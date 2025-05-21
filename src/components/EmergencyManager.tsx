@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Send, Bell, Users, Search, Filter, Trash2 } from 'lucide-react';
+import { AlertTriangle, Send, Bell, Users, Search, Trash2, Check } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
+import { useGetAllEmergenciesQuery } from '../redux/Features/Emergencies/emergencyApi';
 
 interface EmergencyMessage {
   id: string;
@@ -17,6 +18,8 @@ interface EmergencyMessage {
 }
 
 export function EmergencyManager() {
+  const {data} = useGetAllEmergenciesQuery({});
+  console.log(data);
   const [messages, setMessages] = useState<EmergencyMessage[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [filter, setFilter] = useState('all');

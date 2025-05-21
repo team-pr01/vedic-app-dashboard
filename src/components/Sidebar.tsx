@@ -1,4 +1,3 @@
-import React from 'react';
 import { LayoutDashboard, Users, BarChart2, Settings, Activity, HelpCircle, Bell, Sun, Moon, BookOpen, Headphones, FileText, Building, LandPlot, Newspaper, MessageSquarePlus, AlertTriangle, BellRing, Bot as Lotus, Home, Key, Film } from 'lucide-react';
 
 interface SidebarProps {
