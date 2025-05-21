@@ -9,7 +9,7 @@ const authApi = baseApi.injectEndpoints({
         body: userInfo,
         credentials: "include",
       }),
-      invalidatesTags: ["user"],
+      invalidatesTags: ["users"],
     }),
 
     signup: builder.mutation({
@@ -19,36 +19,7 @@ const authApi = baseApi.injectEndpoints({
         body: userInfo,
         credentials: "include",
       }),
-      invalidatesTags: ["user"],
-    }),
-
-    verifyAccount: builder.mutation({
-      query: (verifyAccountData) => ({
-        url: "/auth/verify",
-        method: "POST",
-        body: verifyAccountData,
-        credentials: "include",
-      }),
-      invalidatesTags: ["user"],
-    }),
-
-    getMe: builder.query({
-      query: () => ({
-        url: "/auth/me",
-        method: "GET",
-        credentials: "include",
-      }),
-      providesTags: ["user"],
-    }),
-
-    updateProfile: builder.mutation({
-      query: (profileUpdatedData) => ({
-        method: "PUT",
-        url: `/auth/me/update`,
-        body: profileUpdatedData,
-        credentials: "include",
-      }),
-      invalidatesTags: ["user"],
+      invalidatesTags: ["users"],
     }),
 
     logoutUser: builder.query({
@@ -57,7 +28,7 @@ const authApi = baseApi.injectEndpoints({
         url: `/auth/logout`,
         credentials: "include",
       }),
-      providesTags: ["user"],
+      providesTags: ["users"],
     }),
 
     forgotPassword: builder.mutation({
@@ -67,7 +38,7 @@ const authApi = baseApi.injectEndpoints({
         body: forgotPasswordData,
         credentials: "include",
       }),
-      invalidatesTags: ["user"],
+      invalidatesTags: ["users"],
     }),
 
     resetPassword: builder.mutation({
@@ -77,7 +48,7 @@ const authApi = baseApi.injectEndpoints({
         body: resetPasswordData,
         credentials: "include",
       }),
-      invalidatesTags: ["user"],
+      invalidatesTags: ["users"],
     }),
 
 
@@ -87,9 +58,6 @@ const authApi = baseApi.injectEndpoints({
 export const {
   useLoginMutation,
   useSignupMutation,
-  useVerifyAccountMutation,
-  useGetMeQuery,
-  useUpdateProfileMutation,
   useLogoutUserQuery,
   useForgotPasswordMutation,
   useResetPasswordMutation

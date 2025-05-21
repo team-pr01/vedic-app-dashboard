@@ -1,6 +1,11 @@
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { useLoginMutation } from "../redux/Features/Auth/authApi";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { setUser } from "../redux/Features/Auth/authSlice";
+import { useNavigate } from "react-router-dom";
 
 type FormValues = {
   email: string;
@@ -8,6 +13,9 @@ type FormValues = {
 };
 
 const Signin = () => {
+    const [login, {isLoading}] = useLoginMutation();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const {
     register,
     handleSubmit,
@@ -16,15 +24,26 @@ const Signin = () => {
 
     const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
 
-  const handleLogin = async (data:FormValues) => {
-    console.log(data);
+   const handleLogin: SubmitHandler<FormValues> = async (data) => {
+    const loginData = {
+      email: data.email,
+      password: data.password,
+    };
+    try {
+      const res = await login(loginData).unwrap();
+      const user = res.user;
+      toast.success("Logged in successfully.");
+
+      // Setting the user in Redux state
+      dispatch(setUser({ user }));
+      navigate("/dashboard");
+    } catch (err) {
+      toast.error("Invalid email or password!");
+    }
   };
+
+
     return (
     <div className="max-w-[500px] mx-auto h-screen flex items-center justify-center">
       <form className="space-y-6 w-full bg-gray-100 p-6 rounded-xl" onSubmit={handleSubmit(handleLogin)}>
@@ -75,10 +94,10 @@ const Signin = () => {
         <div>
           <button
             type="submit"
-            disabled={loading}
+            disabled={isLoading}
             className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? (
+            {isLoading ? (
               <svg
                 className="animate-spin h-5 w-5 text-white"
                 xmlns="http://www.w3.org/2000/svg"
