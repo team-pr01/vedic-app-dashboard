@@ -19,7 +19,7 @@ const Signin = () => {
     const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors },reset
   } = useForm<FormValues>();
 
     const [isLogin, setIsLogin] = useState(true);
@@ -30,14 +30,17 @@ const Signin = () => {
       email: data.email,
       password: data.password,
     };
+    console.log(loginData)
     try {
       const res = await login(loginData).unwrap();
+      reset();
       const user = res.user;
       toast.success("Logged in successfully.");
 
       // Setting the user in Redux state
       dispatch(setUser({ user }));
       navigate("/dashboard");
+      console.log("first")
     } catch (err) {
       toast.error("Invalid email or password!");
     }

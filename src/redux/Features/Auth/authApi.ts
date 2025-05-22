@@ -22,15 +22,6 @@ const authApi = baseApi.injectEndpoints({
       invalidatesTags: ["users"],
     }),
 
-    logoutUser: builder.query({
-      query: () => ({
-        method: "PUT",
-        url: `/auth/logout`,
-        credentials: "include",
-      }),
-      providesTags: ["users"],
-    }),
-
     forgotPassword: builder.mutation({
       query: (forgotPasswordData) => ({
         url: "/auth/forgot-password",
@@ -58,7 +49,6 @@ const authApi = baseApi.injectEndpoints({
 export const {
   useLoginMutation,
   useSignupMutation,
-  useLogoutUserQuery,
   useForgotPasswordMutation,
   useResetPasswordMutation
 } = authApi;
