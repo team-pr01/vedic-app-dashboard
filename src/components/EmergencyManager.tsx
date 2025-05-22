@@ -8,11 +8,12 @@ import {
   Trash2,
   Check,
   X,
+  Loader2,
 } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import toast from "react-hot-toast";
 import {
-  useChangeStatusMutation,
+  useChangeStatusToResolvedMutation,
   useDeleteEmergencyMutation,
   useGetAllEmergenciesQuery,
 } from "../redux/Features/Emergencies/emergencyApi";
@@ -34,7 +35,7 @@ export function EmergencyManager() {
   const [filter, setFilter] = useState("all");
   const { data, isLoading } = useGetAllEmergenciesQuery(filter);
   const [deleteEmergency] = useDeleteEmergencyMutation();
-  const [changeStatus] = useChangeStatusMutation();
+  const [changeStatusToResolved] = useChangeStatusToResolvedMutation();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [showForm, setShowForm] = useState(false);
@@ -100,14 +101,16 @@ export function EmergencyManager() {
     }
   };
 
-  const handleResolve = async (messageId: string) => {
+  const handleChangeStatus = async (messageId: string, status: string) => {
     try {
-     
-      toast.promise(changeStatus({id: messageId, status:"resolved"}).unwrap(), {
-      loading: "Updating emergency post status...",
-      success: "Emergency post marked as resolved",
-      error: "Failed to update status.",
-    });
+      toast.promise(
+        changeStatusToResolved({ id: messageId, status: status }).unwrap(),
+        {
+          loading: "Updating emergency post status...",
+          success: `Emergency post marked as ${status}",`,
+          error: "Failed to update status.",
+        }
+      );
     } catch (error) {
       console.error("Error resolving message:", error);
       toast.error("Failed to resolve message");
@@ -207,7 +210,9 @@ export function EmergencyManager() {
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
                       message.status === "resolved"
                         ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                        : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+                        : message.status === "pending"
+                        ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                        : " text-gray-800 bg-blue-200 dark:text-gray-200"
                     }`}
                   >
                     {message.status.toUpperCase()}
@@ -231,10 +236,30 @@ export function EmergencyManager() {
                 {(message?.status === "pending" ||
                   message?.status === "processing") && (
                   <button
-                    onClick={() => handleResolve(message._id)}
-                    className="p-2 text-green-600 hover:bg-green-50 rounded-lg dark:text-green-400 dark:hover:bg-green-900/20"
+                    onClick={() => handleChangeStatus(message._id, "resolved")}
+                    className="px-2 py-1 text-xs text-green-600 bg-green-100 rounded-lg dark:text-green-400 dark:hover:bg-green-900/20"
                   >
-                    <Check className="h-5 w-5" />
+                    Resolved
+                  </button>
+                )}
+
+                {message?.status === "pending" && (
+                  <button
+                    onClick={() =>
+                      handleChangeStatus(message._id, "processing")
+                    }
+                    className="px-2 py-1 text-xs bg-blue-200 rounded-lg dark:text-green-400 dark:hover:bg-green-900/20 "
+                  >
+                    Processing
+                  </button>
+                )}
+
+                {message?.status === "processing" && (
+                  <button
+                    onClick={() => handleChangeStatus(message._id, "pending")}
+                    className="px-2 py-1 text-xs text-yellow-600 bg-yellow-100 rounded-lg dark:text-green-400 dark:hover:bg-green-900/20 "
+                  >
+                    Pending
                   </button>
                 )}
 

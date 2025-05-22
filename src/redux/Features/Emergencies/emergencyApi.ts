@@ -32,7 +32,7 @@ const menuApi = baseApi.injectEndpoints({
       invalidatesTags: ["emergencies"],
     }),
 
-    changeStatus: builder.mutation<any, { id: string; status: string }>({
+    changeStatusToResolved: builder.mutation<any, { id: string; status: string }>({
       query: ({ id, status }) => ({
         url: `/emergency/update-status/${id}`,
         method: "PUT",
@@ -48,5 +48,5 @@ export const {
   useGetAllEmergenciesQuery,
   useGetSingleEmergencyQuery,
   useDeleteEmergencyMutation,
-  useChangeStatusMutation,
+  useChangeStatusToResolvedMutation
 } = menuApi;
