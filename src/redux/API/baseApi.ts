@@ -17,8 +17,7 @@ const baseQuery = fetchBaseQuery({
 });
 
 const baseQueryWithRefreshToken: BaseQueryFn<FetchArgs, BaseQueryApi, DefinitionType> = async (args, api, extraOptions) : Promise<any> => {
-  const result = await baseQuery(args, api, extraOptions);
-  console.log(result);
+  let result = await baseQuery(args, api, extraOptions);
 
   if(result.error?.status === 401){
     const res = await fetch('https://vedic-app-server.vercel.app/api/v1/auth/refresh-token', {
@@ -26,7 +25,6 @@ const baseQueryWithRefreshToken: BaseQueryFn<FetchArgs, BaseQueryApi, Definition
     });
 
     const data = await res.json();
-    console.log(data);
     const user = (api.getState() as RootState).auth.user
     api.dispatch(
       setUser({
@@ -34,6 +32,7 @@ const baseQueryWithRefreshToken: BaseQueryFn<FetchArgs, BaseQueryApi, Definition
         token : data?.data?.accessToken
       })
     )
+     result = await baseQuery(args, api, extraOptions);
   }
 
   return result;

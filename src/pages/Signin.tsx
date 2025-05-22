@@ -34,13 +34,14 @@ const Signin = () => {
     try {
       const res = await login(loginData).unwrap();
       reset();
-      const user = res.user;
+      const user = res.data.user;
+    const token = res.data.accessToken;
+      console.log(token)
       toast.success("Logged in successfully.");
 
       // Setting the user in Redux state
-      dispatch(setUser({ user }));
+      dispatch(setUser({  user, token } ));
       navigate("/dashboard");
-      console.log("first")
     } catch (err) {
       toast.error("Invalid email or password!");
     }

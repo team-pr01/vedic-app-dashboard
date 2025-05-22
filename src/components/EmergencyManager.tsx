@@ -18,8 +18,7 @@ interface EmergencyMessage {
 }
 
 export function EmergencyManager() {
-  const {data} = useGetAllEmergenciesQuery({});
-  console.log(data);
+  const { data, error, isLoading } = useGetAllEmergenciesQuery();
   const [messages, setMessages] = useState<EmergencyMessage[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [filter, setFilter] = useState('all');
@@ -32,10 +31,49 @@ export function EmergencyManager() {
     status: 'active' as const
   });
 
-  useEffect(() => {
-    fetchMessages();
-    subscribeToMessages();
-  }, []);
+
+   useEffect(() => {
+    if (data?.data) {
+      const mappedMessages = data.data.map((emergency: any): EmergencyMessage => {
+        const severityMap: Record<string, EmergencyMessage["severity"]> = {
+          low: "low",
+          moderate: "medium",
+          medium: "medium",
+          high: "high",
+          critical: "critical",
+        };
+
+        // Map backend status to interface status
+        const statusMap: Record<string, EmergencyMessage["status"]> = {
+          processing: "active",
+          active: "active",
+          resolved: "resolved",
+          archived: "archived",
+        };
+
+        return {
+          id: emergency._id,
+          title: "",  // No title in backend, optionally substring from message
+          message: emergency.message,
+          severity: severityMap[emergency.severity] || "medium",
+          target_groups: [],       // no data, default empty
+          status: statusMap[emergency.status] || "active",
+          sent_at: emergency.createdAt,
+          resolved_at: undefined,  // no resolvedAt in backend response
+          sent_by: emergency.user?.name || "Unknown",
+          acknowledgments: [],     // no data, empty array
+        };
+      });
+
+      setMessages(mappedMessages);
+    }
+  }, [data]);
+
+
+  // useEffect(() => {
+  //   fetchMessages();
+  //   subscribeToMessages();
+  // }, []);
 
   const fetchMessages = async () => {
     try {
