@@ -4,10 +4,9 @@ const menuApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllEmergencies: builder.query<any, string | void>({
       query: (type) => {
-
-        const queryParam = type && type !== 'all' ? `?status=${type}` : '';
+        const queryParam = type && type !== "all" ? `?status=${type}` : "";
         return {
-           url: `/emergency${queryParam}`,
+          url: `/emergency${queryParam}`,
           method: "GET",
           credentials: "include",
         };
@@ -24,17 +23,19 @@ const menuApi = baseApi.injectEndpoints({
       providesTags: ["emergencies"],
     }),
 
-   
-    deleteEmergency: builder.mutation<any, string >({
+    deleteEmergency: builder.mutation<any, string>({
       query: (id) => ({
         url: `/emergency/${id}`,
         method: "DELETE",
         credentials: "include",
       }),
-      invalidatesTags: ['emergencies']
+      invalidatesTags: ["emergencies"],
     }),
   }),
 });
 
-export const { useGetAllEmergenciesQuery, useGetSingleEmergencyQuery ,useDeleteEmergencyMutation} =
-  menuApi;
+export const {
+  useGetAllEmergenciesQuery,
+  useGetSingleEmergencyQuery,
+  useDeleteEmergencyMutation,
+} = menuApi;

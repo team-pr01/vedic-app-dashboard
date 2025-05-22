@@ -1,16 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { AlertTriangle, Send, Bell, Users, Search, Trash2, Check, X } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import toast from 'react-hot-toast';
-import { useDeleteEmergencyMutation, useGetAllEmergenciesQuery } from '../redux/Features/Emergencies/emergencyApi';
+import React, { useState, useEffect } from "react";
+import {
+  AlertTriangle,
+  Send,
+  Bell,
+  Users,
+  Search,
+  Trash2,
+  Check,
+  X,
+} from "lucide-react";
+import { supabase } from "../lib/supabase";
+import toast from "react-hot-toast";
+import {
+  useDeleteEmergencyMutation,
+  useGetAllEmergenciesQuery,
+} from "../redux/Features/Emergencies/emergencyApi";
 
 interface EmergencyMessage {
   id: string;
   title: string;
   message: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
   target_groups: string[];
-  status: 'active' | 'resolved' | 'archived';
+  status: "active" | "resolved" | "archived";
   sent_at: string;
   resolved_at?: string;
   sent_by: string;
@@ -18,76 +30,37 @@ interface EmergencyMessage {
 }
 
 export function EmergencyManager() {
-  const [filter, setFilter] = useState('all');
-  const { data, error, isLoading } = useGetAllEmergenciesQuery(filter);
-  const [deleteEmergency]=useDeleteEmergencyMutation();
-  const [messages, setMessages] = useState<EmergencyMessage[]>([]);
+  const [filter, setFilter] = useState("all");
+  const { data, isLoading } = useGetAllEmergenciesQuery(filter);
+  const [deleteEmergency] = useDeleteEmergencyMutation();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
   const [showForm, setShowForm] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [newMessage, setNewMessage] = useState({
-    title: '',
-    message: '',
-    severity: 'high' as const,
-    target_groups: ['all'],
-    status: 'active' as const
+    title: "",
+    message: "",
+    severity: "high" as const,
+    target_groups: ["all"],
+    status: "active" as const,
   });
 
-
-   useEffect(() => {
-    if (data?.data) {
-      const mappedMessages = data.data.map((emergency: any): EmergencyMessage => {
-        const severityMap: Record<string, EmergencyMessage["severity"]> = {
-          low: "low",
-          moderate: "medium",
-          medium: "medium",
-          high: "high",
-          critical: "critical",
-        };
-
-        // Map backend status to interface status
-        const statusMap: Record<string, EmergencyMessage["status"]> = {
-          processing: "active",
-          active: "active",
-          resolved: "resolved",
-          archived: "archived",
-        };
-
-        return {
-          id: emergency._id,
-          title: "",  
-          message: emergency.message,
-          severity: severityMap[emergency.severity] || "medium",
-          target_groups: [],      
-          status: statusMap[emergency.status] || "active",
-          sent_at: emergency.createdAt,
-          resolved_at: emergency.resolvedAt,  
-          sent_by: emergency.user?.name || "Unknown",
-          acknowledgments: [],    
-        };
-      });
-
-      setMessages(mappedMessages);
-    }
-  }, [data]);
-
-
-  // useEffect(() => {
-  //   fetchMessages();
-  //   subscribeToMessages();
-  // }, []);
-
- 
+  console.log(data);
 
   const subscribeToMessages = () => {
     const subscription = supabase
-      .channel('emergency_messages')
-      .on('postgres_changes', { 
-        event: '*', 
-        schema: 'public', 
-        table: 'emergency_messages' 
-      }, () => {
-        // fetchMessages();
-      })
+      .channel("emergency_messages")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "emergency_messages",
+        },
+        () => {
+          // fetchMessages();
+        }
+      )
       .subscribe();
 
     return () => {
@@ -99,77 +72,74 @@ export function EmergencyManager() {
     e.preventDefault();
     try {
       const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) throw new Error('Not authenticated');
+      if (!userData.user) throw new Error("Not authenticated");
 
-      const { error } = await supabase
-        .from('emergency_messages')
-        .insert({
-          ...newMessage,
-          sent_by: userData.user.id,
-          sent_at: new Date().toISOString(),
-          acknowledgments: []
-        });
+      const { error } = await supabase.from("emergency_messages").insert({
+        ...newMessage,
+        sent_by: userData.user.id,
+        sent_at: new Date().toISOString(),
+        acknowledgments: [],
+      });
 
       if (error) throw error;
 
-      toast.success('Emergency message sent successfully');
+      toast.success("Emergency message sent successfully");
       setShowForm(false);
       setNewMessage({
-        title: '',
-        message: '',
-        severity: 'high',
-        target_groups: ['all'],
-        status: 'active'
+        title: "",
+        message: "",
+        severity: "high",
+        target_groups: ["all"],
+        status: "active",
       });
     } catch (error) {
-      console.error('Error sending message:', error);
-      toast.error('Failed to send emergency message');
+      console.error("Error sending message:", error);
+      toast.error("Failed to send emergency message");
     }
   };
 
   const handleResolve = async (messageId: string) => {
     try {
       const { error } = await supabase
-        .from('emergency_messages')
+        .from("emergency_messages")
         .update({
-          status: 'resolved',
-          resolved_at: new Date().toISOString()
+          status: "resolved",
+          resolved_at: new Date().toISOString(),
         })
-        .eq('id', messageId);
+        .eq("id", messageId);
 
       if (error) throw error;
-      toast.success('Message marked as resolved');
+      toast.success("Message marked as resolved");
     } catch (error) {
-      console.error('Error resolving message:', error);
-      toast.error('Failed to resolve message');
+      console.error("Error resolving message:", error);
+      toast.error("Failed to resolve message");
     }
   };
 
-  const handleDelete = async (messageId: string) => {
-    if (!window.confirm('Are you sure you want to delete this message?')) return;
+ const handleDelete = async (messageId: string) => {
+  if (!window.confirm("Are you sure you want to delete this message?")) return;
 
-    try {
-      const { error } = await supabase
-        .from('emergency_messages')
-        .delete()
-        .eq('id', messageId);
-
-      if (error) throw error;
-      toast.success('Message deleted successfully');
-    } catch (error) {
-      console.error('Error deleting message:', error);
-      toast.error('Failed to delete message');
+  toast.promise(
+    deleteEmergency(messageId).unwrap(), // Important to unwrap for proper error catching
+    {
+      loading: "Deleting message...",
+      success: "Message deleted successfully!",
+      error: "Failed to delete message.",
     }
-  };
-
+  );
+};
 
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'critical': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      case 'high': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      default: return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+      case "critical":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+      case "high":
+        return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+      default:
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
     }
   };
 
@@ -212,15 +182,15 @@ export function EmergencyManager() {
           <option value="all">All Status</option>
 
           {/* to be changed to active instated of processing */}
-          <option value="processing">Active</option>
+          <option value="pending">Pending</option>
+          <option value="processing">Processing</option>
           <option value="resolved">Resolved</option>
-          <option value="archived">Archived</option>
         </select>
       </div>
 
       {/* Messages List */}
       <div className="space-y-4">
-        {messages.map((message) => (
+        {data?.data?.map((message) => (
           <div
             key={message.id}
             className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
@@ -231,14 +201,20 @@ export function EmergencyManager() {
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                     {message.title}
                   </h3>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getSeverityColor(message.severity)}`}>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${getSeverityColor(
+                      message.severity
+                    )}`}
+                  >
                     {message.severity.toUpperCase()}
                   </span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    message.status === 'active'
-                      ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                      : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
-                  }`}>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      message.status === "active"
+                        ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                        : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
+                    }`}
+                  >
                     {message.status.toUpperCase()}
                   </span>
                 </div>
@@ -252,21 +228,21 @@ export function EmergencyManager() {
                   </span>
                   <span className="flex items-center">
                     <Users className="h-4 w-4 mr-1" />
-                    {message.target_groups.join(', ')}
+                    {message?.target_groups?.join(", ")}
                   </span>
                 </div>
               </div>
               <div className="flex space-x-2">
-                {message.status === 'active' && (
+                {message.status === "active" && (
                   <button
-                    onClick={() => handleResolve(message.id)}
+                    onClick={() => handleDelete(message._id)}
                     className="p-2 text-green-600 hover:bg-green-50 rounded-lg dark:text-green-400 dark:hover:bg-green-900/20"
                   >
                     <Check className="h-5 w-5" />
                   </button>
                 )}
                 <button
-                  onClick={() => handleDelete(message.id)}
+                  onClick={() => handleDelete(message?._id)}
                   className="p-2 text-red-600 hover:bg-red-50 rounded-lg dark:text-red-400 dark:hover:bg-red-900/20"
                 >
                   <Trash2 className="h-5 w-5" />
@@ -303,7 +279,9 @@ export function EmergencyManager() {
                   <input
                     type="text"
                     value={newMessage.title}
-                    onChange={(e) => setNewMessage({ ...newMessage, title: e.target.value })}
+                    onChange={(e) =>
+                      setNewMessage({ ...newMessage, title: e.target.value })
+                    }
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:border-gray-600"
                     required
                   />
@@ -315,7 +293,9 @@ export function EmergencyManager() {
                   </label>
                   <textarea
                     value={newMessage.message}
-                    onChange={(e) => setNewMessage({ ...newMessage, message: e.target.value })}
+                    onChange={(e) =>
+                      setNewMessage({ ...newMessage, message: e.target.value })
+                    }
                     rows={4}
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:border-gray-600"
                     required
@@ -328,10 +308,13 @@ export function EmergencyManager() {
                   </label>
                   <select
                     value={newMessage.severity}
-                    onChange={(e) => setNewMessage({
-                      ...newMessage,
-                      severity: e.target.value as EmergencyMessage['severity']
-                    })}
+                    onChange={(e) =>
+                      setNewMessage({
+                        ...newMessage,
+                        severity: e.target
+                          .value as EmergencyMessage["severity"],
+                      })
+                    }
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:border-gray-600"
                   >
                     <option value="low">Low</option>
@@ -348,10 +331,15 @@ export function EmergencyManager() {
                   <select
                     multiple
                     value={newMessage.target_groups}
-                    onChange={(e) => setNewMessage({
-                      ...newMessage,
-                      target_groups: Array.from(e.target.selectedOptions, option => option.value)
-                    })}
+                    onChange={(e) =>
+                      setNewMessage({
+                        ...newMessage,
+                        target_groups: Array.from(
+                          e.target.selectedOptions,
+                          (option) => option.value
+                        ),
+                      })
+                    }
                     className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:border-gray-600"
                   >
                     <option value="all">All Users</option>
@@ -360,7 +348,9 @@ export function EmergencyManager() {
                     <option value="members">Members</option>
                     <option value="visitors">Visitors</option>
                   </select>
-                  <p className="mt-1 text-sm text-gray-500">Hold Ctrl/Cmd to select multiple groups</p>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Hold Ctrl/Cmd to select multiple groups
+                  </p>
                 </div>
               </div>
 
