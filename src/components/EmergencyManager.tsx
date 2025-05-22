@@ -12,6 +12,7 @@ import {
 import { supabase } from "../lib/supabase";
 import toast from "react-hot-toast";
 import {
+  useChangeStatusMutation,
   useDeleteEmergencyMutation,
   useGetAllEmergenciesQuery,
 } from "../redux/Features/Emergencies/emergencyApi";
@@ -33,6 +34,7 @@ export function EmergencyManager() {
   const [filter, setFilter] = useState("all");
   const { data, isLoading } = useGetAllEmergenciesQuery(filter);
   const [deleteEmergency] = useDeleteEmergencyMutation();
+  const [changeStatus] = useChangeStatusMutation();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [showForm, setShowForm] = useState(false);
@@ -100,35 +102,28 @@ export function EmergencyManager() {
 
   const handleResolve = async (messageId: string) => {
     try {
-      const { error } = await supabase
-        .from("emergency_messages")
-        .update({
-          status: "resolved",
-          resolved_at: new Date().toISOString(),
-        })
-        .eq("id", messageId);
-
-      if (error) throw error;
-      toast.success("Message marked as resolved");
+     
+      toast.promise(changeStatus({id: messageId, status:"resolved"}).unwrap(), {
+      loading: "Updating emergency post status...",
+      success: "Emergency post marked as resolved",
+      error: "Failed to update status.",
+    });
     } catch (error) {
       console.error("Error resolving message:", error);
       toast.error("Failed to resolve message");
     }
   };
 
- const handleDelete = async (messageId: string) => {
-  if (!window.confirm("Are you sure you want to delete this message?")) return;
+  const handleDelete = async (messageId: string) => {
+    if (!window.confirm("Are you sure you want to delete this message?"))
+      return;
 
-  toast.promise(
-    deleteEmergency(messageId).unwrap(), // Important to unwrap for proper error catching
-    {
-      loading: "Deleting message...",
-      success: "Message deleted successfully!",
-      error: "Failed to delete message.",
-    }
-  );
-};
-
+    toast.promise(deleteEmergency(messageId).unwrap(), {
+      loading: "Deleting emergency post...",
+      success: "Emergency post deleted successfully!",
+      error: "Failed to delete emergency post.",
+    });
+  };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -210,7 +205,7 @@ export function EmergencyManager() {
                   </span>
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      message.status === "active"
+                      message.status === "resolved"
                         ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                         : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
                     }`}
@@ -233,14 +228,16 @@ export function EmergencyManager() {
                 </div>
               </div>
               <div className="flex space-x-2">
-                {message.status === "active" && (
+                {(message?.status === "pending" ||
+                  message?.status === "processing") && (
                   <button
-                    onClick={() => handleDelete(message._id)}
+                    onClick={() => handleResolve(message._id)}
                     className="p-2 text-green-600 hover:bg-green-50 rounded-lg dark:text-green-400 dark:hover:bg-green-900/20"
                   >
                     <Check className="h-5 w-5" />
                   </button>
                 )}
+
                 <button
                   onClick={() => handleDelete(message?._id)}
                   className="p-2 text-red-600 hover:bg-red-50 rounded-lg dark:text-red-400 dark:hover:bg-red-900/20"

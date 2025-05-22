@@ -31,6 +31,16 @@ const menuApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["emergencies"],
     }),
+
+    changeStatus: builder.mutation<any, { id: string; status: string }>({
+      query: ({ id, status }) => ({
+        url: `/emergency/update-status/${id}`,
+        method: "PUT",
+        body: {status},
+        credentials: "include",
+      }),
+      invalidatesTags: ["emergencies"],
+    }),
   }),
 });
 
@@ -38,4 +48,5 @@ export const {
   useGetAllEmergenciesQuery,
   useGetSingleEmergencyQuery,
   useDeleteEmergencyMutation,
+  useChangeStatusMutation,
 } = menuApi;
