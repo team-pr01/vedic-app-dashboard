@@ -2,17 +2,17 @@ import { baseApi } from "../../API/baseApi";
 
 const menuApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getAllEmergencies: builder.query<any, string | void>({
-      query: (type) => {
-        const queryParam = type && type !== "all" ? `?status=${type}` : "";
-        return {
-          url: `/emergency${queryParam}`,
-          method: "GET",
-          credentials: "include",
-        };
-      },
-      providesTags: ["emergencies"],
-    }),
+    getAllEmergencies: builder.query<any, { keyword?: string; status?: string }>({
+  query: ({ keyword = "", status = "" }) => {
+    return {
+      url: `/emergency?keyword=${keyword}&status=${status}`,
+      method: "GET",
+      credentials: "include",
+    };
+  },
+  providesTags: ["emergencies"],
+}),
+
 
     getSingleEmergency: builder.query({
       query: (id) => ({

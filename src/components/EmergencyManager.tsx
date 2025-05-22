@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   AlertTriangle,
   Send,
@@ -6,9 +6,7 @@ import {
   Users,
   Search,
   Trash2,
-  Check,
   X,
-  Loader2,
 } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import toast from "react-hot-toast";
@@ -32,14 +30,13 @@ interface EmergencyMessage {
 }
 
 export function EmergencyManager() {
-  const [filter, setFilter] = useState("all");
-  const { data, isLoading } = useGetAllEmergenciesQuery(filter);
+  const [status, setStatus] = useState("");
   const [deleteEmergency] = useDeleteEmergencyMutation();
   const [changeStatusToResolved] = useChangeStatusToResolvedMutation();
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-
+  
   const [showForm, setShowForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const { data, isLoading } = useGetAllEmergenciesQuery({ keyword: searchQuery, status });
   const [newMessage, setNewMessage] = useState({
     title: "",
     message: "",
@@ -47,29 +44,6 @@ export function EmergencyManager() {
     target_groups: ["all"],
     status: "active" as const,
   });
-
-  console.log(data);
-
-  const subscribeToMessages = () => {
-    const subscription = supabase
-      .channel("emergency_messages")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "emergency_messages",
-        },
-        () => {
-          // fetchMessages();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -173,11 +147,11 @@ export function EmergencyManager() {
           </div>
         </div>
         <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
           className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
         >
-          <option value="all">All Status</option>
+          <option value="">All Status</option>
 
           {/* to be changed to active instated of processing */}
           <option value="pending">Pending</option>
@@ -188,7 +162,7 @@ export function EmergencyManager() {
 
       {/* Messages List */}
       <div className="space-y-4">
-        {data?.data?.map((message) => (
+        {data?.data?.map((message:any) => (
           <div
             key={message.id}
             className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
