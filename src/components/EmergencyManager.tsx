@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AlertTriangle, Send, Bell, Users, Search, Trash2, Check, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
-import { useGetAllEmergenciesQuery } from '../redux/Features/Emergencies/emergencyApi';
+import { useDeleteEmergencyMutation, useGetAllEmergenciesQuery } from '../redux/Features/Emergencies/emergencyApi';
 
 interface EmergencyMessage {
   id: string;
@@ -18,10 +18,11 @@ interface EmergencyMessage {
 }
 
 export function EmergencyManager() {
-  const { data, error, isLoading } = useGetAllEmergenciesQuery();
+  const [filter, setFilter] = useState('all');
+  const { data, error, isLoading } = useGetAllEmergenciesQuery(filter);
+  const [deleteEmergency]=useDeleteEmergencyMutation();
   const [messages, setMessages] = useState<EmergencyMessage[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [newMessage, setNewMessage] = useState({
     title: '',
@@ -53,15 +54,15 @@ export function EmergencyManager() {
 
         return {
           id: emergency._id,
-          title: "",  // No title in backend, optionally substring from message
+          title: "",  
           message: emergency.message,
           severity: severityMap[emergency.severity] || "medium",
-          target_groups: [],       // no data, default empty
+          target_groups: [],      
           status: statusMap[emergency.status] || "active",
           sent_at: emergency.createdAt,
-          resolved_at: undefined,  // no resolvedAt in backend response
+          resolved_at: emergency.resolvedAt,  
           sent_by: emergency.user?.name || "Unknown",
-          acknowledgments: [],     // no data, empty array
+          acknowledgments: [],    
         };
       });
 
@@ -75,20 +76,7 @@ export function EmergencyManager() {
   //   subscribeToMessages();
   // }, []);
 
-  const fetchMessages = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('emergency_messages')
-        .select('*')
-        .order('sent_at', { ascending: false });
-
-      if (error) throw error;
-      setMessages(data || []);
-    } catch (error) {
-      console.error('Error fetching messages:', error);
-      toast.error('Failed to load emergency messages');
-    }
-  };
+ 
 
   const subscribeToMessages = () => {
     const subscription = supabase
@@ -98,7 +86,7 @@ export function EmergencyManager() {
         schema: 'public', 
         table: 'emergency_messages' 
       }, () => {
-        fetchMessages();
+        // fetchMessages();
       })
       .subscribe();
 
@@ -174,12 +162,7 @@ export function EmergencyManager() {
     }
   };
 
-  const filteredMessages = messages.filter(message => {
-    const matchesFilter = filter === 'all' || message.status === filter;
-    const matchesSearch = message.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      message.message.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
+
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -227,7 +210,9 @@ export function EmergencyManager() {
           className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
         >
           <option value="all">All Status</option>
-          <option value="active">Active</option>
+
+          {/* to be changed to active instated of processing */}
+          <option value="processing">Active</option>
           <option value="resolved">Resolved</option>
           <option value="archived">Archived</option>
         </select>
@@ -235,7 +220,7 @@ export function EmergencyManager() {
 
       {/* Messages List */}
       <div className="space-y-4">
-        {filteredMessages.map((message) => (
+        {messages.map((message) => (
           <div
             key={message.id}
             className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
