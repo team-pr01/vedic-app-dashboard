@@ -14,7 +14,6 @@ import { TempleManager } from '../../components/TempleManager';
 import { YogaManager } from '../../components/YogaManager';
 import { VastuManager } from '../../components/VastuManager';
 import { APIKeyManager } from '../../components/APIKeyManager';
-import { ReelsManager } from '../../components/ReelsManager';
 import { AlertTriangle, Users, BookOpen, Building, Newspaper, Headphones, Activity } from 'lucide-react';
 import type { 
   Metric, 
@@ -176,8 +175,6 @@ export function Dashboard({ activeSection }: any) {
         return <TempleManager />;
       case 'religious-texts':
         return <ReligiousTextManager />;
-      case 'reels':
-        return <ReelsManager />;
       case 'users':
         return (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow">

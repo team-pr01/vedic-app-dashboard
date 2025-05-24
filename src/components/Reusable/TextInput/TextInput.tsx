@@ -13,10 +13,11 @@ interface TextInputProps {
   defaultValue?: any;
   isDisabled?: boolean;
   isRequired?: boolean;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
-  ({ label, name, placeholder = "", type = "text", error, defaultValue, isDisabled = false, isRequired = true, ...rest }, ref) => {
+  ({ label, name, placeholder = "", type = "text", error, defaultValue, isDisabled = false, isRequired = true, onKeyDown, ...rest }, ref) => {
     return (
       <div className="flex flex-col gap-2 font-Inter w-full">
         <label htmlFor={name} className="text-neutral-65">
@@ -33,6 +34,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
           type={type}
           placeholder={placeholder}
           defaultValue={defaultValue}
+          onKeyDown={onKeyDown}
           ref={ref}
           disabled={isDisabled}
           className={`px-[18px] py-[14px] rounded-lg bg-neutral-70 border focus:outline-none focus:border-primary-500 transition duration-300 ${error ? "border-red-500" : "border-neutral-75"
