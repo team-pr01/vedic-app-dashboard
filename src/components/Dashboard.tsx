@@ -14,7 +14,6 @@ import { OrganizationManager } from './OrganizationManager';
 import { NewsManager } from './NewsManager';
 import { PopupManager } from './PopupManager';
 import { TempleManager } from './TempleManager';
-import { EmergencyManager } from './EmergencyManager';
 import { YogaManager } from './YogaManager';
 import { VastuManager } from './VastuManager';
 import { APIKeyManager } from './APIKeyManager';
@@ -228,8 +227,6 @@ export function Dashboard({ activeSection }: DashboardProps) {
         return <YogaManager />;
       case 'vastu':
         return <VastuManager />;
-      case 'emergency':
-        return <EmergencyManager />;
       case 'temple':
         return <TempleManager />;
       case 'religious-texts':

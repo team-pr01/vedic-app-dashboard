@@ -1,4 +1,4 @@
-import { Search, Bell, LogOut, LogIn } from 'lucide-react';
+import { Search, Bell, LogOut } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { logout } from '../redux/Features/Auth/authSlice';
 import { useNavigate } from 'react-router-dom';
