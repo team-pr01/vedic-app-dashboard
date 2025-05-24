@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { setUser } from "../redux/Features/Auth/authSlice";
 import { useNavigate } from "react-router-dom";
 
+
 type FormValues = {
   email: string;
   password: string;
@@ -126,7 +127,7 @@ const Signin = () => {
           </button>
         </div>
 
-        <div className="text-center">
+        {/* <div className="text-center">
           <button
             type="button"
             onClick={() => setIsLogin(!isLogin)}
@@ -136,7 +137,7 @@ const Signin = () => {
               ? "Don't have an account? Sign up"
               : 'Already have an account? Sign in'}
           </button>
-        </div>
+        </div> */}
       </form>
     </div>
     );

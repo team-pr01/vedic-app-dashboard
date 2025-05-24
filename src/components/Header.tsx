@@ -1,22 +1,15 @@
-import React from 'react';
 import { Search, Bell, LogOut, LogIn } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import toast from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { logout } from '../redux/Features/Auth/authSlice';
+import { useNavigate } from 'react-router-dom';
 
-interface HeaderProps {
-  session: any;
-  onAuthClick: () => void;
-}
 
-export function Header({ session, onAuthClick }: HeaderProps) {
-  const handleSignOut = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      toast.success('Signed out successfully');
-    } catch (error) {
-      toast.error('Error signing out');
-    }
+export function Header() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+ const handleLogout = async () => {
+  dispatch(logout());
+  navigate("/");
   };
 
   return (
@@ -41,15 +34,25 @@ export function Header({ session, onAuthClick }: HeaderProps) {
                 3
               </span>
             </button>
-            
-            {session ? (
-              <>
-                <button
-                  onClick={handleSignOut}
+
+            {/* <button
+                  onClick={handleLogout}
                   className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
                 >
                   <LogOut className="h-6 w-6" />
-                </button>
+                </button> */}
+
+                <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                <LogOut className="size-5" />
+                Logout
+              </button>
+            
+            {/* {session ? (
+              <>
+                
                 <div className="flex items-center space-x-3">
                   <img
                     src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
@@ -72,7 +75,7 @@ export function Header({ session, onAuthClick }: HeaderProps) {
                 <LogIn className="h-4 w-4 mr-2" />
                 Sign In
               </button>
-            )}
+            )} */}
           </div>
         </div>
       </div>
