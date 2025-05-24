@@ -36,6 +36,7 @@ const AddReelForm: React.FC<TAddReelFormProps> = ({
     console.log("object", data);
   };
 
+//   To enter tags
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -146,24 +147,6 @@ const AddReelForm: React.FC<TAddReelFormProps> = ({
                   ))}
                 </div>
               </div>
-
-              {/* <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Tags (comma-separated)
-                </label>
-                <input
-                  type="text"
-                  value={newReel.tags?.join(", ") || ""}
-                  onChange={(e) =>
-                    setNewReel({
-                      ...newReel,
-                      tags: e.target.value.split(",").map((tag) => tag.trim()),
-                    })
-                  }
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
-                  placeholder="meditation, vedic, tutorial"
-                />
-              </div> */}
             </div>
 
             <div className="flex justify-end space-x-3">

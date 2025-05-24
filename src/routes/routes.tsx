@@ -5,6 +5,7 @@ import { Dashboard } from "../pages/Dashboard/Dashboard";
 import Users from "../pages/Users/Users";
 import Login from "../pages/Login/Login";
 import Reels from "../pages/Reels/Reels";
+import Yoga from "../pages/Yoga/Yoga";
 
 export const router = createBrowserRouter([
   {
@@ -31,6 +32,10 @@ export const router = createBrowserRouter([
       {
         path: "reels",
         element: <Reels />,
+      },
+      {
+        path: "yoga",
+        element: <Yoga />,
       },
     ],
   },
