@@ -6,6 +6,7 @@ import Users from "../pages/Users/Users";
 import Login from "../pages/Login/Login";
 import Reels from "../pages/Reels/Reels";
 import Yoga from "../pages/Yoga/Yoga";
+import Vastu from "../pages/Vastu/Vastu";
 
 export const router = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ export const router = createBrowserRouter([
       {
         path: "yoga",
         element: <Yoga />,
+      },
+      {
+        path: "vastu",
+        element: <Vastu />,
       },
     ],
   },

@@ -2,7 +2,6 @@
 import { forwardRef } from "react";
 import { FieldError, FieldErrorsImpl, Merge } from "react-hook-form";
 
-
 interface DropdownProps {
   label: string;
   options: string[];
@@ -12,14 +11,12 @@ interface DropdownProps {
 }
 
 const SelectDropdown = forwardRef<HTMLSelectElement, DropdownProps>(
-  ({ label, options, error, isRequired=true, selected, ...rest }, ref) => {
+  ({ label, options, error, isRequired = true, selected, ...rest }, ref) => {
     return (
       <div className="flex flex-col gap-2 font-Inter">
         <label className="text-neutral-65">
           {label}
-          {
-            isRequired && <span className="text-red-600">*</span>
-          }
+          {isRequired && <span className="text-red-600">*</span>}
         </label>
         <select
           ref={ref}
@@ -39,7 +36,9 @@ const SelectDropdown = forwardRef<HTMLSelectElement, DropdownProps>(
             </option>
           ))}
         </select>
-        {error && typeof error.message === 'string' && <p className="text-xs text-red-500 mt-1">{error.message}</p>}
+        {error && typeof error.message === "string" && (
+          <p className="text-xs text-red-500 mt-1">{error.message}</p>
+        )}
       </div>
     );
   }

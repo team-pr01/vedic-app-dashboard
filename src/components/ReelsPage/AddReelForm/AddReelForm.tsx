@@ -36,7 +36,7 @@ const AddReelForm: React.FC<TAddReelFormProps> = ({
     console.log("object", data);
   };
 
-//   To enter tags
+  //   To enter tags
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
