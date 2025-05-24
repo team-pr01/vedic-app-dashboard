@@ -4,6 +4,7 @@ import Emergency from "../pages/Emergency/Emergency";
 import { Dashboard } from "../pages/Dashboard/Dashboard";
 import Users from "../pages/Users/Users";
 import Login from "../pages/Login/Login";
+import Reels from "../pages/Reels/Reels";
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +27,10 @@ export const router = createBrowserRouter([
       {
         path: "users",
         element: <Users />,
+      },
+      {
+        path: "reels",
+        element: <Reels />,
       },
     ],
   },

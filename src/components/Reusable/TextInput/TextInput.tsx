@@ -35,7 +35,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
           defaultValue={defaultValue}
           ref={ref}
           disabled={isDisabled}
-          className={`px-[18px] py-[14px] rounded-lg bg-neutral-70 border focus:outline-none focus:border-primary-10 transition duration-300 ${error ? "border-red-500" : "border-neutral-75"
+          className={`px-[18px] py-[14px] rounded-lg bg-neutral-70 border focus:outline-none focus:border-primary-500 transition duration-300 ${error ? "border-red-500" : "border-neutral-75"
             }`}
           {...rest}
         />
