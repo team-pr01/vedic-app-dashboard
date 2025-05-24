@@ -1,24 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
-import { db } from '../firebase';
-import { MetricCard } from './MetricCard';
-import { RecentActivity } from './RecentActivity';
-import { UserTable } from './UserTable';
-import { DonationStats } from './DonationStats';
-import { ConsultancyManager } from './ConsultancyManager';
-import { ContentManager } from './ContentManager';
-import { NotificationCenter } from './NotificationCenter';
-import { AnalyticsOverview } from './AnalyticsOverview';
-import { ReligiousTextManager } from './ReligiousTextManager';
-import { OrganizationManager } from './OrganizationManager';
-import { NewsManager } from './NewsManager';
-import { PopupManager } from './PopupManager';
-import { TempleManager } from './TempleManager';
-import { YogaManager } from './YogaManager';
-import { VastuManager } from './VastuManager';
-import { APIKeyManager } from './APIKeyManager';
-import { ReelsManager } from './ReelsManager';
-import { AlertTriangle, Users, BookOpen, Building, Newspaper, MessageSquare, Headphones, FileText, Activity } from 'lucide-react';
+import { RecentActivity } from '../../components/RecentActivity';
+// import { UserTable } from '../Users/Users';
+import { DonationStats } from '../../components/DonationStats';
+import { ConsultancyManager } from '../../components/ConsultancyManager';
+import { ContentManager } from '../../components/ContentManager';
+import { NotificationCenter } from '../../components/NotificationCenter';
+import { AnalyticsOverview } from '../../components/AnalyticsOverview';
+import { ReligiousTextManager } from '../../components/ReligiousTextManager';
+import { OrganizationManager } from '../../components/OrganizationManager';
+import { NewsManager } from '../../components/NewsManager';
+import { PopupManager } from '../../components/PopupManager';
+import { TempleManager } from '../../components/TempleManager';
+import { YogaManager } from '../../components/YogaManager';
+import { VastuManager } from '../../components/VastuManager';
+import { APIKeyManager } from '../../components/APIKeyManager';
+import { ReelsManager } from '../../components/ReelsManager';
+import { AlertTriangle, Users, BookOpen, Building, Newspaper, Headphones, Activity } from 'lucide-react';
 import type { 
   Metric, 
   ActivityLog, 
@@ -26,78 +23,26 @@ import type {
   Donation, 
   ConsultancyService,
   AnalyticsData 
-} from '../types';
+} from '../../types';
+import UserTable from '../../components/UsersPage/UserTable/UserTable';
 
-interface DashboardProps {
-  activeSection: string;
-}
 
-export function Dashboard({ activeSection }: DashboardProps) {
+export function Dashboard({ activeSection }: any) {
+   const users = [
+    {
+      id: "1",
+      name: "John Doe",
+      email: "RbSsM@example.com",
+      role: "Admin",
+      status: "active",
+      joined: "2023-10-01T12:00:00Z",
+    },
+  ];
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [recentActivity, setRecentActivity] = useState<ActivityLog[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
   const [donations, setDonations] = useState<Donation[]>([]);
   const [consultancies, setConsultancies] = useState<ConsultancyService[]>([]);
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
-
-  useEffect(() => {
-    // Fetch metrics from Firestore
-    const fetchMetrics = async () => {
-      const metricsRef = collection(db, 'metrics');
-      const metricsSnap = await getDocs(metricsRef);
-      const metricsData = metricsSnap.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Metric[];
-      setMetrics(metricsData);
-    };
-
-    // Real-time listeners
-    const unsubscribers = [
-      // Users listener
-      onSnapshot(collection(db, 'users'), (snapshot) => {
-        const userData = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as User[];
-        setUsers(userData);
-      }),
-
-      // Activity listener
-      onSnapshot(collection(db, 'activity'), (snapshot) => {
-        const activities = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as ActivityLog[];
-        setRecentActivity(activities);
-      }),
-
-      // Donations listener
-      onSnapshot(collection(db, 'donations'), (snapshot) => {
-        const donationData = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Donation[];
-        setDonations(donationData);
-      }),
-
-      // Consultancies listener
-      onSnapshot(collection(db, 'consultancies'), (snapshot) => {
-        const consultancyData = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as ConsultancyService[];
-        setConsultancies(consultancyData);
-      })
-    ];
-
-    fetchMetrics();
-
-    // Cleanup function
-    return () => {
-      unsubscribers.forEach(unsubscribe => unsubscribe());
-    };
-  }, []);
 
   const renderOverviewCard = (title: string, count: number, icon: React.ReactNode, bgColor: string) => (
     <div className={`${bgColor} p-6 rounded-lg shadow-sm`}>
@@ -205,7 +150,7 @@ export function Dashboard({ activeSection }: DashboardProps) {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Recent Users
           </h3>
-          <UserTable users={users.slice(0, 5)} />
+          <UserTable users={users} />
         </div>
 
         {/* Donation Stats */}
@@ -330,7 +275,7 @@ export function Dashboard({ activeSection }: DashboardProps) {
   };
 
   return (
-    <div className="flex-1 overflow-auto p-6">
+    <div className="flex-1 overflow-auto">
       {renderContent()}
     </div>
   );
