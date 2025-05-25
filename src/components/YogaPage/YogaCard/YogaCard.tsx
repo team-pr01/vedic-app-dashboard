@@ -1,16 +1,44 @@
 import { Clock, Edit2, Trash2 } from "lucide-react";
+import toast from "react-hot-toast";
+import { useDeleteYogaMutation } from "../../../redux/Features/Yoga/yogaApi";
 
 type TYogaCardProps = {
   yoga: any;
   setShowForm: (visible: boolean) => void;
+  setMode?: React.Dispatch<React.SetStateAction<"add" | "edit">>;
+  setReelId: React.Dispatch<React.SetStateAction<string>>;
 };
-const YogaCard: React.FC<TYogaCardProps> = ({ yoga, setShowForm }) => {
+const YogaCard: React.FC<TYogaCardProps> = ({
+  yoga,
+  setShowForm,
+  setMode,
+  setReelId,
+}) => {
+  const [deleteYoga] = useDeleteYogaMutation();
+  const handleDeleteYoga = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete?")) return;
+
+    toast.promise(deleteYoga(id).unwrap(), {
+      loading: "Deleting yoga...",
+      success: "Yoga deleted successfully!",
+      error: "Failed to delete yoga.",
+    });
+  };
+
+  const getEmbedUrl = (url: string) => {
+    const videoIdMatch = url.match(/(?:\?v=|\/embed\/|\.be\/)([\w\-]{11})/);
+    return videoIdMatch
+      ? `https://www.youtube.com/embed/${videoIdMatch[1]}`
+      : null;
+  };
+
+  const embedUrl = yoga?.videoUrl ? getEmbedUrl(yoga.videoUrl) : null;
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
       {yoga.videoUrl ? (
         <div className="relative w-full h-48">
           <iframe
-            src={yoga.videoUrl}
+            src={embedUrl as string}
             className="absolute inset-0 w-full h-full"
             frameBorder="0"
             allow="autoplay; fullscreen; picture-in-picture"
@@ -19,8 +47,8 @@ const YogaCard: React.FC<TYogaCardProps> = ({ yoga, setShowForm }) => {
         </div>
       ) : (
         <img
-          src={yoga.imageUrl}
-          alt={yoga.name}
+          src={yoga?.imageUrl}
+          alt={yoga?.name}
           className="w-full h-48 object-cover"
         />
       )}
@@ -74,7 +102,7 @@ const YogaCard: React.FC<TYogaCardProps> = ({ yoga, setShowForm }) => {
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          {yoga.category.map((category: string, index: number) => (
+          {yoga?.categories?.map((category: string, index: number) => (
             <span
               key={index}
               className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
@@ -87,13 +115,18 @@ const YogaCard: React.FC<TYogaCardProps> = ({ yoga, setShowForm }) => {
         <div className="mt-6 flex justify-end space-x-2">
           <button
             onClick={() => {
+              setReelId(yoga?._id);
+              setMode && setMode("edit");
               setShowForm(true);
             }}
             className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg dark:text-blue-400 dark:hover:bg-blue-900/20"
           >
             <Edit2 className="h-5 w-5" />
           </button>
-          <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg dark:text-red-400 dark:hover:bg-red-900/20">
+          <button
+            onClick={() => handleDeleteYoga(yoga?._id)}
+            className="p-2 text-red-600 hover:bg-red-50 rounded-lg dark:text-red-400 dark:hover:bg-red-900/20"
+          >
             <Trash2 className="h-5 w-5" />
           </button>
         </div>

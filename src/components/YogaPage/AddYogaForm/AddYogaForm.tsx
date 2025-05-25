@@ -3,7 +3,14 @@ import { useForm } from "react-hook-form";
 import TextInput from "../../Reusable/TextInput/TextInput";
 import Textarea from "../../Reusable/TextArea/TextArea";
 import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { TYoga } from "../../../pages/Yoga/Yoga";
+import toast from "react-hot-toast";
+import {
+  useAddYogaMutation,
+  useUpdateYogaMutation,
+} from "../../../redux/Features/Yoga/yogaApi";
+import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
 
 type TFormValues = {
   name: string;
@@ -22,15 +29,24 @@ type TFormValues = {
 type TAddAddYogaFormProps = {
   showForm: boolean;
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
+  mode?: "add" | "edit";
+  defaultValues?: TYoga;
 };
 
 const AddYogaForm: React.FC<TAddAddYogaFormProps> = ({
   showForm,
   setShowForm,
+  mode,
+  defaultValues,
 }) => {
+  const [addYoga, { isLoading }] = useAddYogaMutation();
+  const [updateYoga, { isLoading: isYogaUpdating }] = useUpdateYogaMutation();
+
   const {
     register,
     handleSubmit,
+    setValue,
+    reset,
     formState: { errors },
   } = useForm<TFormValues>();
 
@@ -49,6 +65,25 @@ const AddYogaForm: React.FC<TAddAddYogaFormProps> = ({
     contraindications: [],
     categories: [],
   });
+
+  // Fetching default values
+  useEffect(() => {
+    if (mode === "edit" && defaultValues) {
+      setValue("name", defaultValues.name);
+      setValue("sanskritName", defaultValues.sanskritName);
+      setValue("description", defaultValues.description);
+      setValue("difficulty", defaultValues.difficulty as any);
+      setValue("duration", defaultValues.duration);
+      setValue("imageUrl", defaultValues.imageUrl);
+      setValue("videoUrl", defaultValues.videoUrl);
+
+      setAllTags({
+        benefits: defaultValues.benefits || [],
+        contraindications: defaultValues.contraindications || [],
+        categories: defaultValues.categories || [],
+      });
+    }
+  }, [defaultValues, mode, setValue]);
 
   const handleTagInputChange = (
     field: keyof typeof tagInputs,
@@ -83,8 +118,47 @@ const AddYogaForm: React.FC<TAddAddYogaFormProps> = ({
     }));
   };
 
-  const handleAddYoga = (data: TFormValues) => {
-    console.log("Yoga data submitted:", data);
+  //   Function to add or edit yoga
+  const handleSubmitYoga = async (data: TFormValues) => {
+    try {
+      const payload = {
+        ...data,
+        benefits: allTags.benefits,
+        contraindications: allTags.contraindications,
+        categories: allTags.categories,
+      };
+
+      let response;
+      if (mode === "edit" && defaultValues?._id) {
+        // Update API
+        console.log(defaultValues?._id);
+        response = await updateYoga({
+          id: defaultValues?._id,
+          data: payload,
+        }).unwrap();
+        if (response?.success) {
+          toast.success("Reel updated successfully");
+        }
+      } else {
+        // Add API
+        response = await addYoga(payload).unwrap();
+        if (response?.success) {
+          toast.success(response?.message || "Reel added successfully");
+        }
+      }
+
+      setShowForm(false);
+      reset();
+    } catch (error) {
+      const errMsg =
+        typeof error === "object" &&
+        error !== null &&
+        "data" in error &&
+        typeof (error as any).data?.message === "string"
+          ? (error as any).data.message
+          : "Something went wrong";
+      toast.error(errMsg);
+    }
   };
 
   return (
@@ -92,7 +166,7 @@ const AddYogaForm: React.FC<TAddAddYogaFormProps> = ({
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[700px] overflow-y-auto">
           <form
-            onSubmit={handleSubmit(handleAddYoga)}
+            onSubmit={handleSubmit(handleSubmitYoga)}
             className="p-6 space-y-6"
           >
             <div className="flex items-center justify-between">
@@ -101,7 +175,10 @@ const AddYogaForm: React.FC<TAddAddYogaFormProps> = ({
               </h3>
               <button
                 type="button"
-                onClick={() => setShowForm(false)}
+                onClick={() => {
+                  setShowForm(false)
+                  reset();
+                }}
                 className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
               >
                 <X className="h-6 w-6" />
@@ -179,6 +256,7 @@ const AddYogaForm: React.FC<TAddAddYogaFormProps> = ({
                       ? errors.benefits[0]
                       : errors.benefits
                   }
+                  isRequired={false}
                 />
                 <div className="flex flex-wrap gap-2 mt-2">
                   {allTags.benefits.map((tag: string, index: number) => (
@@ -215,6 +293,7 @@ const AddYogaForm: React.FC<TAddAddYogaFormProps> = ({
                       ? errors.contraindications[0]
                       : errors.contraindications
                   }
+                  isRequired={false}
                 />
                 <div className="flex flex-wrap gap-2 mt-2">
                   {allTags.contraindications.map(
@@ -253,6 +332,7 @@ const AddYogaForm: React.FC<TAddAddYogaFormProps> = ({
                       ? errors.categories[0]
                       : errors.categories
                   }
+                  isRequired={false}
                 />
                 <div className="flex flex-wrap gap-2 mt-2">
                   {allTags.categories.map((tag: string, index: number) => (
@@ -282,12 +362,7 @@ const AddYogaForm: React.FC<TAddAddYogaFormProps> = ({
               >
                 Cancel
               </button>
-              <button
-                type="submit"
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Submit
-              </button>
+             <SubmitButton isLoading={isLoading || isYogaUpdating} />
             </div>
           </form>
         </div>

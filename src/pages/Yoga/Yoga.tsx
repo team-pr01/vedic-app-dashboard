@@ -3,9 +3,14 @@ import PageHeader from "../../components/Reusable/PageHeader/PageHeader";
 import { Plus } from "lucide-react";
 import YogaCard from "../../components/YogaPage/YogaCard/YogaCard";
 import AddYogaForm from "../../components/YogaPage/AddYogaForm/AddYogaForm";
+import {
+  useGetAllYogaQuery,
+  useGetSingleYogaQuery,
+} from "../../redux/Features/Yoga/yogaApi";
+import Loader from "../../components/Shared/Loader/Loader";
 
-interface YogaAsana {
-  id: string;
+export type TYoga = {
+  _id: string;
   name: string;
   sanskritName: string;
   description: string;
@@ -15,52 +20,17 @@ interface YogaAsana {
   imageUrl: string;
   videoUrl: string;
   contraindications: string[];
-  category: string[];
-}
-
-const yogas: YogaAsana[] = [
-  {
-    id: "1",
-    name: "Mountain Pose",
-    sanskritName: "Tadasana",
-    description:
-      "A standing pose that forms the foundation for all standing poses.",
-    benefits: [
-      "Improves posture",
-      "Strengthens thighs, knees, and ankles",
-      "Firms abdomen and buttocks",
-    ],
-    difficulty: "beginner",
-    duration: 60,
-    imageUrl:
-      "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=1000&q=80",
-    videoUrl: "https://player.vimeo.com/video/252333618",
-    category: ["standing", "foundation"],
-    contraindications: ["High blood pressure", "Headache"],
-  },
-  {
-    id: "2",
-    name: "Tree Pose",
-    sanskritName: "Vrksasana",
-    description:
-      "A standing balance pose that improves focus and concentration.",
-    benefits: [
-      "Improves balance",
-      "Strengthens legs and core",
-      "Increases focus",
-    ],
-    difficulty: "intermediate",
-    duration: 120,
-    imageUrl:
-      "https://images.unsplash.com/photo-1552286450-4a669f880062?auto=format&fit=crop&w=1000&q=80",
-    videoUrl: "https://player.vimeo.com/video/252333987",
-    category: ["standing", "balance"],
-    contraindications: ["Knee injuries", "Ankle problems"],
-  },
-];
+  categories: string[];
+};
 
 const Yoga = () => {
   const [showForm, setShowForm] = useState(false);
+  const { data, isLoading } = useGetAllYogaQuery({});
+  const [yogaId, setYogaId] = useState("");
+  const [mode, setMode] = useState<"add" | "edit">("add");
+
+  const { data: singleYogaData } = useGetSingleYogaQuery(yogaId);
+  console.log(data);
   return (
     <div className="space-y-6">
       <PageHeader
@@ -68,18 +38,34 @@ const Yoga = () => {
         buttonText="Add New Asana"
         icon={<Plus className="h-4 w-4" />}
         onClick={() => {
+          setMode && setMode("add");
           setShowForm(true);
         }}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {yogas.map((yoga) => (
-          <YogaCard key={yoga.id} yoga={yoga} setShowForm={setShowForm} />
-        ))}
-      </div>
+      {isLoading ? (
+        <Loader size="size-10" />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {data?.data.map((yoga: TYoga) => (
+            <YogaCard
+              key={yoga._id}
+              yoga={yoga}
+              setShowForm={setShowForm}
+              setMode={setMode}
+              setReelId={setYogaId}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Add/Edit Form Modal */}
-      <AddYogaForm showForm={showForm} setShowForm={setShowForm} />
+      <AddYogaForm
+        showForm={showForm}
+        setShowForm={setShowForm}
+        defaultValues={singleYogaData?.data}
+        mode={mode}
+      />
     </div>
   );
 };

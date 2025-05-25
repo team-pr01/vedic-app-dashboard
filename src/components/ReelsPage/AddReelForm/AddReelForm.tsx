@@ -132,7 +132,10 @@ const AddReelForm: React.FC<TAddReelFormProps> = ({
               </h3>
               <button
                 type="button"
-                onClick={() => setShowForm(false)}
+                onClick={() => {
+                  setShowForm(false);
+                  reset();
+                }}
                 className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 text-2xl"
               >
                 ×
