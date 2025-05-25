@@ -1,12 +1,15 @@
 import { useForm } from "react-hook-form";
 import TextInput from "../../Reusable/TextInput/TextInput";
 import Textarea from "../../Reusable/TextArea/TextArea";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { useAddReelMutation } from "../../../redux/Features/Reels/reelsApi";
+import {
+  useAddReelMutation,
+  useUpdateReelMutation,
+} from "../../../redux/Features/Reels/reelsApi";
 import toast from "react-hot-toast";
-import Loader from "../../Shared/Loader/Loader";
 import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
+import { TReels } from "../../../pages/Reels/Reels";
 
 type TFormValues = {
   title: string;
@@ -20,43 +23,80 @@ type TFormValues = {
 type TAddReelFormProps = {
   showForm: boolean;
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
+  mode?: "add" | "edit";
+  defaultValues?: TReels;
 };
 
 const AddReelForm: React.FC<TAddReelFormProps> = ({
   showForm,
   setShowForm,
+  mode,
+  defaultValues,
 }) => {
   const {
     register,
     handleSubmit,
+    setValue,
+    reset,
     formState: { errors },
   } = useForm<TFormValues>();
 
+  // Fetching default values
+  useEffect(() => {
+    if (mode === "edit" && defaultValues) {
+      setValue("title", defaultValues.title);
+      setValue("description", defaultValues.description);
+      setValue("videoSource", defaultValues.videoSource);
+      setValue("videoUrl", defaultValues.videoUrl);
+      setValue("category", defaultValues.category);
+      setTags(defaultValues.tags || []);
+    }
+  }, [defaultValues, mode, setValue]);
+
   const [addReel, { isLoading }] = useAddReelMutation();
+  const [updateReel, { isLoading: isReelUpdating }] = useUpdateReelMutation();
 
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
 
-  //   Function to add new reel
-  const handleAddReel = async (data: TFormValues) => {
+  //   Function to add or edit reel
+  const handleSubmitReel = async (data: TFormValues) => {
     try {
-      const { title, description, videoSource, videoUrl, category } = data;
       const payload = {
-        title,
-        description,
-        videoSource,
-        videoUrl,
-        category,
+        ...data,
         tags,
       };
-      const response = await addReel(payload).unwrap();
-      if(response?.success){
-        setShowForm(false);
-        toast.success('Reel added successfully');
+
+      let response;
+      if (mode === "edit" && defaultValues?._id) {
+        // Update API
+        console.log(defaultValues?._id);
+        response = await updateReel({
+          id: defaultValues?._id,
+          data: payload,
+        }).unwrap();
+        if (response?.success) {
+          toast.success("Reel updated successfully");
+        }
+      } else {
+        // Add API
+        response = await addReel(payload).unwrap();
+        if (response?.success) {
+          toast.success("Reel added successfully");
+        }
       }
-      console.log(response);
+
+      setShowForm(false);
+      reset();
     } catch (error) {
-      console.log(error);
+      const errMsg =
+        typeof error === "object" &&
+        error !== null &&
+        "data" in error &&
+        typeof (error as any).data?.message === "string"
+          ? (error as any).data.message
+          : "Something went wrong";
+      toast.error(errMsg);
     }
   };
 
@@ -83,7 +123,7 @@ const AddReelForm: React.FC<TAddReelFormProps> = ({
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[700px] overflow-y-auto">
           <form
-            onSubmit={handleSubmit(handleAddReel)}
+            onSubmit={handleSubmit(handleSubmitReel)}
             className="p-6 space-y-6"
           >
             <div className="flex items-center justify-between">
@@ -182,7 +222,7 @@ const AddReelForm: React.FC<TAddReelFormProps> = ({
               >
                 Cancel
               </button>
-              <SubmitButton isLoading={isLoading} />
+              <SubmitButton isLoading={isLoading || isReelUpdating} />
             </div>
           </form>
         </div>

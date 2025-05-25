@@ -40,6 +40,16 @@ const reelsApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["reels"],
     }),
+
+    updateReel: builder.mutation<any, any>({
+      query: ({id, data}) => ({
+        url: `/reels/${id}`,
+        method: "PUT",
+        body : data,
+        credentials: "include",
+      }),
+      invalidatesTags: ["reels"],
+    }),
   }),
 });
 
@@ -48,4 +58,5 @@ export const {
   useGetSingleReelQuery,
   useAddReelMutation,
   useDeleteReelMutation,
+  useUpdateReelMutation,
 } = reelsApi;

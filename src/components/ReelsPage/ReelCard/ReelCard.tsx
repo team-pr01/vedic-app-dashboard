@@ -6,9 +6,13 @@ import toast from "react-hot-toast";
 const ReelCard = ({
   reel,
   setShowForm,
+  setMode,
+  setReelId,
 }: {
   reel: TReels;
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
+  setMode?: React.Dispatch<React.SetStateAction<"add" | "edit">>;
+  setReelId: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   const [deleteReel] = useDeleteReelMutation();
 
@@ -58,6 +62,8 @@ const ReelCard = ({
           <div className="flex space-x-2">
             <button
               onClick={() => {
+                setReelId && setReelId(reel?._id);
+                setMode && setMode("edit");
                 setShowForm(true);
               }}
               className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg dark:text-blue-400 dark:hover:bg-blue-900/20"
