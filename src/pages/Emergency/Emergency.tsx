@@ -8,7 +8,6 @@ import EmergencyPostForm from "../../components/EmergencyPage/EmergencyPostForm/
 
 const Emergency = () => {
   const [status, setStatus] = useState("");
-
   const [showForm, setShowForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { data, isLoading, isFetching } = useGetAllEmergenciesQuery({
