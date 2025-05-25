@@ -7,7 +7,6 @@ import { ContentManager } from '../../components/ContentManager';
 import { NotificationCenter } from '../../components/NotificationCenter';
 import { AnalyticsOverview } from '../../components/AnalyticsOverview';
 import { ReligiousTextManager } from '../../components/ReligiousTextManager';
-import { OrganizationManager } from '../../components/OrganizationManager';
 import { NewsManager } from '../../components/NewsManager';
 import { PopupManager } from '../../components/PopupManager';
 import { APIKeyManager } from '../../components/APIKeyManager';
@@ -231,7 +230,7 @@ export function Dashboard({ activeSection }: any) {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Organization Management
               </h2>
-              <OrganizationManager />
+              {/* <OrganizationManager /> */}
             </div>
           </div>
         );

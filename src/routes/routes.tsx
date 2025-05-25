@@ -8,6 +8,7 @@ import Reels from "../pages/Reels/Reels";
 import Yoga from "../pages/Yoga/Yoga";
 import Vastu from "../pages/Vastu/Vastu";
 import TempleManagement from "../pages/TempleManagement/TempleManagement";
+import Organizations from "../pages/Organizations/Organizations";
 
 export const router = createBrowserRouter([
   {
@@ -46,6 +47,10 @@ export const router = createBrowserRouter([
       {
         path: "temple-management",
         element: <TempleManagement />,
+      },
+      {
+        path: "organizations",
+        element: <Organizations />,
       },
     ],
   },

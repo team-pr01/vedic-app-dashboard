@@ -44,7 +44,7 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
     { icon: Lotus, label: "Yoga", path: "/dashboard/yoga" },
     { icon: Home, label: "Vastu", path: "/dashboard/vastu" },
     { icon: LandPlot, label: "Temple Management", path: "/dashboard/temple-management" },
-    { icon: Building, label: "Organization", path: "/dashboard/organization" },
+    { icon: Building, label: "Organization", path: "/dashboard/organizations" },
     { icon: Newspaper, label: "News", path: "/dashboard/news" },
     {
       icon: BellRing,
