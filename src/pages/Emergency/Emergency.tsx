@@ -28,7 +28,7 @@ const Emergency = () => {
       {/* Messages Cards */}
       <div className="flex flex-col gap-4">
         {isLoading || isFetching ? (
-          <Loader />
+          <Loader size="size-10" />
         ) : (
           data?.data?.map((post: any) => (
             <EmergencyPostCard key={post.id} post={post} />
