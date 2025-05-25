@@ -14,12 +14,12 @@ const Layout = () => {
 
   return (
     <div
-      className={`flex h-screen ${
+      className={`flex ${
         isDarkMode ? "dark" : ""
       } bg-gray-50 dark:bg-gray-900`}
     >
       <Sidebar isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
-      <div className="flex-1 flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900">
+      <div className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900">
         <Header />
         <div className="p-6">
           <Outlet />

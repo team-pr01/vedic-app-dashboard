@@ -3,6 +3,10 @@ import TextInput from "../../Reusable/TextInput/TextInput";
 import Textarea from "../../Reusable/TextArea/TextArea";
 import { useState } from "react";
 import { X } from "lucide-react";
+import { useAddReelMutation } from "../../../redux/Features/Reels/reelsApi";
+import toast from "react-hot-toast";
+import Loader from "../../Shared/Loader/Loader";
+import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
 
 type TFormValues = {
   title: string;
@@ -28,12 +32,32 @@ const AddReelForm: React.FC<TAddReelFormProps> = ({
     formState: { errors },
   } = useForm<TFormValues>();
 
+  const [addReel, { isLoading }] = useAddReelMutation();
+
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
 
   //   Function to add new reel
-  const handleAddReel = (data: TFormValues) => {
-    console.log("object", data);
+  const handleAddReel = async (data: TFormValues) => {
+    try {
+      const { title, description, videoSource, videoUrl, category } = data;
+      const payload = {
+        title,
+        description,
+        videoSource,
+        videoUrl,
+        category,
+        tags,
+      };
+      const response = await addReel(payload).unwrap();
+      if(response?.success){
+        setShowForm(false);
+        toast.success('Reel added successfully');
+      }
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   //   To enter tags
@@ -127,6 +151,7 @@ const AddReelForm: React.FC<TAddReelFormProps> = ({
                   error={
                     Array.isArray(errors.tags) ? errors.tags[0] : errors.tags
                   }
+                  isRequired={false}
                 />
                 {/* Display tags below the input */}
                 <div className="flex flex-wrap gap-2 mt-2">
@@ -157,12 +182,7 @@ const AddReelForm: React.FC<TAddReelFormProps> = ({
               >
                 Cancel
               </button>
-              <button
-                type="submit"
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Submit
-              </button>
+              <SubmitButton isLoading={isLoading} />
             </div>
           </form>
         </div>

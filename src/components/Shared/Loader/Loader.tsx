@@ -1,8 +1,8 @@
-const Loader = () => {
+const Loader = ({size, variant="primary"} : {size: string, variant? : string}) => {
   return (
     <div className="flex items-center justify-center">
       <svg
-        className="animate-spin size-10 text-blue-500"
+        className={`animate-spin ${size} ${variant === "primary" ? "text-blue-500" : "text-white"}`}
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"

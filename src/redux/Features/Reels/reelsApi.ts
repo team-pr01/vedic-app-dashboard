@@ -22,9 +22,9 @@ const reelsApi = baseApi.injectEndpoints({
       providesTags: ["reels"],
     }),
 
-    addReel: builder.mutation<any, string>({
+    addReel: builder.mutation<any, any>({
       query: (data) => ({
-        url: `/reels`,
+        url: `/reels/add-reel`,
         method: "POST",
         body: data,
         credentials: "include",

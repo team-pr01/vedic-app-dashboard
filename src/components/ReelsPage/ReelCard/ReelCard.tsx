@@ -5,13 +5,20 @@ const ReelCard = ({reel, setShowForm} : {reel: TReels, setShowForm: React.Dispat
     const handleDelete = (id: string) => {
     console.log("object", id);
   };
+
+  const getEmbedUrl = (url: string) => {
+  const videoIdMatch = url.match(/(?:\?v=|\/embed\/|\.be\/)([\w\-]{11})/);
+  return videoIdMatch ? `https://www.youtube.com/embed/${videoIdMatch[1]}` : null;
+};
+
+const embedUrl = reel?.videoUrl ? getEmbedUrl(reel.videoUrl) : null;
     return (
          <div
             className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden"
           >
             <div className="aspect-video">
               <iframe
-                src={reel?.videoUrl}
+                src={embedUrl as string}
                 className="w-full h-full"
                 allowFullScreen
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -23,9 +30,14 @@ const ReelCard = ({reel, setShowForm} : {reel: TReels, setShowForm: React.Dispat
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                     {reel?.title}
                   </h3>
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 mt-2">
+                  <div className="flex items-center gap-5">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 mt-2">
                     {reel?.category}
                   </span>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-200 text-blue-800 dark:bg-blue-900 dark:text-blue-200 mt-2">
+                    {reel?.videoSource}
+                  </span>
+                  </div>
                 </div>
                 <div className="flex space-x-2">
                   <button

@@ -6,14 +6,14 @@ import { useNavigate } from "react-router-dom";
 export function Header() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+
   const handleLogout = async () => {
     dispatch(logout());
     navigate("/");
   };
 
   return (
-    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
       <div className="px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center flex-1">
