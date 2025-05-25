@@ -2,21 +2,23 @@ import { baseApi } from "../../API/baseApi";
 
 const menuApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getAllEmergencies: builder.query<any, { keyword?: string; status?: string }>({
-  query: ({ keyword = "", status = "" }) => {
-    return {
-      url: `/emergency?keyword=${keyword}&status=${status}`,
-      method: "GET",
-      credentials: "include",
-    };
-  },
-  providesTags: ["emergencies"],
-}),
-
+    getAllEmergencies: builder.query<
+      any,
+      { keyword?: string; status?: string }
+    >({
+      query: ({ keyword = "", status = "" }) => {
+        return {
+          url: `/emergency?keyword=${keyword}&status=${status}`,
+          method: "GET",
+          credentials: "include",
+        };
+      },
+      providesTags: ["emergencies"],
+    }),
 
     getSingleEmergency: builder.query({
       query: (id) => ({
-        url: `/product/${id}`,
+        url: `/emergency/${id}`,
         method: "GET",
         credentials: "include",
       }),
@@ -32,11 +34,14 @@ const menuApi = baseApi.injectEndpoints({
       invalidatesTags: ["emergencies"],
     }),
 
-    changeStatusToResolved: builder.mutation<any, { id: string; status: string }>({
+    changeStatusToResolved: builder.mutation<
+      any,
+      { id: string; status: string }
+    >({
       query: ({ id, status }) => ({
         url: `/emergency/update-status/${id}`,
         method: "PUT",
-        body: {status},
+        body: { status },
         credentials: "include",
       }),
       invalidatesTags: ["emergencies"],
@@ -48,5 +53,5 @@ export const {
   useGetAllEmergenciesQuery,
   useGetSingleEmergencyQuery,
   useDeleteEmergencyMutation,
-  useChangeStatusToResolvedMutation
+  useChangeStatusToResolvedMutation,
 } = menuApi;
