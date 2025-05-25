@@ -10,7 +10,6 @@ import { ReligiousTextManager } from '../../components/ReligiousTextManager';
 import { OrganizationManager } from '../../components/OrganizationManager';
 import { NewsManager } from '../../components/NewsManager';
 import { PopupManager } from '../../components/PopupManager';
-import { TempleManager } from '../../components/TempleManager';
 import { APIKeyManager } from '../../components/APIKeyManager';
 import { AlertTriangle, Users, BookOpen, Building, Newspaper, Headphones, Activity } from 'lucide-react';
 import type { 
@@ -165,8 +164,6 @@ export function Dashboard({ activeSection }: any) {
     switch (activeSection) {
       case 'api-keys':
         return <APIKeyManager />;
-      case 'temple':
-        return <TempleManager />;
       case 'religious-texts':
         return <ReligiousTextManager />;
       case 'users':

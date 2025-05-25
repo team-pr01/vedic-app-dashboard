@@ -7,6 +7,7 @@ import Login from "../pages/Login/Login";
 import Reels from "../pages/Reels/Reels";
 import Yoga from "../pages/Yoga/Yoga";
 import Vastu from "../pages/Vastu/Vastu";
+import TempleManagement from "../pages/TempleManagement/TempleManagement";
 
 export const router = createBrowserRouter([
   {
@@ -41,6 +42,10 @@ export const router = createBrowserRouter([
       {
         path: "vastu",
         element: <Vastu />,
+      },
+      {
+        path: "temple-management",
+        element: <TempleManagement />,
       },
     ],
   },

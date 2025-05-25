@@ -43,7 +43,7 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
     { icon: Film, label: "Reels", path: "/dashboard/reels" },
     { icon: Lotus, label: "Yoga", path: "/dashboard/yoga" },
     { icon: Home, label: "Vastu", path: "/dashboard/vastu" },
-    { icon: LandPlot, label: "Temple Management", path: "/dashboard/temple" },
+    { icon: LandPlot, label: "Temple Management", path: "/dashboard/temple-management" },
     { icon: Building, label: "Organization", path: "/dashboard/organization" },
     { icon: Newspaper, label: "News", path: "/dashboard/news" },
     {
