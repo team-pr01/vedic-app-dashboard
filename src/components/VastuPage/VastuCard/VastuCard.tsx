@@ -1,5 +1,7 @@
 import { Compass, Edit2, HomeIcon, Trash2 } from "lucide-react";
 import { TVastu } from "../../../pages/Vastu/Vastu";
+import toast from "react-hot-toast";
+import { useDeleteVastuMutation } from "../../../redux/Features/Vastu/vastuApi";
 
 type TVastuCardProps = {
   vastu: TVastu;
@@ -8,6 +10,17 @@ type TVastuCardProps = {
   setVastuId?: React.Dispatch<React.SetStateAction<string>>;
 };
 const VastuCard: React.FC<TVastuCardProps> = ({ vastu, setShowForm, setMode, setVastuId }) => {
+   const [deleteVastu] = useDeleteVastuMutation();
+    const handleDeleteVastu = async (id: string) => {
+      if (!window.confirm("Are you sure you want to delete?")) return;
+  
+      toast.promise(deleteVastu(id).unwrap(), {
+        loading: "Deleting vastu...",
+        success: "Castu deleted successfully!",
+        error: "Failed to delete vastu.",
+      });
+    };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
       <img
@@ -79,7 +92,7 @@ const VastuCard: React.FC<TVastuCardProps> = ({ vastu, setShowForm, setMode, set
           >
             <Edit2 className="h-5 w-5" />
           </button>
-          <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg dark:text-red-400 dark:hover:bg-red-900/20">
+          <button onClick={() => handleDeleteVastu(vastu?._id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg dark:text-red-400 dark:hover:bg-red-900/20">
             <Trash2 className="h-5 w-5" />
           </button>
         </div>
