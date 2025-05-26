@@ -74,18 +74,17 @@ const AddVastuForm: React.FC<TAddAddYogaFormProps> = ({
   const [recommendations, setRecommendations] = useState<string[]>([]);
   console.log(defaultValues);
 
-useEffect(() => {
-  if (mode === "edit" && defaultValues) {
-    setValue("title", defaultValues?.title);
-    setValue("description", defaultValues?.description);
-    setValue("category", defaultValues?.category?.toLowerCase() as any);
-    setValue("direction", defaultValues?.direction?.toLowerCase() as any);
-    setValue("imageUrl", defaultValues?.imageUrl);
-    setValue("importance", defaultValues?.importance);
-    setRecommendations(defaultValues?.recommendations || []);
-  }
-}, [defaultValues, mode, setValue]);
-
+  useEffect(() => {
+    if (mode === "edit" && defaultValues) {
+      setValue("title", defaultValues?.title);
+      setValue("description", defaultValues?.description);
+      setValue("category", defaultValues?.category?.toLowerCase() as any);
+      setValue("direction", defaultValues?.direction?.toLowerCase() as any);
+      setValue("imageUrl", defaultValues?.imageUrl);
+      setValue("importance", defaultValues?.importance);
+      setRecommendations(defaultValues?.recommendations || []);
+    }
+  }, [defaultValues, mode, setValue]);
 
   //   To enter recommendations
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

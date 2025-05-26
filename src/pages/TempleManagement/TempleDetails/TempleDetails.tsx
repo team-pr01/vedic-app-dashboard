@@ -1,10 +1,52 @@
 import { Calendar, Clock, Info, LandPlot, MapPin, Trash2 } from "lucide-react";
-import { useDeleteEventMutation } from "../../../redux/Features/Temple/templeApi";
+import {
+  useAddEventMutation,
+  useDeleteEventMutation,
+} from "../../../redux/Features/Temple/templeApi";
 import toast from "react-hot-toast";
+import TextInput from "../../../components/Reusable/TextInput/TextInput";
+import Textarea from "../../../components/Reusable/TextArea/TextArea";
+import { useForm } from "react-hook-form";
+import SubmitButton from "../../../components/Reusable/SubmitButton/SubmitButton";
 
+type TFormValues = {
+  name: string;
+  description: string;
+  time: string;
+  date: string;
+};
 const TempleDetails = ({ templeDetails }: { templeDetails: any }) => {
-  const handleAddEvent = async (data) => {
-    console.log(data);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<TFormValues>();
+
+  const [addEvent, { isLoading }] = useAddEventMutation();
+  const handleAddEvent = async (data: TFormValues) => {
+    try {
+      const payload = {
+        ...data,
+      };
+      console.log(payload);
+      const id = templeDetails._id;
+
+      const response = await addEvent({ data: payload, id }).unwrap();
+      if (response?.success) {
+        toast.success(response?.message || "Event added successfully");
+      }
+      reset();
+    } catch (error) {
+      const errMsg =
+        typeof error === "object" &&
+        error !== null &&
+        "data" in error &&
+        typeof (error as any).data?.message === "string"
+          ? (error as any).data.message
+          : "Something went wrong";
+      toast.error(errMsg);
+    }
   };
 
   const [deleteEvent] = useDeleteEventMutation();
@@ -160,45 +202,39 @@ const TempleDetails = ({ templeDetails }: { templeDetails: any }) => {
             <h4 className="font-medium text-gray-900 dark:text-white mb-2">
               Add New Event
             </h4>
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Event Name
-                </label>
-                <input
-                  type="text"
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
-                  required
-                />
-              </div>
+            <form onSubmit={handleSubmit(handleAddEvent)} className="space-y-3">
+              <TextInput
+                label="Event Name"
+                placeholder="Enter event name"
+                {...register("name", { required: "Event name is required" })}
+                error={errors.name}
+              />
+              <TextInput
+                label="Event Date"
+                type="date"
+                placeholder="Enter event date"
+                {...register("date", { required: "Event date is required" })}
+                error={errors.date}
+              />
+              <TextInput
+                label="Event Time"
+                placeholder="Enter event time"
+                {...register("time", { required: "Event time is required" })}
+                error={errors.time}
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Event Date
-                </label>
-                <input
-                  type="date"
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
-                  required
-                />
-              </div>
+              <Textarea
+                label="Description"
+                placeholder="Write event description here..."
+                rows={6}
+                error={errors.description}
+                {...register("description", {
+                  required: "Description is required",
+                })}
+              />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Description
-                </label>
-                <textarea
-                  rows={2}
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
-                  required
-                />
-              </div>
-
-              <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                <Calendar className="h-4 w-4 mr-2" />
-                Add Event
-              </button>
-            </div>
+              <SubmitButton isLoading={isLoading} />
+            </form>
           </div>
         </div>
 
@@ -209,18 +245,20 @@ const TempleDetails = ({ templeDetails }: { templeDetails: any }) => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {templeDetails?.mediaGallery &&
-              templeDetails?.mediaGallery?.map((image, index) => (
-                <div
-                  key={`image-${index}`}
-                  className="rounded-lg overflow-hidden h-48"
-                >
-                  <img
-                    src={image}
-                    alt={`${templeDetails?.name} ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
+              templeDetails?.mediaGallery?.map(
+                (image: string, index: number) => (
+                  <div
+                    key={`image-${index}`}
+                    className="rounded-lg overflow-hidden h-48"
+                  >
+                    <img
+                      src={image}
+                      alt={`${templeDetails?.name} ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )
+              )}
 
             <div className="rounded-lg overflow-hidden h-48">
               <video

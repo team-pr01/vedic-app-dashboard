@@ -30,6 +30,16 @@ const templeApi = baseApi.injectEndpoints({
       invalidatesTags: ["temple"],
     }),
 
+    addEvent: builder.mutation<any, any>({
+      query: ({data, id}) => ({
+        url: `/temple/${id}/events`,
+        method: "POST",
+        body: data,
+        credentials: "include",
+      }),
+      invalidatesTags: ["temple"],
+    }),
+
     deleteTemple: builder.mutation<any, string>({
       query: (id) => ({
         url: `/temple/${id}`,
@@ -64,6 +74,7 @@ export const {
   useGetAllTempleQuery,
   useGetSingleTempleQuery,
   useAddTempleMutation,
+  useAddEventMutation,
   useDeleteTempleMutation,
   useDeleteEventMutation,
   useUpdateTempleMutation,
