@@ -2,36 +2,45 @@ import { useState } from "react";
 import TempleCard from "../../components/TemplePage/TempleCard/TempleCard";
 import AddTempleForm from "../../components/TemplePage/AddTempleForm/AddTempleForm";
 import TempleDetails from "./TempleDetails/TempleDetails";
+import { useGetAllTempleQuery, useGetSingleTempleQuery } from "../../redux/Features/Temple/templeApi";
+import Loader from "../../components/Shared/Loader/Loader";
 
+export type TTemple = {
+  _id: string;
+  name: string;
+  mainDeity: string;
+  description: string;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  establishedYear: number;
+  visitingHours: string;
+  contactInfo: {
+    phone: string;
+    email: string;
+    website?: string;
+  };
+  imageUrl: string;
+  videoUrl?: string;
+  createdBy: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
 const TempleManagement = () => {
-  const temples = [
-    {
-      _id: "1",
-      name: "Shree Krishna Temple",
-      description: "A beautiful temple dedicated to Lord Krishna.",
-      location: {
-        address: "123 Temple Street",
-        city: "Vrindavan",
-        state: "Uttar Pradesh",
-        country: "India",
-      },
-      images: ["https://example.com/image1.jpg"],
-      deity: "Lord Krishna",
-      establishedYear: 1985,
-      contactInfo: {
-        phone: "+91-1234567890",
-        email: "hello",
-      },
-    },
-  ];
   const [activeTab, setActiveTab] = useState("list");
   const [selectedTemple, setSelectedTemple] = useState(null);
+  const {data, isLoading} = useGetAllTempleQuery({});
+  const [templeId, setTempleId] = useState("");
+  const { data: singleTempleuData } = useGetSingleTempleQuery(templeId);
 
   const tabButtons = [
     { key: "list", label: "Temple List" },
     { key: "add", label: "Add New Temple", resetSelection: true },
     { key: "details", label: "Temple Details", condition: selectedTemple },
   ];
+
+  console.log(data);
   return (
     <div>
       <div className="flex space-x-4 mb-6">
@@ -58,13 +67,16 @@ const TempleManagement = () => {
       </div>
 
       {activeTab === "list" && (
+        isLoading ?
+        <Loader size="size-10" />
+        :
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {temples.map((temple) => (
+          {data?.data?.map((temple:TTemple) => (
             <TempleCard
-              key={temple._id}
+              key={temple?._id}
               temple={temple}
-              setSelectedTemple={setSelectedTemple}
               setActiveTab={setActiveTab}
+              setTempleId={setTempleId}
             />
           ))}
         </div>
@@ -72,8 +84,8 @@ const TempleManagement = () => {
 
       {activeTab === "add" && <AddTempleForm />}
 
-      {activeTab === "details" && selectedTemple && (
-        <TempleDetails selectedTemple={selectedTemple} />
+      {activeTab === "details" && (
+        <TempleDetails templeDetails={singleTempleuData?.data} />
       )}
     </div>
   );

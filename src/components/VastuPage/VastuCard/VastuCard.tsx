@@ -16,7 +16,7 @@ const VastuCard: React.FC<TVastuCardProps> = ({ vastu, setShowForm, setMode, set
   
       toast.promise(deleteVastu(id).unwrap(), {
         loading: "Deleting vastu...",
-        success: "Castu deleted successfully!",
+        success: "Vastu deleted successfully!",
         error: "Failed to delete vastu.",
       });
     };

@@ -30,7 +30,6 @@ const Vastu = () => {
   const [mode, setMode] = useState<"add" | "edit">("add");
 
   const { data: singleVastuData } = useGetSingleVastuQuery(vastuId);
-  console.log(data);
   return (
     <div className="space-y-6">
       <PageHeader
