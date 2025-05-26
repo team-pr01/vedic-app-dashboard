@@ -32,7 +32,7 @@ const TempleManagement = () => {
   const [selectedTemple, setSelectedTemple] = useState(null);
   const {data, isLoading} = useGetAllTempleQuery({});
   const [templeId, setTempleId] = useState("");
-  const { data: singleTempleuData } = useGetSingleTempleQuery(templeId);
+  const { data: singleTempleData } = useGetSingleTempleQuery(templeId);
 
   const tabButtons = [
     { key: "list", label: "Temple List" },
@@ -85,7 +85,7 @@ const TempleManagement = () => {
       {activeTab === "add" && <AddTempleForm />}
 
       {activeTab === "details" && (
-        <TempleDetails templeDetails={singleTempleuData?.data} />
+        <TempleDetails templeDetails={singleTempleData?.data} />
       )}
     </div>
   );

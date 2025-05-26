@@ -1,7 +1,11 @@
 import { useForm } from "react-hook-form";
 import Textarea from "../../Reusable/TextArea/TextArea";
 import TextInput from "../../Reusable/TextInput/TextInput";
-import { Upload } from "lucide-react";
+import { X } from "lucide-react";
+import toast from "react-hot-toast";
+import { useAddTempleMutation } from "../../../redux/Features/Temple/templeApi";
+import { useState } from "react";
+import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
 
 export type TFormValues = {
   name: string;
@@ -19,6 +23,7 @@ export type TFormValues = {
     website?: string;
   };
   imageUrl: string;
+  mediaGallery: string[];
   videoUrl?: string;
 };
 
@@ -26,12 +31,62 @@ const AddTempleForm = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<TFormValues>();
 
-  const handleAddTemple = async (data: TFormValues) => {
-    console.log(data);
+  const [mediaGallery, setMediaGallery] = useState<string[]>([]);
+  const [mediaGalleryInput, setMediaGalleryInput] = useState("");
+
+  //   To enter image
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const trimmed = mediaGalleryInput.trim();
+      if (trimmed && !mediaGallery.includes(trimmed)) {
+        const newTags = [...mediaGallery, trimmed];
+        setMediaGallery(newTags);
+      }
+      setMediaGalleryInput("");
+    }
   };
+
+  const removeImage = (tagToRemove: string) => {
+    const filtered = mediaGallery.filter((tag) => tag !== tagToRemove);
+    setMediaGallery(filtered);
+  };
+
+  const [addTemple, { isLoading }] = useAddTempleMutation();
+  const handleAddTemple = async (data: TFormValues) => {
+    try {
+      const payload = {
+        ...data,
+        contactInfo : {
+          phone: data.contactInfo.phone,
+          email: data.contactInfo.email,
+          website: data.contactInfo.website
+        },
+        mediaGallery,
+      };
+
+      const response = await addTemple(payload).unwrap();
+      if (response?.success) {
+        toast.success(response?.message || "Temple added successfully");
+        window.location.reload();
+      }
+      reset();
+    } catch (error) {
+      const errMsg =
+        typeof error === "object" &&
+        error !== null &&
+        "data" in error &&
+        typeof (error as any).data?.message === "string"
+          ? (error as any).data.message
+          : "Something went wrong";
+      toast.error(errMsg);
+    }
+  };
+
   return (
     <form
       onSubmit={handleSubmit(handleAddTemple)}
@@ -144,7 +199,6 @@ const AddTempleForm = () => {
 
         <TextInput
           label="Website"
-          type="url"
           placeholder="https://example.com"
           {...register("contactInfo.website")}
           error={errors.contactInfo?.website}
@@ -169,16 +223,41 @@ const AddTempleForm = () => {
           {...register("videoUrl")}
           error={errors.videoUrl}
         />
+
+        <div>
+          <TextInput
+            label="Media Gallery (Image URLs) "
+            name="mediaGallery"
+            placeholder="Enter image url. Press enter to add another url"
+            value={mediaGalleryInput}
+            onChange={(e) => setMediaGalleryInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            error={Array.isArray(errors.mediaGallery) ? errors.mediaGallery[0] : errors.mediaGallery}
+            isRequired={false}
+          />
+          {/* Display tags below the input */}
+          <div className="flex flex-wrap gap-2 mt-2">
+            {mediaGallery.map((tag, index) => (
+              <div
+                key={index}
+                className="flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm"
+              >
+                <span>{tag}</span>
+                <button
+                  type="button"
+                  onClick={() => removeImage(tag)}
+                  className="ml-1 text-blue-500 hover:text-red-500"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="flex justify-end">
-        <button
-          type="submit"
-          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
-          <Upload className="h-4 w-4 mr-2" />
-          Add Temple
-        </button>
+       <SubmitButton isLoading={isLoading} />
       </div>
     </form>
   );

@@ -9,17 +9,11 @@ const TempleCard: React.FC<TTempleCardProps> = ({temple, setActiveTab, setTemple
     return (
          <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
               <div className="h-48 overflow-hidden">
-                {temple.images && temple.images.length > 0 ? (
-                  <img 
-                    src={temple.images[0]} 
+                <img 
+                    src={temple?.imageUrl} 
                     alt={temple.name} 
                     className="w-full h-full object-cover"
                   />
-                ) : (
-                  <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                    <LandPlot className="h-16 w-16 text-gray-400" />
-                  </div>
-                )}
               </div>
               <div className="p-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{temple.name}</h3>

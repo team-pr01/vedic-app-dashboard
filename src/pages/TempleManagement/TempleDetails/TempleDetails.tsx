@@ -59,20 +59,15 @@ const TempleDetails = ({ templeDetails }: { templeDetails: any }) => {
       error: "Failed to delete event.",
     });
   };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-      <div className="h-64 overflow-hidden">
-        {templeDetails.images && templeDetails.images.length > 0 ? (
-          <img
-            src={templeDetails.images[0]}
-            alt={templeDetails.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-            <LandPlot className="h-24 w-24 text-gray-400" />
-          </div>
-        )}
+      <div className=" overflow-hidden">
+        <img
+          src={templeDetails.imageUrl}
+          alt={templeDetails.name}
+          className="w-full h-full object-cover"
+        />
       </div>
 
       <div className="p-6">
@@ -249,7 +244,7 @@ const TempleDetails = ({ templeDetails }: { templeDetails: any }) => {
                 (image: string, index: number) => (
                   <div
                     key={`image-${index}`}
-                    className="rounded-lg overflow-hidden h-48"
+                    className="rounded-lg overflow-hidden h-72"
                   >
                     <img
                       src={image}
@@ -260,7 +255,7 @@ const TempleDetails = ({ templeDetails }: { templeDetails: any }) => {
                 )
               )}
 
-            <div className="rounded-lg overflow-hidden h-48">
+            <div className="rounded-lg overflow-hidden h-72">
               <video
                 src={templeDetails?.videoUrl}
                 controls
