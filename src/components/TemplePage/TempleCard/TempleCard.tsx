@@ -13,16 +13,15 @@ const TempleCard: React.FC<TTempleCardProps> = ({
   setTempleId,
 }) => {
   const [deleteTemple] = useDeleteTempleMutation();
-  
-    const handleDeleteTemple = async (id: string) => {
-      if (!window.confirm("Are you sure you want to delete?")) return;
-  
-      toast.promise(deleteTemple(id).unwrap(), {
-        loading: "Deleting temple...",
-        success: "Temple deleted successfully!",
-        error: "Failed to delete temple.",
-      });
-    };
+  const handleDeleteTemple = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete?")) return;
+
+    toast.promise(deleteTemple(id).unwrap(), {
+      loading: "Deleting temple...",
+      success: "Temple deleted successfully!",
+      error: "Failed to delete temple.",
+    });
+  };
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
@@ -58,7 +57,10 @@ const TempleCard: React.FC<TTempleCardProps> = ({
           >
             View Details
           </button>
-          <button onClick={() => handleDeleteTemple(temple?._id)} className="px-3 py-1 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-md text-sm">
+          <button
+            onClick={() => handleDeleteTemple(temple?._id)}
+            className="px-3 py-1 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-md text-sm"
+          >
             Delete
           </button>
         </div>
