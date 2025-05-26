@@ -30,7 +30,6 @@ const Yoga = () => {
   const [mode, setMode] = useState<"add" | "edit">("add");
 
   const { data: singleYogaData } = useGetSingleYogaQuery(yogaId);
-  console.log(data);
   return (
     <div className="space-y-6">
       <PageHeader
@@ -53,7 +52,7 @@ const Yoga = () => {
               yoga={yoga}
               setShowForm={setShowForm}
               setMode={setMode}
-              setReelId={setYogaId}
+              setYogaId={setYogaId}
             />
           ))}
         </div>

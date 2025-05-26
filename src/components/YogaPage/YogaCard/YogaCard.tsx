@@ -6,13 +6,13 @@ type TYogaCardProps = {
   yoga: any;
   setShowForm: (visible: boolean) => void;
   setMode?: React.Dispatch<React.SetStateAction<"add" | "edit">>;
-  setReelId: React.Dispatch<React.SetStateAction<string>>;
+  setYogaId: React.Dispatch<React.SetStateAction<string>>;
 };
 const YogaCard: React.FC<TYogaCardProps> = ({
   yoga,
   setShowForm,
   setMode,
-  setReelId,
+  setYogaId,
 }) => {
   const [deleteYoga] = useDeleteYogaMutation();
   const handleDeleteYoga = async (id: string) => {
@@ -115,7 +115,7 @@ const YogaCard: React.FC<TYogaCardProps> = ({
         <div className="mt-6 flex justify-end space-x-2">
           <button
             onClick={() => {
-              setReelId(yoga?._id);
+              setYogaId(yoga?._id);
               setMode && setMode("edit");
               setShowForm(true);
             }}

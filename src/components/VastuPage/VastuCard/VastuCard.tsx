@@ -1,15 +1,18 @@
 import { Compass, Edit2, HomeIcon, Trash2 } from "lucide-react";
+import { TVastu } from "../../../pages/Vastu/Vastu";
 
 type TVastuCardProps = {
-  vastu: any;
+  vastu: TVastu;
   setShowForm: (show: boolean) => void;
+  setMode?: React.Dispatch<React.SetStateAction<"add" | "edit">>;
+  setVastuId?: React.Dispatch<React.SetStateAction<string>>;
 };
-const VastuCard: React.FC<TVastuCardProps> = ({ vastu, setShowForm }) => {
+const VastuCard: React.FC<TVastuCardProps> = ({ vastu, setShowForm, setMode, setVastuId }) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
       <img
-        src={vastu.imageUrl}
-        alt={vastu.title}
+        src={vastu?.imageUrl}
+        alt={vastu?.title}
         className="w-full h-48 object-cover"
       />
       <div className="p-6">
@@ -47,7 +50,7 @@ const VastuCard: React.FC<TVastuCardProps> = ({ vastu, setShowForm }) => {
             Recommendations:
           </h4>
           <ul className="mt-2 space-y-1">
-            {vastu.recommendations.map((rec: string, index: number) => (
+            {vastu?.recommendations?.map((rec: string, index: number) => (
               <li
                 key={index}
                 className="text-sm text-gray-600 dark:text-gray-300 flex items-center"
@@ -60,7 +63,7 @@ const VastuCard: React.FC<TVastuCardProps> = ({ vastu, setShowForm }) => {
         </div>
 
         <div className="mt-4">
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 capitalize">
             {vastu.category}
           </span>
         </div>
@@ -68,6 +71,8 @@ const VastuCard: React.FC<TVastuCardProps> = ({ vastu, setShowForm }) => {
         <div className="mt-6 flex justify-end space-x-2">
           <button
             onClick={() => {
+              setVastuId && setVastuId(vastu?._id);
+              setMode && setMode("edit");
               setShowForm(true);
             }}
             className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg dark:text-blue-400 dark:hover:bg-blue-900/20"
