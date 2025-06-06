@@ -1,9 +1,9 @@
 import { Book } from "lucide-react";
-import { ReligiousTextManager } from "../../components/ReligiousTextManager";
 import PageHeader from "../../components/Reusable/PageHeader/PageHeader";
 import { useState } from "react";
 import ReligiousTextsFilters from "../../components/ReligiousTextsPage/ReligiousTextsFilters/ReligiousTextsFilters";
 import { ReligiousTextCard } from "../../components/ReligiousTextsPage/ReligiousTextCard/ReligiousTextCard";
+import AddReligiousTextForm from "../../components/ReligiousTextsPage/AddReligiousTextForm/AddReligiousTextForm";
 
 export const VEDA_TYPES = [
   {
@@ -31,52 +31,51 @@ export const VEDA_TYPES = [
 
 export const dummyTexts = [
   {
-    _id: '1',
-    veda_type: 'rigveda',
+    _id: "1",
+    veda_type: "rigveda",
     mandala_number: 1,
     sukta_number: 2,
     verse_number: 3,
     is_published: true,
-    original_text: 'अग्निमीळे पुरोहितं यज्ञस्य देवमृत्विजम् ।',
-    devanagari_text: 'अग्निमीळे पुरोहितं यज्ञस्य देवमृत्विजम् ।',
-    transliteration: 'agnim īḷe purohitaṃ yajñasya devam ṛtvijam',
+    original_text: "अग्निमीळे पुरोहितं यज्ञस्य देवमृत्विजम् ।",
+    devanagari_text: "अग्निमीळे पुरोहितं यज्ञस्य देवमृत्विजम् ।",
+    transliteration: "agnim īḷe purohitaṃ yajñasya devam ṛtvijam",
     translations: [
       {
-        language_code: 'en',
-        translation: 'I praise Agni, the chosen priest, god of the sacrifice...',
-        translator: 'Ralph Griffith',
+        language_code: "en",
+        translation:
+          "I praise Agni, the chosen priest, god of the sacrifice...",
+        translator: "Ralph Griffith",
         is_verified: true,
       },
       {
-        language_code: 'hi',
-        translation: 'मैं अग्नि की स्तुति करता हूँ, जो यज्ञ का पुरोहित है...',
-        translator: 'Dayanand Saraswati',
+        language_code: "hi",
+        translation: "मैं अग्नि की स्तुति करता हूँ, जो यज्ञ का पुरोहित है...",
+        translator: "Dayanand Saraswati",
         is_verified: false,
       },
     ],
   },
   {
-    _id: '2',
-    veda_type: 'samaveda',
+    _id: "2",
+    veda_type: "samaveda",
     book_number: 1,
     chapter_number: 1,
     verse_number: 1,
     is_published: false,
-    original_text: 'ओम् सह नाववतु सह नौ भुनक्तु',
-    devanagari_text: 'ॐ सह नाववतु। सह नौ भुनक्तु।',
-    transliteration: 'om saha nāv avatu, saha nau bhunaktu',
+    original_text: "ओम् सह नाववतु सह नौ भुनक्तु",
+    devanagari_text: "ॐ सह नाववतु। सह नौ भुनक्तु।",
+    transliteration: "om saha nāv avatu, saha nau bhunaktu",
     translations: [
       {
-        language_code: 'en',
-        translation: 'May He protect us both. May He nourish us both.',
-        translator: 'Swami Chinmayananda',
+        language_code: "en",
+        translation: "May He protect us both. May He nourish us both.",
+        translator: "Swami Chinmayananda",
         is_verified: true,
       },
     ],
   },
 ];
-
-
 
 const ReligiousTexts = () => {
   const [showForm, setShowForm] = useState<boolean>(false);
@@ -85,13 +84,14 @@ const ReligiousTexts = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [id, setId] = useState("");
   const [mode, setMode] = useState<"add" | "edit">("add");
+  //   const { data: singleVastuData } = useGetSingleVastuQuery(id);
 
   return (
-    <div>
+    <div className="flex flex-col gap-10">
       <PageHeader
         title="Vedic Texts Management"
         buttonText="Add New Text"
-        icon={<Book className="h-6 w-6 mr-2 text-blue-500" />}
+        icon={<Book className="size-6 mr-2 text-blue-500" />}
         onClick={() => {
           setShowForm(true);
         }}
@@ -129,7 +129,18 @@ const ReligiousTexts = () => {
           setShowForm={setShowForm}
         />
       ))}
-      <ReligiousTextManager />
+
+      {/* Add/Edit Form Modal */}
+      {showForm && (
+        <AddReligiousTextForm
+        showForm={showForm}
+          setShowForm={setShowForm}
+        //   defaultValues={singleVastuData?.data}
+          mode={mode}
+        />
+      )}
+
+      {/* <ReligiousTextManager /> */}
     </div>
   );
 };

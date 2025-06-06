@@ -3,7 +3,6 @@ import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../firebase';
 import { MantraStats } from './MantraStats';
 import { MantraEditor } from './MantraEditor';
-import { ReligiousTextManager } from './ReligiousTextManager';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import type { Mantra, MantraStats as MantraStatsType } from '../types';
 
@@ -101,7 +100,7 @@ export function ReligiousTextDashboard() {
             </TabsContent>
 
             <TabsContent value="manage">
-              <ReligiousTextManager />
+              {/* <ReligiousTextManager /> */}
             </TabsContent>
 
             <TabsContent value="reported">

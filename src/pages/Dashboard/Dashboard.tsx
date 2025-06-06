@@ -6,7 +6,6 @@ import { ConsultancyManager } from '../../components/ConsultancyManager';
 import { ContentManager } from '../../components/ContentManager';
 import { NotificationCenter } from '../../components/NotificationCenter';
 import { AnalyticsOverview } from '../../components/AnalyticsOverview';
-import { ReligiousTextManager } from '../../components/ReligiousTextManager';
 import { NewsManager } from '../../components/NewsManager';
 import { PopupManager } from '../../components/PopupManager';
 import { APIKeyManager } from '../../components/APIKeyManager';
@@ -163,8 +162,6 @@ export function Dashboard({ activeSection }: any) {
     switch (activeSection) {
       case 'api-keys':
         return <APIKeyManager />;
-      case 'religious-texts':
-        return <ReligiousTextManager />;
       case 'users':
         return (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
