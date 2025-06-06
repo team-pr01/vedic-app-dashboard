@@ -5,7 +5,10 @@ import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
 import Textarea from "../../Reusable/TextArea/TextArea";
 import { TOrganization } from "../../../pages/Organizations/Organizations";
 import { useEffect } from "react";
-import { useAddOrganizationMutation, useUpdateOrganizationMutation } from "../../../redux/Features/Organization/organizationApi";
+import {
+  useAddOrganizationMutation,
+  useUpdateOrganizationMutation,
+} from "../../../redux/Features/Organization/organizationApi";
 import toast from "react-hot-toast";
 import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
 export type TFormValues = {
@@ -15,7 +18,6 @@ export type TFormValues = {
   headTeacher: string;
   studentCapacity: number;
   coursesOffered: string;
-
   contact: {
     email: string;
     phone: string;
@@ -40,7 +42,8 @@ const AddOrganizationForm = ({
   defaultValues?: TOrganization;
 }) => {
   const [addOrganization, { isLoading }] = useAddOrganizationMutation();
-    const [updateOrganization, { isLoading: isOrganizationUpdating }] = useUpdateOrganizationMutation();
+  const [updateOrganization, { isLoading: isOrganizationUpdating }] =
+    useUpdateOrganizationMutation();
   const {
     register,
     handleSubmit,
@@ -51,26 +54,26 @@ const AddOrganizationForm = ({
 
   useEffect(() => {
     if (mode === "edit" && defaultValues) {
-      setValue("name", defaultValues.name);
-      setValue("type", defaultValues.type);
-      setValue("description", defaultValues.description);
-      setValue("headTeacher", defaultValues.headTeacher);
-      setValue("studentCapacity", defaultValues.studentCapacity);
-      setValue("coursesOffered", defaultValues.coursesOffered as any);
+      setValue("name", defaultValues?.name);
+      setValue("type", defaultValues?.type);
+      setValue("description", defaultValues?.description);
+      setValue("headTeacher", defaultValues?.headTeacher);
+      setValue("studentCapacity", defaultValues?.studentCapacity);
+      setValue("coursesOffered", defaultValues?.coursesOffered as any);
 
-      setValue("contact.email", defaultValues.contact.email);
-      setValue("contact.phone", defaultValues.contact.phone);
-      setValue("contact.website", defaultValues.contact.website || "");
+      setValue("contact.email", defaultValues?.contact?.email);
+      setValue("contact.phone", defaultValues?.contact?.phone);
+      setValue("contact.website", defaultValues?.contact?.website || "");
 
-      setValue("address.street", defaultValues.address.street);
-      setValue("address.city", defaultValues.address.city);
-      setValue("address.state", defaultValues.address.state);
-      setValue("address.postalCode", defaultValues.address.postalCode);
-      setValue("address.country", defaultValues.address.country);
+      setValue("address.street", defaultValues?.address?.street);
+      setValue("address.city", defaultValues?.address?.city);
+      setValue("address.state", defaultValues?.address?.state);
+      setValue("address.postalCode", defaultValues?.address?.postalCode);
+      setValue("address.country", defaultValues?.address?.country);
     }
   }, [defaultValues, mode, setValue]);
 
-   //   Function to add or edit organization
+  //   Function to add or edit organization
   const handleSubmitOrganization = async (data: TFormValues) => {
     try {
       const payload = {
@@ -86,13 +89,13 @@ const AddOrganizationForm = ({
           data: payload,
         }).unwrap();
         if (response?.success) {
-          toast.success(response?.message || "Reel updated successfully");
+          toast.success(response?.message || "Organization updated successfully");
         }
       } else {
         // Add API
         response = await addOrganization(payload).unwrap();
         if (response?.success) {
-          toast.success(response?.message || "Reel added successfully");
+          toast.success(response?.message || "Organization added successfully");
         }
       }
 
@@ -129,7 +132,7 @@ const AddOrganizationForm = ({
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex flex-col gap-6">
             <TextInput
               label="Name"
               placeholder="Enter organization name"
@@ -144,7 +147,8 @@ const AddOrganizationForm = ({
               options={["gurukul", "vedic_institution", "ashram"]}
             />
 
-            <Textarea
+            <div className="flex flex-col">
+              <Textarea
               label="Description"
               placeholder="Write description here..."
               rows={6}
@@ -162,6 +166,7 @@ const AddOrganizationForm = ({
               })}
               error={errors.headTeacher}
             />
+            </div>
 
             <TextInput
               label="Student Capacity"
@@ -182,6 +187,15 @@ const AddOrganizationForm = ({
               })}
               error={errors.coursesOffered}
             />
+
+            {/* <TextInput
+              label="Image URL"
+              placeholder="Enter image URL"
+              {...register("imageUrl", {
+                required: "Image is required",
+              })}
+              error={errors.headTeacher}
+            /> */}
 
             <div className="md:col-span-2">
               <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

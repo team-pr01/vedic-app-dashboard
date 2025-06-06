@@ -16,6 +16,7 @@ export type TOrganization = {
   type: "gurukul" | "vedic_institution" | "ashram";
   description: string;
   headTeacher: string;
+  imageUrl: string;
   studentCapacity: number;
   coursesOffered: string[];
   contact: {
@@ -45,6 +46,8 @@ const Organizations = () => {
   const [mode, setMode] = useState<"add" | "edit">("add");
   const { data: singleOrganizationData } =
     useGetSingleOrganizationQuery(organizationId);
+
+    console.log(data);
 
   return (
     <div className="space-y-6">
