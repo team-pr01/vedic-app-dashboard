@@ -7,13 +7,12 @@ import Textarea from "../../Reusable/TextArea/TextArea";
 import { X } from "lucide-react";
 
 type TFormValues = {
-    title: string;
-    content: string;
-    tags: string[];
-    excerpt: string;
-    imageUrl: string;
-    category: string;
-    
+  title: string;
+  content: string;
+  tags: string[];
+  excerpt: string;
+  imageUrl: string;
+  category: string;
 };
 
 type TAddNewsFormProps = {
@@ -37,7 +36,9 @@ const AddNewsForm: React.FC<TAddNewsFormProps> = ({
     formState: { errors },
   } = useForm<TFormValues>();
 
-  const [currentArticle, setCurrentArticle] = useState<{ content: string }>({ content: "" });
+  const [currentArticle, setCurrentArticle] = useState<{ content: string }>({
+    content: "",
+  });
 
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
@@ -85,8 +86,7 @@ const AddNewsForm: React.FC<TAddNewsFormProps> = ({
               </button>
             </div>
 
-
-              <TextInput
+            <TextInput
               label="Title"
               placeholder="Enter Title"
               {...register("title", {
@@ -95,7 +95,7 @@ const AddNewsForm: React.FC<TAddNewsFormProps> = ({
               error={errors.title}
             />
 
-              <TextInput
+            <TextInput
               label="Category"
               placeholder="Enter Category"
               {...register("category", {
@@ -104,7 +104,7 @@ const AddNewsForm: React.FC<TAddNewsFormProps> = ({
               error={errors.category}
             />
 
-              <TextInput
+            <TextInput
               label="Image URL"
               placeholder="Enter Image URL"
               {...register("imageUrl", {
@@ -113,26 +113,22 @@ const AddNewsForm: React.FC<TAddNewsFormProps> = ({
               error={errors.imageUrl}
             />
 
-              
-
-              
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Content
-                </label>
-                <div className="mt-1">
-                  <ReactQuill
-                    value={currentArticle.content}
-                    onChange={(content) =>
-                      setCurrentArticle({ ...currentArticle, content })
-                    }
-                    className="bg-white dark:bg-gray-700"
-                  />
-                </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Content
+              </label>
+              <div className="mt-1">
+                <ReactQuill
+                  value={currentArticle.content}
+                  onChange={(content) =>
+                    setCurrentArticle({ ...currentArticle, content })
+                  }
+                  className="bg-white dark:bg-gray-700"
+                />
               </div>
+            </div>
 
-              <Textarea
+            <Textarea
               label="Excerpt"
               placeholder="Write Excerpt here..."
               rows={6}
@@ -142,7 +138,7 @@ const AddNewsForm: React.FC<TAddNewsFormProps> = ({
               })}
             />
 
-              <div>
+            <div>
               <TextInput
                 label="Tags"
                 name="tags"

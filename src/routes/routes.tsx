@@ -11,6 +11,7 @@ import TempleManagement from "../pages/TempleManagement/TempleManagement";
 import Organizations from "../pages/Organizations/Organizations";
 import ReligiousTexts from "../pages/ReligiousTexts/ReligiousTexts";
 import News from "../pages/News/News";
+import Notification from "../pages/Notification/Notification";
 
 export const router = createBrowserRouter([
   {
@@ -61,6 +62,10 @@ export const router = createBrowserRouter([
       {
         path: "news",
         element: <News />,
+      },
+      {
+        path: "notifications",
+        element: <Notification />,
       },
     ],
   },
