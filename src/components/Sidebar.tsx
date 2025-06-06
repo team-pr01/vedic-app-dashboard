@@ -32,7 +32,7 @@ interface SidebarProps {
 export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
   const location = useLocation();
   const sidebarLinks = [
-    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard/home" },
+    { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
     { icon: AlertTriangle, label: "Emergency", path: "/dashboard/emergency" },
     { icon: Users, label: "Users", path: "/dashboard/users" },
     {

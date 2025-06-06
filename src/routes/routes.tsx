@@ -12,6 +12,7 @@ import Organizations from "../pages/Organizations/Organizations";
 import ReligiousTexts from "../pages/ReligiousTexts/ReligiousTexts";
 import News from "../pages/News/News";
 import Notification from "../pages/Notification/Notification";
+import Popups from "../pages/Popups/Popups";
 
 export const router = createBrowserRouter([
   {
@@ -24,7 +25,7 @@ export const router = createBrowserRouter([
     // errorElement: <NotFound />,
     children: [
       {
-        path: "home",
+        path: "",
         element: <Dashboard />,
       },
       {
@@ -66,6 +67,10 @@ export const router = createBrowserRouter([
       {
         path: "notifications",
         element: <Notification />,
+      },
+      {
+        path: "popups",
+        element: <Popups />,
       },
     ],
   },
