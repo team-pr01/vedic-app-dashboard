@@ -10,6 +10,7 @@ import Vastu from "../pages/Vastu/Vastu";
 import TempleManagement from "../pages/TempleManagement/TempleManagement";
 import Organizations from "../pages/Organizations/Organizations";
 import ReligiousTexts from "../pages/ReligiousTexts/ReligiousTexts";
+import News from "../pages/News/News";
 
 export const router = createBrowserRouter([
   {
@@ -56,6 +57,10 @@ export const router = createBrowserRouter([
       {
         path: "religious-texts",
         element: <ReligiousTexts />,
+      },
+      {
+        path: "news",
+        element: <News />,
       },
     ],
   },

@@ -6,7 +6,6 @@ import { ConsultancyManager } from '../../components/ConsultancyManager';
 import { ContentManager } from '../../components/ContentManager';
 import { NotificationCenter } from '../../components/NotificationCenter';
 import { AnalyticsOverview } from '../../components/AnalyticsOverview';
-import { NewsManager } from '../../components/NewsManager';
 import { PopupManager } from '../../components/PopupManager';
 import { APIKeyManager } from '../../components/APIKeyManager';
 import { AlertTriangle, Users, BookOpen, Building, Newspaper, Headphones, Activity } from 'lucide-react';
@@ -238,7 +237,7 @@ export function Dashboard({ activeSection }: any) {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 News Management
               </h2>
-              <NewsManager />
+              {/* <NewsManager /> */}
             </div>
           </div>
         );

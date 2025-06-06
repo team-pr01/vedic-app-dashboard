@@ -1,9 +1,9 @@
-import { Book } from "lucide-react";
 import PageHeader from "../../components/Reusable/PageHeader/PageHeader";
 import { useState } from "react";
 import ReligiousTextsFilters from "../../components/ReligiousTextsPage/ReligiousTextsFilters/ReligiousTextsFilters";
 import { ReligiousTextCard } from "../../components/ReligiousTextsPage/ReligiousTextCard/ReligiousTextCard";
 import AddReligiousTextForm from "../../components/ReligiousTextsPage/AddReligiousTextForm/AddReligiousTextForm";
+import { Book } from "lucide-react";
 
 export const VEDA_TYPES = [
   {
@@ -91,7 +91,7 @@ const ReligiousTexts = () => {
       <PageHeader
         title="Vedic Texts Management"
         buttonText="Add New Text"
-        icon={<Book className="size-6 mr-2 text-blue-500" />}
+        icon={<Book className="w-6 h-6 mr-2 text-blue-500" />}
         onClick={() => {
           setShowForm(true);
         }}
@@ -133,9 +133,9 @@ const ReligiousTexts = () => {
       {/* Add/Edit Form Modal */}
       {showForm && (
         <AddReligiousTextForm
-        showForm={showForm}
+          showForm={showForm}
           setShowForm={setShowForm}
-        //   defaultValues={singleVastuData?.data}
+          //   defaultValues={singleVastuData?.data}
           mode={mode}
         />
       )}
