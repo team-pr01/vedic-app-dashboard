@@ -2,6 +2,30 @@ import { baseApi } from "../../API/baseApi";
 
 const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+
+    getAllUsers: builder.query({
+      query: () => {
+        return {
+          url: `/user`,
+          method: "GET",
+          credentials: "include",
+        };
+      },
+      providesTags: ["users"],
+    }),
+
+    getSingleUserById: builder.query({
+      query: (id) => {
+        return {
+          url: `/user/${id}`,
+          method: "GET",
+          credentials: "include",
+        };
+      },
+      providesTags: ["users"],
+    }),
+
+
     login: builder.mutation({
       query: (userInfo) => ({
         url: "/auth/login",
@@ -40,13 +64,26 @@ const authApi = baseApi.injectEndpoints({
       invalidatesTags: ["users"],
     }),
 
+    changeUserRole: builder.mutation({
+      query: (data) => ({
+        url: `/auth/change-role`,
+        method: "PUT",
+        body: data,
+        credentials: "include",
+      }),
+      invalidatesTags: ["users"],
+    }),
+
 
   }),
 });
 
 export const {
+  useGetAllUsersQuery,
+  useGetSingleUserByIdQuery,
   useLoginMutation,
   useSignupMutation,
   useForgotPasswordMutation,
-  useResetPasswordMutation
+  useResetPasswordMutation,
+  useChangeUserRoleMutation,
 } = authApi;

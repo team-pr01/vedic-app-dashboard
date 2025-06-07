@@ -1,13 +1,16 @@
 import { Edit2, Trash2 } from "lucide-react";
+import { useState } from "react";
+import UpdateUserModal from "../UpdateUserModal/UpdateUserModal";
+import { useGetAllUsersQuery, useGetSingleUserByIdQuery } from "../../../redux/Features/Auth/authApi";
 
 const UserTable = ({users} : {users: any}) => {
-    const handleDeleteUser = async (userId: string) => {
-    console.log("object", userId);
-  };
+  const [id, setId] = useState<string>("");
+  const {data, isLoading} = useGetAllUsersQuery({});
 
-  const handleUpdateStatus = async () => {
-    console.log("object");
-  };
+  const {data:singleUserData, isLoading:isUserDataLoading} = useGetSingleUserByIdQuery(id);
+  console.log(singleUserData);
+
+  const [showForm, setShowForm] = useState<boolean>(false);
     return (
         <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -20,10 +23,13 @@ const UserTable = ({users} : {users: any}) => {
               Role
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              Status
+              Phone Number
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
               Joined
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Assigned Pages
             </th>
             <th className="relative px-6 py-3">
               <span className="sr-only">Actions</span>
@@ -31,7 +37,7 @@ const UserTable = ({users} : {users: any}) => {
           </tr>
         </thead>
         <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-          {users?.map((user:any) => (
+          {data?.data?.map((user:any) => (
             <tr key={user.id}>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">
@@ -51,6 +57,11 @@ const UserTable = ({users} : {users: any}) => {
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  {user.phoneNumber}
+                </span>
+              </td>
+              {/* <td className="px-6 py-4 whitespace-nowrap">
                 <button
                   onClick={() =>
                     handleUpdateStatus()
@@ -63,20 +74,26 @@ const UserTable = ({users} : {users: any}) => {
                 >
                   {user.status}
                 </button>
-              </td>
+              </td> */}
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                {new Date(user.joined).toLocaleString()}
+                {new Date(user.createdAt).toLocaleString()}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 capitalize">
+                {user?.assignedPages ? user?.assignedPages?.join(", ") : "N/A"}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div className="flex items-center justify-end space-x-2">
                   <button
-                    onClick={() => handleUpdateStatus()}
+                    onClick={() => {
+                      setId(user?._id);
+                      setShowForm(true)
+                    }}
                     className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
-                    onClick={() => handleDeleteUser(user.id)}
+                    // onClick={() => handleDeleteUser(user.id)}
                     className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -87,6 +104,7 @@ const UserTable = ({users} : {users: any}) => {
           ))}
         </tbody>
       </table>
+      <UpdateUserModal showForm={showForm} setShowForm={setShowForm} defaultValues={singleUserData?.data} isLoading={isUserDataLoading} />
     </div>
     );
 };
