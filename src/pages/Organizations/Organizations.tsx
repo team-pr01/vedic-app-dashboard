@@ -47,8 +47,6 @@ const Organizations = () => {
   const { data: singleOrganizationData } =
     useGetSingleOrganizationQuery(organizationId);
 
-    console.log(data);
-
   return (
     <div className="space-y-6">
       {/* Header */}

@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import Layout from "../layout/Layout";
 import Emergency from "../pages/Emergency/Emergency";
-import { Dashboard } from "../pages/Dashboard/Dashboard";
 import Users from "../pages/Users/Users";
 import Login from "../pages/Login/Login";
 import Reels from "../pages/Reels/Reels";
@@ -13,6 +12,7 @@ import ReligiousTexts from "../pages/ReligiousTexts/ReligiousTexts";
 import News from "../pages/News/News";
 import Notification from "../pages/Notification/Notification";
 import Popups from "../pages/Popups/Popups";
+import Dashboard from "../pages/Dashboard/Dashboard";
 
 export const router = createBrowserRouter([
   {
