@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
 import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
-import { useChangeUserRoleMutation } from "../../../redux/Features/Auth/authApi";
+import { useAssignPagesMutation, useChangeUserRoleMutation } from "../../../redux/Features/Auth/authApi";
 import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
 import Loader from "../../Shared/Loader/Loader";
 
@@ -33,8 +33,8 @@ const UpdateUserModal: React.FC<TUpdateUserModalProps> = ({
     formState: { errors },
   } = useForm<TFormValues>();
 
-  const [changeUserRole, { isLoading: isUserRoleUpdating }] =
-    useChangeUserRoleMutation();
+  const [changeUserRole, { isLoading: isUserRoleUpdating }] =useChangeUserRoleMutation();
+  const [assignPages, { isLoading: isAssigningPage }] =useAssignPagesMutation();
 
   const [assignedPages, setAssignedPages] = useState<string[]>([]);
 
@@ -44,7 +44,7 @@ const UpdateUserModal: React.FC<TUpdateUserModalProps> = ({
     setAssignedPages(defaultValues?.assignedPages || []);
   }, [defaultValues, setValue]);
 
-  //   Function to add or edit user data
+  //   Function to change user role
   const handleChangeUserRole = async (data: TFormValues) => {
     try {
       const payload = {
@@ -53,6 +53,29 @@ const UpdateUserModal: React.FC<TUpdateUserModalProps> = ({
       };
       const response = await changeUserRole(payload).unwrap();
       console.log(response);
+      setShowForm(false);
+      reset();
+    } catch (error) {
+      const errMsg =
+        typeof error === "object" &&
+        error !== null &&
+        "data" in error &&
+        typeof (error as any).data?.message === "string"
+          ? (error as any).data.message
+          : "Something went wrong";
+      toast.error(errMsg);
+    }
+  };
+
+  //   Function to change assigned pages
+  const handleChangeAssignedPages = async () => {
+    try {
+      const payload = {
+        userId: defaultValues?._id,
+        pages: assignedPages,
+      };
+      const response = await assignPages(payload).unwrap();
+      if(response?.success) toast.success(response?.message || "Pages updated successfully");
       setShowForm(false);
       reset();
     } catch (error) {
@@ -141,7 +164,7 @@ const UpdateUserModal: React.FC<TUpdateUserModalProps> = ({
                 </div>
               </form>
               <form
-                onSubmit={handleSubmit(handleChangeUserRole)}
+                onSubmit={handleSubmit(handleChangeAssignedPages)}
                 className="p-6 space-y-6"
               >
                 <div className="flex flex-col">
@@ -197,7 +220,7 @@ const UpdateUserModal: React.FC<TUpdateUserModalProps> = ({
                   >
                     Cancel
                   </button>
-                  <SubmitButton isLoading={isLoading || isUserRoleUpdating} />
+                  <SubmitButton isLoading={isAssigningPage || isUserRoleUpdating} />
                 </div>
               </form>
             </div>

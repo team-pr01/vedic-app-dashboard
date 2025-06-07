@@ -74,6 +74,16 @@ const authApi = baseApi.injectEndpoints({
       invalidatesTags: ["users"],
     }),
 
+    assignPages: builder.mutation({
+      query: (data) => ({
+        url: `/auth/assign-pages`,
+        method: "PUT",
+        body: data,
+        credentials: "include",
+      }),
+      invalidatesTags: ["users"],
+    }),
+
 
   }),
 });
@@ -86,4 +96,5 @@ export const {
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useChangeUserRoleMutation,
+  useAssignPagesMutation
 } = authApi;

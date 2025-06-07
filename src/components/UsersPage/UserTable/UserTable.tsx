@@ -8,7 +8,7 @@ const UserTable = ({users} : {users: any}) => {
   const {data, isLoading} = useGetAllUsersQuery({});
 
   const {data:singleUserData, isLoading:isUserDataLoading} = useGetSingleUserByIdQuery(id);
-  console.log(singleUserData);
+  console.log(data);
 
   const [showForm, setShowForm] = useState<boolean>(false);
     return (
@@ -79,7 +79,7 @@ const UserTable = ({users} : {users: any}) => {
                 {new Date(user.createdAt).toLocaleString()}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 capitalize">
-                {user?.assignedPages ? user?.assignedPages?.join(", ") : "N/A"}
+                {user?.assignedPages?.length > 0 ? user?.assignedPages?.join(", ") : "N/A"}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div className="flex items-center justify-end space-x-2">
