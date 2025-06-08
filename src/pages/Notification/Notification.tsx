@@ -58,9 +58,7 @@ const Notification = () => {
   const { data, isLoading } = useGetAllNotificationsQuery({});
   console.log(data);
 
-  const handleDelete = () => {
-    console.log("deleted");
-  };
+
   return (
     <div>
       <PageHeader
@@ -84,7 +82,6 @@ const Notification = () => {
             <NotificationCard
               key={notification._id}
               notification={notification}
-              onDelete={handleDelete}
             />
           ))}
         </div>

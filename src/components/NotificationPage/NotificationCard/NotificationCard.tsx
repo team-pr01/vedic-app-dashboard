@@ -1,25 +1,35 @@
-import { Calendar, Check, Trash2, Users, X } from "lucide-react";
+import { Calendar, Trash2, Users } from "lucide-react";
 import React from "react";
+import { useDeleteNotificationMutation } from "../../../redux/Features/Notification/notificationApi";
+import toast from "react-hot-toast";
 
 type Notification = {
-  id: string;
+  _id: string;
   title: string;
   message: string;
-  status: "scheduled" | "sent" | "failed";
-  type: string;
-  scheduled_for: string;
-  sent_at?: string;
+  createdAt: string;
+  targetedAudience: string[];
 };
 
 type NotificationCardProps = {
   notification: Notification;
-  onDelete: (id: string) => void;
 };
 
 const NotificationCard: React.FC<NotificationCardProps> = ({
   notification,
-  onDelete,
 }) => {
+  const [deleteNotification] = useDeleteNotificationMutation();
+
+  const handleDeleteNews = async (id: string) => {
+      console.log(id);
+          if (!window.confirm("Are you sure you want to delete?")) return;
+      
+          toast.promise(deleteNotification(id).unwrap(), {
+            loading: "Deleting notification...",
+            success: "Notification deleted successfully!",
+            error: "Failed to delete notification.",
+          });
+        };
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
       <div className="flex items-start justify-between">
@@ -41,7 +51,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
         </div>
         <div className="flex space-x-2">
           <button
-            onClick={() => onDelete(notification?._id)}
+            onClick={() => handleDeleteNews(notification?._id)}
             className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
           >
             <Trash2 className="h-5 w-5" />

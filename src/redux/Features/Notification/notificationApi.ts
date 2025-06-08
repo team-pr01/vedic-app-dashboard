@@ -10,7 +10,7 @@ const notificationApi = baseApi.injectEndpoints({
           credentials: "include",
         };
       },
-      providesTags: ["news"],
+      providesTags: ["notification"],
     }),
 
     getSingleNotification: builder.query({
@@ -19,7 +19,7 @@ const notificationApi = baseApi.injectEndpoints({
         method: "GET",
         credentials: "include",
       }),
-      providesTags: ["news"],
+      providesTags: ["notification"],
     }),
 
     sendNotification: builder.mutation<any, any>({
@@ -29,7 +29,7 @@ const notificationApi = baseApi.injectEndpoints({
         body: data,
         credentials: "include",
       }),
-      invalidatesTags: ["news"],
+      invalidatesTags: ["notification"],
     }),
 
     deleteNotification: builder.mutation<any, string>({
@@ -38,7 +38,7 @@ const notificationApi = baseApi.injectEndpoints({
         method: "DELETE",
         credentials: "include",
       }),
-      invalidatesTags: ["news"],
+      invalidatesTags: ["notification"],
     }),
 
     // updateNews: builder.mutation<any, any>({
