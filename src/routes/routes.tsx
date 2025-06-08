@@ -13,6 +13,7 @@ import News from "../pages/News/News";
 import Notification from "../pages/Notification/Notification";
 import Popups from "../pages/Popups/Popups";
 import Dashboard from "../pages/Dashboard/Dashboard";
+import ContentManagement from "../pages/ContentManagement/ContentManagement";
 
 export const router = createBrowserRouter([
   {
@@ -71,6 +72,10 @@ export const router = createBrowserRouter([
       {
         path: "popups",
         element: <Popups />,
+      },
+      {
+        path: "content",
+        element: <ContentManagement />,
       },
     ],
   },

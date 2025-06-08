@@ -52,12 +52,12 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
       path: "/dashboard/notifications",
     },
     { icon: MessageSquarePlus, label: "Popups", path: "/dashboard/popups" },
+    { icon: FileText, label: "Content Management", path: "/dashboard/content" },
     {
       icon: Headphones,
       label: "Consultancy Service",
       path: "/dashboard/consultancy",
     },
-    { icon: FileText, label: "Content Management", path: "/dashboard/content" },
     { icon: Key, label: "API Keys", path: "/dashboard/api-keys" },
     { icon: BarChart2, label: "Analytics", path: "/dashboard/analytics" },
     { icon: Activity, label: "Activity", path: "/dashboard/activity" },
