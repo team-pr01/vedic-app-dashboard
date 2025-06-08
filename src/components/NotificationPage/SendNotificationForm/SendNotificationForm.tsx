@@ -2,12 +2,15 @@ import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import TextInput from "../../Reusable/TextInput/TextInput";
 import Textarea from "../../Reusable/TextArea/TextArea";
-import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
+import { useSendNotificationMutation } from "../../../redux/Features/Notification/notificationApi";
+import toast from "react-hot-toast";
+import Loader from "../../Shared/Loader/Loader";
+import { useState } from "react";
 
 type TFormValues = {
   title: string;
+  endDate: string;
   message: string;
-  targetedAudience: string;
 };
 
 type TSendNotificationFormProps = {
@@ -22,17 +25,50 @@ const SendNotificationForm: React.FC<TSendNotificationFormProps> = ({
   const {
     register,
     handleSubmit,
-    setValue,
-    reset,
     formState: { errors },
   } = useForm<TFormValues>();
 
+  const [sendNotification, { isLoading }] = useSendNotificationMutation();
+  const [targetedAudience, setTargetedAudience] = useState<string[]>([]);
+
   const handleSendNotification = async (data: TFormValues) => {
-    console.log(data);
+    if (targetedAudience.length === 0) {
+      toast.error("Please select at least one targeted audience");
+      return;
+    }
+
+    try {
+      const payload = {
+        ...data,
+        targetedAudience,
+      };
+      const response = await sendNotification(payload).unwrap();
+      if (response?.success) {
+        toast.success(response?.message || "Notification sent successfully");
+        setShowForm(false);
+      }
+    } catch (error) {
+      const errMsg =
+        typeof error === "object" &&
+        error !== null &&
+        "data" in error &&
+        typeof (error as any).data?.message === "string"
+          ? (error as any).data.message
+          : "Something went wrong";
+      toast.error(errMsg);
+    }
   };
 
-  const isLoading = false;
-  const isUpdating = false;
+  const audiences = ["All Users", "Moderator", "Admin"];
+
+  const toggleAudience = (audience: string) => {
+    setTargetedAudience((prev) =>
+      prev.includes(audience)
+        ? prev.filter((a) => a !== audience)
+        : [...prev, audience]
+    );
+  };
+
   return (
     showForm && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -64,6 +100,16 @@ const SendNotificationForm: React.FC<TSendNotificationFormProps> = ({
                 error={errors.title}
               />
 
+              <TextInput
+                label="End Date"
+                type="datetime-local"
+                placeholder="Enter End date"
+                {...register("endDate", {
+                  required: "End date is required",
+                })}
+                error={errors.endDate}
+              />
+
               <Textarea
                 label="Message"
                 placeholder="Write Message here..."
@@ -74,14 +120,27 @@ const SendNotificationForm: React.FC<TSendNotificationFormProps> = ({
                 })}
               />
 
-              <SelectDropdown
-                label="Targeted Audience"
-                {...register("targetedAudience", {
-                  required: "Targeted Audience is required",
-                })}
-                error={errors?.targetedAudience}
-                options={["All Users", "Moderator", "Admin"]}
-              />
+              <div>
+                <p className="font-medium text-gray-700 dark:text-white mb-2">
+                  Targeted Audience
+                </p>
+                <div className="flex gap-4 flex-wrap">
+                  {audiences.map((audience) => (
+                    <button
+                      key={audience}
+                      type="button"
+                      onClick={() => toggleAudience(audience)}
+                      className={`px-4 py-2 rounded-lg border text-sm font-medium shadow-sm transition-all ${
+                        targetedAudience.includes(audience)
+                          ? "bg-blue-600 text-white border-blue-600"
+                          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600"
+                      }`}
+                    >
+                      {audience}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <div className="flex justify-end space-x-3">
@@ -96,7 +155,7 @@ const SendNotificationForm: React.FC<TSendNotificationFormProps> = ({
                 type="submit"
                 className="px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                Send Notification
+                {isLoading ? <Loader size="size-4" /> : "Send Notification"}
               </button>
             </div>
           </form>

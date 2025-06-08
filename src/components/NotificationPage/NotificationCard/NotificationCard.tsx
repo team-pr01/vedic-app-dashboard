@@ -41,7 +41,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
         </div>
         <div className="flex space-x-2">
           <button
-            onClick={() => onDelete(notification.id)}
+            onClick={() => onDelete(notification?._id)}
             className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
           >
             <Trash2 className="h-5 w-5" />
@@ -49,23 +49,17 @@ const NotificationCard: React.FC<NotificationCardProps> = ({
         </div>
       </div>
 
-      <p className="mt-2 text-gray-600 dark:text-gray-300">{notification.message}</p>
+      <p className="mt-2 text-gray-600 dark:text-gray-300">{notification?.message}</p>
 
       <div className="mt-4 flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
         <span className="flex items-center">
           <Calendar className="h-4 w-4 mr-1" />
-          {new Date(notification.scheduled_for).toLocaleString()}
+           Sent: {new Date(notification?.createdAt).toLocaleString()}
         </span>
         <span className="flex items-center">
           <Users className="h-4 w-4 mr-1" />
-          {notification.type}
+          {notification?.targetedAudience?.join(", ")}
         </span>
-        {notification.sent_at && (
-          <span className="flex items-center">
-            <Check className="h-4 w-4 mr-1" />
-            Sent: {new Date(notification.sent_at).toLocaleString()}
-          </span>
-        )}
       </div>
     </div>
   );

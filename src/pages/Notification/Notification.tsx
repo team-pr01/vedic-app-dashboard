@@ -4,6 +4,8 @@ import PageHeader from "../../components/Reusable/PageHeader/PageHeader";
 import { Send } from "lucide-react";
 import NotificationCard from "../../components/NotificationPage/NotificationCard/NotificationCard";
 import SendNotificationForm from "./../../components/NotificationPage/SendNotificationForm/SendNotificationForm";
+import { useGetAllNotificationsQuery } from "../../redux/Features/Notification/notificationApi";
+import Loader from "../../components/Shared/Loader/Loader";
 
 export const dummyNotifications = [
   {
@@ -53,6 +55,9 @@ export const dummyNotifications = [
 
 const Notification = () => {
   const [showForm, setShowForm] = useState<boolean>(false);
+  const { data, isLoading } = useGetAllNotificationsQuery({});
+  console.log(data);
+
   const handleDelete = () => {
     console.log("deleted");
   };
@@ -67,15 +72,23 @@ const Notification = () => {
         }}
       />
 
-      <div className="flex flex-col gap-6">
-        {dummyNotifications.map((notification) => (
-          <NotificationCard
-            key={notification.id}
-            notification={notification}
-            onDelete={handleDelete}
-          />
-        ))}
-      </div>
+      {isLoading ? (
+        <Loader size="size-10" />
+      ) : data?.data?.length < 1 ? (
+        <h1 className="text-center text-gray-500 dark:text-gray-100 mt-16">
+          No notifications found
+        </h1>
+      ) : (
+        <div className="flex flex-col gap-6">
+          {data?.data?.map((notification: any) => (
+            <NotificationCard
+              key={notification._id}
+              notification={notification}
+              onDelete={handleDelete}
+            />
+          ))}
+        </div>
+      )}
 
       {showForm && (
         <SendNotificationForm showForm={showForm} setShowForm={setShowForm} />
