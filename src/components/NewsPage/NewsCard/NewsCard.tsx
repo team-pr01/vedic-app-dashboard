@@ -1,19 +1,19 @@
 import { Eye, Trash2, Calendar } from "lucide-react";
 import { format } from "date-fns";
 
-type TArticle = {
-  id: string;
+export type TNews = {
+  _id: string;
   title: string;
   excerpt: string;
   content: string;
-  status: "published" | "draft" | string;
-  featured_image?: string;
+  category: string;
+  imageUrl?: string;
   tags: string[];
-  created_at: string;
+  createdAt: string;
 };
 
 type TNewsCardProps = {
-  article: TArticle;
+  article: TNews;
   setId: (id: string) => void;
   setMode: (mode: "add" | "edit") => void;
   setShowForm: (show: boolean) => void;
@@ -26,37 +26,29 @@ const NewsCard: React.FC<TNewsCardProps> = ({
   setShowForm,
 }) => {
   const handleEdit = () => {
-    setId(article.id);
+    setId(article._id);
     setMode("add");
     setShowForm(true);
   };
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-      {article.featured_image && (
         <img
-          src={article.featured_image}
+          src={article?.imageUrl}
           alt={article.title}
-          className="w-full h-48 object-cover rounded-t-lg"
+          className="w-full h-56 object-cover rounded-t-lg"
         />
-      )}
 
       <div className="p-6">
         <div className="flex items-start justify-between">
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {article.title}
+              {article?.title}
             </h3>
             <span
-              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 ${
-                article.status === "published"
-                  ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                  : article.status === "draft"
-                  ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-                  : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
-              }`}
+              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200`}
             >
-              {article.status.charAt(0).toUpperCase() + article.status.slice(1)}
+              {article?.category}
             </span>
           </div>
 
@@ -94,7 +86,7 @@ const NewsCard: React.FC<TNewsCardProps> = ({
         <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">
           <div className="flex items-center">
             <Calendar className="h-4 w-4 mr-1" />
-            {format(new Date(article.created_at), "MMM d, yyyy")}
+            {format(new Date(article.createdAt), "MMM d, yyyy")}
           </div>
         </div>
       </div>

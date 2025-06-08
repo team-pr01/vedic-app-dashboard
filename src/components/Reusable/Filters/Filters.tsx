@@ -1,28 +1,28 @@
 import { Search } from "lucide-react";
 
-type TOption = {
-  label: string;
-  value: string;
-};
+// type TOption = {
+//   label: string;
+//   value: string;
+// };
 
 type TFiltersProps = {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  selectedOption: string;
-  setSelectedOption: (value: string) => void;
-  options: TOption[];
+  // selectedOption: string;
+  // setSelectedOption: (value: string) => void;
+  // options: TOption[];
   placeholder?: string;
-  selectLabel?: string;
+  // selectLabel?: string;
 };
 
 const Filters: React.FC<TFiltersProps> = ({
   searchQuery,
   setSearchQuery,
-  selectedOption,
-  setSelectedOption,
-  options,
+  // selectedOption,
+  // setSelectedOption,
+  // options,
   placeholder = "Search...",
-  selectLabel = "Select Option",
+  // selectLabel = "Select Option",
 }) => {
   return (
     <div className="flex flex-wrap gap-4">
@@ -39,7 +39,7 @@ const Filters: React.FC<TFiltersProps> = ({
         </div>
       </div>
 
-      <select
+      {/* <select
         value={selectedOption}
         onChange={(e) => setSelectedOption(e.target.value)}
         className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2"
@@ -52,7 +52,7 @@ const Filters: React.FC<TFiltersProps> = ({
             {opt.label}
           </option>
         ))}
-      </select>
+      </select> */}
     </div>
   );
 };

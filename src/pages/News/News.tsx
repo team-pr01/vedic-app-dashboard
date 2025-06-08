@@ -2,8 +2,10 @@ import { useState } from "react";
 import PageHeader from "../../components/Reusable/PageHeader/PageHeader";
 import { Newspaper } from "lucide-react";
 import Filters from "../../components/Reusable/Filters/Filters";
-import NewsCard from "../../components/NewsPage/NewsCard/NewsCard";
+import NewsCard, { TNews } from "../../components/NewsPage/NewsCard/NewsCard";
 import AddNewsForm from "../../components/NewsPage/AddNewsForm/AddNewsForm";
+import { useGetAllNewsQuery } from "../../redux/Features/News/newsApi";
+import Loader from "../../components/Shared/Loader/Loader";
 
 export const dummyArticles = [
   {
@@ -56,20 +58,23 @@ export const dummyArticles = [
 
 const News = () => {
   const [showForm, setShowForm] = useState<boolean>(false);
-  const [selectedVeda, setSelectedVeda] = useState<any["veda_type"]>("rigveda");
-  const [language, setLanguage] = useState("");
+  // const [language, setLanguage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [id, setId] = useState("");
   const [mode, setMode] = useState<"add" | "edit">("add");
   //   const { data: singleVastuData } = useGetSingleVastuQuery(id);
 
-  const categories = [
-    { value: "sa", label: "Sanskrit" },
-    { value: "en", label: "English" },
-    { value: "hi", label: "Hindi" },
-    { value: "bn", label: "Bengali" },
-    // ... add more languages
-  ];
+  const { data, isLoading, isFetching } = useGetAllNewsQuery({
+    keyword: searchQuery,
+  });
+  // console.log(data);
+
+  // const categories = [
+  //   { value: "sa", label: "Sanskrit" },
+  //   { value: "en", label: "English" },
+  //   { value: "hi", label: "Hindi" },
+  //   { value: "bn", label: "Bengali" },
+  // ];
   return (
     <div>
       <PageHeader
@@ -83,36 +88,44 @@ const News = () => {
 
       <div className="flex flex-col gap-10">
         <Filters
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        selectedOption={language}
-        setSelectedOption={setLanguage}
-        options={categories}
-        placeholder="Search texts..."
-        selectLabel="Select Category"
-      />
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {dummyArticles.map((article) => (
-          <NewsCard
-            key={article.id}
-            article={article}
-            setId={setId}
-            setMode={setMode}
-            setShowForm={setShowForm}
-          />
-        ))}
-      </div>
-
-      {/* Add/Edit Form Modal */}
-      {showForm && (
-        <AddNewsForm
-          showForm={showForm}
-          setShowForm={setShowForm}
-          //   defaultValues={singleVastuData?.data}
-          mode={mode}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          // selectedOption={language}
+          // setSelectedOption={setLanguage}
+          // options={categories}
+          placeholder="Search texts..."
+          // selectLabel="Select Category"
         />
-      )}
+
+        {isLoading || isFetching ? (
+          <Loader size="size-10" />
+        ) : data?.data?.length < 1 ? (
+          <p className="text-center text-gray-500 dark:text-gray-100">
+            No data found
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {data?.data?.map((article: TNews) => (
+              <NewsCard
+                key={article?._id}
+                article={article}
+                setId={setId}
+                setMode={setMode}
+                setShowForm={setShowForm}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Add/Edit Form Modal */}
+        {showForm && (
+          <AddNewsForm
+            showForm={showForm}
+            setShowForm={setShowForm}
+            //   defaultValues={singleVastuData?.data}
+            mode={mode}
+          />
+        )}
       </div>
     </div>
   );
