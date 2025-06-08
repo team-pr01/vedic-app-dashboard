@@ -65,6 +65,7 @@ export const baseApi = createApi({
     "organization",
     "news",
     "notification",
+    "popup"
   ],
   endpoints: () => ({}),
 });

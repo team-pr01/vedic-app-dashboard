@@ -3,13 +3,17 @@ import { useForm } from "react-hook-form";
 import TextInput from "../../Reusable/TextInput/TextInput";
 import Textarea from "../../Reusable/TextArea/TextArea";
 import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
+import { useSendPopupMutation, useUpdatePopupMutation } from "../../../redux/Features/Popup/popupApi";
+import Loader from "../../Shared/Loader/Loader";
 
 type TFormValues = {
   title: string;
   content: string;
   imageUrl: string;
-  buttonText : string;
-  buttonLink : string;
+  btnText : string;
+  btnLink : string;
   startDate: string;
   endDate: string;
   displayFrequency: string;
@@ -28,6 +32,9 @@ const AddPopupForm: React.FC<TAddPopupFormProps> = ({
   mode,
   defaultValues,
 }) => {
+
+  const [sendPopup, {isLoading:isSending}] = useSendPopupMutation();
+  const [updatePopup, {isLoading:isUpdating}] = useUpdatePopupMutation();
   const {
     register,
     handleSubmit,
@@ -36,12 +43,54 @@ const AddPopupForm: React.FC<TAddPopupFormProps> = ({
     formState: { errors },
   } = useForm<TFormValues>();
 
-  const handleSubmitPopup = async (data: TFormValues) => {
-    console.log(data);
-  };
+ useEffect(() => {
+  if (mode === "edit" && defaultValues) {
+    setValue("title", defaultValues.title);
+    setValue("content", defaultValues.content || "");
+    setValue("imageUrl", defaultValues.imageUrl);
+    setValue("btnText", defaultValues.btnText);
+    setValue("btnLink", defaultValues.btnLink);
+    setValue("startDate", defaultValues.startDate);
+    setValue("endDate", defaultValues.endDate);
+    setValue("displayFrequency", defaultValues.displayFrequency);
+  }
+}, [mode, defaultValues, setValue]);
 
-  const isLoading = false;
-  const isUpdating = false;
+
+
+  //   Function to add or edit vastu
+  const handleSubmitPopup = async (data: TFormValues) => {
+  try {
+    const payload = {
+      ...data,
+    };
+
+    let response;
+    if (mode === "edit" && defaultValues?._id) {
+      response = await updatePopup({ id: defaultValues._id, data: payload }).unwrap();
+      if (response?.success) {
+        toast.success(response?.message || "Popup updated successfully");
+      }
+    } else {
+      response = await sendPopup(payload).unwrap();
+      if (response?.success) {
+        toast.success(response?.message || "Popup added successfully");
+      }
+    }
+
+    setShowForm(false);
+    reset();
+  } catch (error) {
+    const errMsg =
+      typeof error === "object" &&
+      error !== null &&
+      "data" in error &&
+      typeof (error as any).data?.message === "string"
+        ? (error as any).data.message
+        : "Something went wrong";
+    toast.error(errMsg);
+  }
+};
   return (
     showForm && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -96,25 +145,26 @@ const AddPopupForm: React.FC<TAddPopupFormProps> = ({
                 <TextInput
                   label="Button Text"
                   placeholder="Enter Button Text"
-                  {...register("buttonText", {
+                  {...register("btnText", {
                     required: "Button Text is required",
                   })}
-                  error={errors.buttonText}
+                  error={errors.btnText}
                 />
 
                 <TextInput
                   label="Button Link"
                   placeholder="Enter Button Link"
-                  {...register("buttonLink", {
+                  {...register("btnLink", {
                     required: "Button Link is required",
                   })}
-                  error={errors.buttonLink}
+                  error={errors.btnLink}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                  <TextInput
                   label="Start Date"
+                  type="date"
                   placeholder="Enter Start Date"
                   {...register("startDate", {
                     required: "Start Date is required",
@@ -123,6 +173,7 @@ const AddPopupForm: React.FC<TAddPopupFormProps> = ({
                 />
                  <TextInput
                   label="End Date"
+                  type="date"
                   placeholder="Enter End Date"
                   {...register("endDate", {
                     required: "End Date is required",
@@ -162,7 +213,7 @@ const AddPopupForm: React.FC<TAddPopupFormProps> = ({
                 type="submit"
                 className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                {isUpdating ? "Update" : "Create"}
+                {isSending || isUpdating ? <Loader size="size-4" /> : "Submit"}
               </button>
             </div>
           </form>

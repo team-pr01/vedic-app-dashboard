@@ -4,7 +4,12 @@ import { Newspaper } from "lucide-react";
 import Filters from "../../components/Reusable/Filters/Filters";
 import NewsCard, { TNews } from "../../components/NewsPage/NewsCard/NewsCard";
 import AddNewsForm from "../../components/NewsPage/AddNewsForm/AddNewsForm";
-import { useDeleteNewsMutation, useGetAllNewsQuery, useGetSingleNewsQuery, useUpdateNewsMutation } from "../../redux/Features/News/newsApi";
+import {
+  useDeleteNewsMutation,
+  useGetAllNewsQuery,
+  useGetSingleNewsQuery,
+  useUpdateNewsMutation,
+} from "../../redux/Features/News/newsApi";
 import Loader from "../../components/Shared/Loader/Loader";
 import toast from "react-hot-toast";
 
@@ -63,7 +68,7 @@ const News = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [id, setId] = useState("");
   const [mode, setMode] = useState<"add" | "edit">("add");
-  
+
   const { data, isLoading, isFetching } = useGetAllNewsQuery({
     keyword: searchQuery,
   });
@@ -79,14 +84,14 @@ const News = () => {
 
   const handleDeleteNews = async (id: string) => {
     console.log(id);
-        if (!window.confirm("Are you sure you want to delete?")) return;
-    
-        toast.promise(deleteNews(id).unwrap(), {
-          loading: "Deleting news...",
-          success: "News deleted successfully!",
-          error: "Failed to delete news.",
-        });
-      };
+    if (!window.confirm("Are you sure you want to delete?")) return;
+
+    toast.promise(deleteNews(id).unwrap(), {
+      loading: "Deleting news...",
+      success: "News deleted successfully!",
+      error: "Failed to delete news.",
+    });
+  };
   return (
     <div>
       <PageHeader

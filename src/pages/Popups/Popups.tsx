@@ -1,9 +1,15 @@
 import { Bell } from "lucide-react";
-import { PopupManager } from "../../components/PopupManager";
 import PageHeader from "../../components/Reusable/PageHeader/PageHeader";
 import { useState } from "react";
-import PopupCard from "../../components/PopupsPage/PopupCard/PopupCard";
+import PopupCard, {
+  TPopup,
+} from "../../components/PopupsPage/PopupCard/PopupCard";
 import AddPopupForm from "../../components/PopupsPage/AddPopupForm/AddPopupForm";
+import {
+  useGetAllPopupsQuery,
+  useGetSinglePopupQuery,
+} from "../../redux/Features/Popup/popupApi";
+import Loader from "../../components/Shared/Loader/Loader";
 
 export const dummyPopups = [
   {
@@ -39,9 +45,11 @@ export const dummyPopups = [
 ];
 
 const Popups = () => {
+  const [id, setId] = useState("");
   const [showForm, setShowForm] = useState(false);
-  //   const { data, isLoading } = useGetAllVastuQuery({});
-  const [vastuId, setVastuId] = useState("");
+  const { data, isLoading } = useGetAllPopupsQuery({});
+  console.log(data);
+  const { data: singlePopupData } = useGetSinglePopupQuery(id);
   const [mode, setMode] = useState<"add" | "edit">("add");
   return (
     <div>
@@ -54,30 +62,35 @@ const Popups = () => {
         }}
       />
 
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {dummyPopups.map((popup) => (
-          <PopupCard
-            key={popup._id}
-            popup={popup}
-            //   setCurrentPopup={setCurrentPopup}
-            //   setPreviewMode={setPreviewMode}
-            //   setIsEditing={setIsEditing}
-            setShowForm={setShowForm}
-            //   handleDelete={handleDelete}
-          />
-        ))}
+      {isLoading ? (
+        <Loader size="size-10" />
+      ) : data?.data?.length < 1 ? (
+        <p className="text-center text-gray-500 dark:text-gray-100">
+          No data found
+        </p>
+      ) : (
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          {data?.data.map((popup: TPopup) => (
+            <PopupCard
+              key={popup._id}
+              popup={popup}
+              setShowForm={setShowForm}
+              setMode={setMode}
+              setId={setId}
+            />
+          ))}
+        </div>
+      )}
 
-        {/* Add/Edit Form Modal */}
-        {showForm && (
-          <AddPopupForm
-            showForm={showForm}
-            setShowForm={setShowForm}
-            //   defaultValues={singleVastuData?.data}
-            mode={mode}
-          />
-        )}
-      </div>
-      <PopupManager />
+      {/* Add/Edit Form Modal */}
+      {showForm && (
+        <AddPopupForm
+          showForm={showForm}
+          setShowForm={setShowForm}
+          defaultValues={singlePopupData?.data}
+          mode={mode}
+        />
+      )}
     </div>
   );
 };
