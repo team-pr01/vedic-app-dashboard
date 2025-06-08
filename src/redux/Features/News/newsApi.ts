@@ -13,50 +13,50 @@ const newsApi = baseApi.injectEndpoints({
       providesTags: ["news"],
     }),
 
-    getSingleYoga: builder.query({
+    getSingleNews: builder.query({
       query: (id) => ({
-        url: `/yoga/${id}`,
+        url: `/news/${id}`,
         method: "GET",
         credentials: "include",
       }),
-      providesTags: ["yoga"],
+      providesTags: ["news"],
     }),
 
-    addYoga: builder.mutation<any, any>({
+    addNews: builder.mutation<any, any>({
       query: (data) => ({
-        url: `/yoga/add-yoga`,
+        url: `/news/add-news`,
         method: "POST",
         body: data,
         credentials: "include",
       }),
-      invalidatesTags: ["yoga"],
+      invalidatesTags: ["news"],
     }),
 
-    deleteYoga: builder.mutation<any, string>({
+    deleteNews: builder.mutation<any, string>({
       query: (id) => ({
-        url: `/yoga/${id}`,
+        url: `/news/${id}`,
         method: "DELETE",
         credentials: "include",
       }),
-      invalidatesTags: ["yoga"],
+      invalidatesTags: ["news"],
     }),
 
-    updateYoga: builder.mutation<any, any>({
+    updateNews: builder.mutation<any, any>({
       query: ({ id, data }) => ({
-        url: `/yoga/${id}`,
+        url: `/news/${id}`,
         method: "PUT",
         body: data,
         credentials: "include",
       }),
-      invalidatesTags: ["yoga"],
+      invalidatesTags: ["news"],
     }),
   }),
 });
 
 export const {
   useGetAllNewsQuery,
-  useGetSingleYogaQuery,
-  useAddYogaMutation,
-  useDeleteYogaMutation,
-  useUpdateYogaMutation,
+  useGetSingleNewsQuery,
+  useAddNewsMutation,
+  useDeleteNewsMutation,
+  useUpdateNewsMutation
 } = newsApi;

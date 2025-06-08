@@ -4,7 +4,7 @@ import { Newspaper } from "lucide-react";
 import Filters from "../../components/Reusable/Filters/Filters";
 import NewsCard, { TNews } from "../../components/NewsPage/NewsCard/NewsCard";
 import AddNewsForm from "../../components/NewsPage/AddNewsForm/AddNewsForm";
-import { useGetAllNewsQuery } from "../../redux/Features/News/newsApi";
+import { useGetAllNewsQuery, useGetSingleNewsQuery } from "../../redux/Features/News/newsApi";
 import Loader from "../../components/Shared/Loader/Loader";
 
 export const dummyArticles = [
@@ -62,12 +62,12 @@ const News = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [id, setId] = useState("");
   const [mode, setMode] = useState<"add" | "edit">("add");
-  //   const { data: singleVastuData } = useGetSingleVastuQuery(id);
-
+  
   const { data, isLoading, isFetching } = useGetAllNewsQuery({
     keyword: searchQuery,
   });
-  // console.log(data);
+  const { data: singleNewsData } = useGetSingleNewsQuery(id);
+  console.log(singleNewsData);
 
   // const categories = [
   //   { value: "sa", label: "Sanskrit" },
@@ -82,6 +82,7 @@ const News = () => {
         buttonText="Add Article"
         icon={<Newspaper className="w-6 h-6 mr-2 text-white" />}
         onClick={() => {
+          setMode("add");
           setShowForm(true);
         }}
       />
@@ -122,7 +123,7 @@ const News = () => {
           <AddNewsForm
             showForm={showForm}
             setShowForm={setShowForm}
-            //   defaultValues={singleVastuData?.data}
+            defaultValues={singleNewsData?.data}
             mode={mode}
           />
         )}

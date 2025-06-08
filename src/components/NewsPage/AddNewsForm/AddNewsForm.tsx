@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import TextInput from "../../Reusable/TextInput/TextInput";
 import Textarea from "../../Reusable/TextArea/TextArea";
 import { X } from "lucide-react";
+import { useAddNewsMutation, useUpdateNewsMutation } from "../../../redux/Features/News/newsApi";
+import toast from "react-hot-toast";
+import Loader from "../../Shared/Loader/Loader";
 
 type TFormValues = {
   title: string;
@@ -28,6 +31,9 @@ const AddNewsForm: React.FC<TAddNewsFormProps> = ({
   mode,
   defaultValues,
 }) => {
+
+  const [addNews, {isLoading:isAdding}] = useAddNewsMutation();
+  const [updateNews, {isLoading:isUpdating}] = useUpdateNewsMutation();
   const {
     register,
     handleSubmit,
@@ -59,12 +65,56 @@ const AddNewsForm: React.FC<TAddNewsFormProps> = ({
     setTags(filtered);
   };
 
-  const handleSubmitNews = async (data: TFormValues) => {
-    console.log(data);
-  };
+ useEffect(() => {
+  if (mode === "edit" && defaultValues) {
+    setValue("title", defaultValues?.title);
+    setValue("excerpt", defaultValues?.excerpt);
+    setValue("category", defaultValues?.category);
+    setCurrentArticle({ content: defaultValues?.content || "" });
+    setValue("imageUrl", defaultValues?.imageUrl);
+    setTags(defaultValues?.tags || []);
+  }
+}, [defaultValues, mode, setValue]);
 
-  const isLoading = false;
-  const isUpdating = false;
+
+  //   Function to add or edit vastu
+  const handleSubmitNews = async (data: TFormValues) => {
+  try {
+    const payload = {
+      ...data,
+      tags,
+      content: currentArticle.content, // ✅ manually include
+    };
+
+    let response;
+    if (mode === "edit" && defaultValues?._id) {
+      response = await updateNews({ id: defaultValues._id, data: payload }).unwrap();
+      if (response?.success) {
+        toast.success(response?.message || "News updated successfully");
+      }
+    } else {
+      response = await addNews(payload).unwrap();
+      if (response?.success) {
+        toast.success(response?.message || "News added successfully");
+      }
+    }
+
+    setShowForm(false);
+    reset();
+    setCurrentArticle({ content: "" }); // ✅ clear after submit
+    setTags([]);
+  } catch (error) {
+    const errMsg =
+      typeof error === "object" &&
+      error !== null &&
+      "data" in error &&
+      typeof (error as any).data?.message === "string"
+        ? (error as any).data.message
+        : "Something went wrong";
+    toast.error(errMsg);
+  }
+};
+
   return (
     showForm && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -79,8 +129,11 @@ const AddNewsForm: React.FC<TAddNewsFormProps> = ({
               </h3>
               <button
                 type="button"
-                onClick={() => setShowForm(false)}
-                className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+                onClick={() => {
+                  setShowForm(false);
+                  reset();
+                }}
+                className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 text-2xl"
               >
                 ×
               </button>
@@ -183,7 +236,7 @@ const AddNewsForm: React.FC<TAddNewsFormProps> = ({
                 type="submit"
                 className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                {isUpdating ? "Update" : "Create"}
+                {isAdding || isUpdating ? <Loader size="size-4"/> : "Submit"}
               </button>
             </div>
           </form>

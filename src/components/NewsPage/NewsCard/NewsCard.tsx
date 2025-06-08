@@ -27,7 +27,7 @@ const NewsCard: React.FC<TNewsCardProps> = ({
 }) => {
   const handleEdit = () => {
     setId(article._id);
-    setMode("add");
+    setMode("edit");
     setShowForm(true);
   };
 
@@ -36,7 +36,7 @@ const NewsCard: React.FC<TNewsCardProps> = ({
         <img
           src={article?.imageUrl}
           alt={article.title}
-          className="w-full h-56 object-cover rounded-t-lg"
+          className="w-full h-80 object-cover rounded-t-lg"
         />
 
       <div className="p-6">
