@@ -17,6 +17,7 @@ type TNewsCardProps = {
   setId: (id: string) => void;
   setMode: (mode: "add" | "edit") => void;
   setShowForm: (show: boolean) => void;
+  handleDeleteNews: (id: string) => void;
 };
 
 const NewsCard: React.FC<TNewsCardProps> = ({
@@ -24,6 +25,7 @@ const NewsCard: React.FC<TNewsCardProps> = ({
   setId,
   setMode,
   setShowForm,
+  handleDeleteNews,
 }) => {
   const handleEdit = () => {
     setId(article._id);
@@ -60,6 +62,7 @@ const NewsCard: React.FC<TNewsCardProps> = ({
               <Eye className="h-5 w-5" />
             </button>
             <button
+              onClick={() => handleDeleteNews(article?._id)}
               className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
             >
               <Trash2 className="h-5 w-5" />

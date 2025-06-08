@@ -4,8 +4,9 @@ import { Newspaper } from "lucide-react";
 import Filters from "../../components/Reusable/Filters/Filters";
 import NewsCard, { TNews } from "../../components/NewsPage/NewsCard/NewsCard";
 import AddNewsForm from "../../components/NewsPage/AddNewsForm/AddNewsForm";
-import { useGetAllNewsQuery, useGetSingleNewsQuery } from "../../redux/Features/News/newsApi";
+import { useDeleteNewsMutation, useGetAllNewsQuery, useGetSingleNewsQuery, useUpdateNewsMutation } from "../../redux/Features/News/newsApi";
 import Loader from "../../components/Shared/Loader/Loader";
+import toast from "react-hot-toast";
 
 export const dummyArticles = [
   {
@@ -67,7 +68,7 @@ const News = () => {
     keyword: searchQuery,
   });
   const { data: singleNewsData } = useGetSingleNewsQuery(id);
-  console.log(singleNewsData);
+  const [deleteNews] = useDeleteNewsMutation();
 
   // const categories = [
   //   { value: "sa", label: "Sanskrit" },
@@ -75,6 +76,17 @@ const News = () => {
   //   { value: "hi", label: "Hindi" },
   //   { value: "bn", label: "Bengali" },
   // ];
+
+  const handleDeleteNews = async (id: string) => {
+    console.log(id);
+        if (!window.confirm("Are you sure you want to delete?")) return;
+    
+        toast.promise(deleteNews(id).unwrap(), {
+          loading: "Deleting news...",
+          success: "News deleted successfully!",
+          error: "Failed to delete news.",
+        });
+      };
   return (
     <div>
       <PageHeader
@@ -113,6 +125,7 @@ const News = () => {
                 setId={setId}
                 setMode={setMode}
                 setShowForm={setShowForm}
+                handleDeleteNews={handleDeleteNews}
               />
             ))}
           </div>
