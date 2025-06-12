@@ -1,5 +1,6 @@
-import { Check, Trash2 } from "lucide-react";
-import { SUPPORTED_LANGUAGES } from "../../../lib/languages";
+import { Pen, Trash2 } from "lucide-react";
+import { useDeleteReligiousTextMutation } from "../../../redux/Features/Religious Texts/religiousTextsApi";
+import toast from "react-hot-toast";
 
 type Translation = {
   language_code: string;
@@ -8,8 +9,30 @@ type Translation = {
   is_verified: boolean;
 };
 
-type ReligiousText = {
+export type TReligiousText = {
   _id: string;
+  vedaName: string;
+  originalText: string;
+  devanagariText?: string;
+  hindiTranslation?: string;
+  englishTranslation?: string;
+  tags?: string[];
+  notes?: string;
+  // Rigved
+  mandala?: number | null;
+
+  // Samved
+  section?: "Purvarchika" | "Uttararchika" | "";
+  chantNumber?: number | null;
+
+  // Yajurved
+  branch?: "Shukla" | "Krishna" | "";
+  chapterNumber?: number | null;
+  verseNumber?: number | null;
+
+  // Atharvaved
+  kandNumber?: number | null;
+  suktaNumber?: number | null;
   veda_type: string;
   mandala_number?: number;
   sukta_number?: number;
@@ -24,7 +47,7 @@ type ReligiousText = {
 };
 
 type Props = {
-  text: ReligiousText;
+  text: TReligiousText;
   setId: (id: string) => void;
   setMode: (mode: "add" | "edit") => void;
   setShowForm: (visible: boolean) => void;
@@ -36,24 +59,24 @@ export const ReligiousTextCard: React.FC<Props> = ({
   setMode,
   setShowForm,
 }) => {
+  const [deleteReligiousText] = useDeleteReligiousTextMutation();
+
+  const handleReligiousText = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete?")) return;
+
+    toast.promise(deleteReligiousText(id).unwrap(), {
+      loading: "Deleting...",
+      success: "Deleted successfully!",
+      error: "Failed to delete.",
+    });
+  };
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
       <div className="flex items-start justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            {text.veda_type === "rigveda"
-              ? `Mandala ${text.mandala_number}, Sukta ${text.sukta_number}, Verse ${text.verse_number}`
-              : `Book ${text.book_number}, Chapter ${text.chapter_number}, Verse ${text.verse_number}`}
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white capitalize">
+            {text?.vedaName}
           </h3>
-          <span
-            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 ${
-              text.is_published
-                ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-            }`}
-          >
-            {text.is_published ? "Published" : "Draft"}
-          </span>
         </div>
         <div className="flex space-x-2">
           <button
@@ -63,10 +86,10 @@ export const ReligiousTextCard: React.FC<Props> = ({
             }}
             className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
           >
-            <Check className="h-5 w-5" />
+            <Pen className="h-[18px] w-[18px]" />
           </button>
           <button
-            onClick={() => setId(text._id)}
+            onClick={() => handleReligiousText(text?._id)}
             className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
           >
             <Trash2 className="h-5 w-5" />
@@ -79,11 +102,11 @@ export const ReligiousTextCard: React.FC<Props> = ({
           Original Text
         </h4>
         <p className="text-gray-900 dark:text-white font-sanskrit">
-          {text.original_text}
+          {text?.originalText}
         </p>
-        {text.devanagari_text && (
+        {text.devanagariText && (
           <p className="mt-2 text-gray-600 dark:text-gray-400 font-devanagari">
-            {text.devanagari_text}
+            {text.devanagariText}
           </p>
         )}
         {text.transliteration && (
@@ -93,40 +116,31 @@ export const ReligiousTextCard: React.FC<Props> = ({
         )}
       </div>
 
-      {text.translations && text.translations.length > 0 && (
-        <div className="mt-4 space-y-4">
-          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Translations
-          </h4>
-          {text.translations.map((translation, index) => (
-            <div
-              key={index}
-              className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {
-                    SUPPORTED_LANGUAGES.find(
-                      (l) => l.code === translation.language_code
-                    )?.name
-                  }
-                </span>
-                {translation.is_verified && (
-                  <span className="text-green-600 dark:text-green-400">
-                    <Check className="h-4 w-4" />
-                  </span>
-                )}
-              </div>
-              <p className="text-gray-800 dark:text-gray-200">
-                {translation.translation}
-              </p>
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                Translated by: {translation.translator}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="mt-4 space-y-4">
+        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          Translations
+        </h4>
+        {text?.englishTranslation && (
+          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              English
+            </span>
+            <p className="text-gray-800 dark:text-gray-200 mt-2">
+              {text?.englishTranslation}
+            </p>
+          </div>
+        )}
+        {text?.hindiTranslation && (
+          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Hindi
+            </span>
+            <p className="text-gray-800 dark:text-gray-200 mt-2">
+              {text?.hindiTranslation}
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

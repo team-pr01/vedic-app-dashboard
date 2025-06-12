@@ -1,9 +1,11 @@
 import PageHeader from "../../components/Reusable/PageHeader/PageHeader";
 import { useState } from "react";
 import ReligiousTextsFilters from "../../components/ReligiousTextsPage/ReligiousTextsFilters/ReligiousTextsFilters";
-import { ReligiousTextCard } from "../../components/ReligiousTextsPage/ReligiousTextCard/ReligiousTextCard";
+import { ReligiousTextCard, TReligiousText } from "../../components/ReligiousTextsPage/ReligiousTextCard/ReligiousTextCard";
 import AddReligiousTextForm from "../../components/ReligiousTextsPage/AddReligiousTextForm/AddReligiousTextForm";
 import { Book } from "lucide-react";
+import { useGetAllReligiousTextsQuery } from "../../redux/Features/Religious Texts/religiousTextsApi";
+import Loader from "../../components/Shared/Loader/Loader";
 
 export const VEDA_TYPES = [
   {
@@ -86,6 +88,12 @@ const ReligiousTexts = () => {
   const [mode, setMode] = useState<"add" | "edit">("add");
   //   const { data: singleVastuData } = useGetSingleVastuQuery(id);
 
+  const { data, isLoading, isFetching } = useGetAllReligiousTextsQuery({
+    keyword: searchQuery,
+    vedaName: language.toLocaleLowerCase(),
+  });
+
+  console.log(data);
   return (
     <div className="flex flex-col gap-10">
       <PageHeader
@@ -117,24 +125,34 @@ const ReligiousTexts = () => {
       <ReligiousTextsFilters
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
+        language={language}
         setLanguage={setLanguage}
       />
 
-      {dummyTexts.map((text) => (
-        <ReligiousTextCard
-          key={text._id}
-          text={text}
-          setId={setId}
-          setMode={setMode}
-          setShowForm={setShowForm}
-        />
-      ))}
+      {isLoading || isFetching ? (
+        <Loader size="size-10" />
+      ) : data?.data?.length < 1 ? (
+        <p className="text-center text-gray-500 dark:text-gray-100">
+          No data found
+        </p>
+      ) : (
+        data?.data?.map((text:TReligiousText) => (
+          <ReligiousTextCard
+            key={text._id}
+            text={text}
+            setId={setId}
+            setMode={setMode}
+            setShowForm={setShowForm}
+          />
+        ))
+      )}
 
       {/* Add/Edit Form Modal */}
       {showForm && (
         <AddReligiousTextForm
           showForm={showForm}
           setShowForm={setShowForm}
+          selectedVeda={selectedVeda}
           //   defaultValues={singleVastuData?.data}
           mode={mode}
         />

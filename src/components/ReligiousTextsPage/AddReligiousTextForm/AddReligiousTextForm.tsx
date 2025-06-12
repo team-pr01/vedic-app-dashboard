@@ -4,20 +4,32 @@ import TextInput from "../../Reusable/TextInput/TextInput";
 import { useState } from "react";
 import { X } from "lucide-react";
 import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
+import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
+import { useAddReligiousTextsApiMutation } from "../../../redux/Features/Religious Texts/religiousTextsApi";
 
 type TFormValues = {
-  originalSanskritText: string;
-  devanagariText: string;
-  tags: string[];
-  transliteration: string;
-  translations: string[];
-  vedaType: string;
-  mandalaNumber?: number;
-  suktaNumber?: number;
-  bookNumber?: number;
-  chapterNumber?: number;
-  verseNumber: number;
-  notes: string;
+  vedaName: string;
+  originalText: string;
+  devanagariText?: string;
+  hindiTranslation?: string;
+  englishTranslation?: string;
+  tags?: string[];
+  notes?: string;
+  // Rigved
+  mandala?: number | null;
+
+  // Samved
+  section?: "Purvarchika" | "Uttararchika" | "";
+  chantNumber?: number | null;
+
+  // Yajurved
+  branch?: "Shukla" | "Krishna" | "";
+  chapterNumber?: number | null;
+  verseNumber?: number | null;
+
+  // Atharvaved
+  kandNumber?: number | null;
+  suktaNumber?: number | null;
 };
 
 type TAddReligiousTextFormProps = {
@@ -25,13 +37,17 @@ type TAddReligiousTextFormProps = {
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
   mode?: "add" | "edit";
   defaultValues?: any;
+  selectedVeda: any;
 };
 const AddReligiousTextForm: React.FC<TAddReligiousTextFormProps> = ({
   showForm,
   setShowForm,
   mode,
   defaultValues,
+  selectedVeda,
 }) => {
+  const [addReligiousTextsApi, { isLoading }] =
+    useAddReligiousTextsApiMutation();
   const {
     register,
     handleSubmit,
@@ -60,17 +76,45 @@ const AddReligiousTextForm: React.FC<TAddReligiousTextFormProps> = ({
   };
 
   const handleAddReligiousText = async (data: TFormValues) => {
-    console.log(data);
+    try {
+      const payload = {
+        vedaName: selectedVeda,
+        originalText: data.originalText,
+        devanagariText: data.devanagariText,
+        hindiTranslation: data.hindiTranslation,
+        englishTranslation: data.englishTranslation,
+        notes: data.notes,
+        mandala: data.mandala,
+        section: data.section,
+        chantNumber: data.chantNumber,
+        branch: data.branch,
+        chapterNumber: data.chapterNumber,
+        verseNumber: data.verseNumber,
+        kandNumber: data.kandNumber,
+        suktaNumber: data.suktaNumber,
+        tags: tags,
+      };
+      const response = await addReligiousTextsApi(payload).unwrap();
+      if (response?.success) {
+        setShowForm(false);
+        reset();
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
+  const isUpdating = false;
 
-  const isLoading = false
-  const isUpdating = false
+  console.log(selectedVeda);
 
   return (
     showForm && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[700px] overflow-y-auto p-5">
-          <form onSubmit={handleSubmit(handleAddReligiousText)} className="flex flex-col gap-5">
+          <form
+            onSubmit={handleSubmit(handleAddReligiousText)}
+            className="flex flex-col gap-5"
+          >
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                 Add Religious Text
@@ -91,8 +135,8 @@ const AddReligiousTextForm: React.FC<TAddReligiousTextFormProps> = ({
               label="Original Text (Sanskrit)"
               placeholder="Write Original Text (Sanskrit) here..."
               rows={6}
-              error={errors.originalSanskritText}
-              {...register("originalSanskritText", {
+              error={errors.originalText}
+              {...register("originalText", {
                 required: "Original Text (Sanskrit) is required",
               })}
             />
@@ -101,69 +145,113 @@ const AddReligiousTextForm: React.FC<TAddReligiousTextFormProps> = ({
               placeholder="Write Devanagari Text here..."
               rows={6}
               error={errors.devanagariText}
-              {...register("devanagariText", {
-                required: "Devanagari Text is required",
-              })}
+              {...register("devanagariText")}
+              isRequired={false}
             />
             <Textarea
-              label="Transliteration"
-              placeholder="Write Transliteration here..."
+              label="Hindi Translation"
+              placeholder="Write Translation here..."
               rows={6}
-              error={errors.transliteration}
-              {...register("transliteration", {
-                required: "Transliteration is required",
-              })}
+              error={errors.hindiTranslation}
+              {...register("hindiTranslation")}
+              isRequired={false}
+            />
+            <Textarea
+              label="English Translation"
+              placeholder="Write Translation here..."
+              rows={6}
+              error={errors.englishTranslation}
+              {...register("englishTranslation")}
+              isRequired={false}
             />
 
-            <TextInput
-              label="Mandala Number"
-              placeholder="Enter Mandala Number"
-              type="number"
-              {...register("mandalaNumber", {
-                required: "Mandala Number is required",
-              })}
-              error={errors.mandalaNumber}
-            />
+            {selectedVeda === "rigveda" && (
+              <TextInput
+                label="Mandala Number"
+                placeholder="Enter Mandala Number"
+                type="number"
+                {...register("mandala")}
+                error={errors.mandala}
+                isRequired={false}
+              />
+            )}
 
-            <TextInput
-              label="Sukta Number"
-              placeholder="Enter Sukta Number"
-              type="number"
-              {...register("suktaNumber", {
-                required: "Sukta Number is required",
-              })}
-              error={errors.suktaNumber}
-            />
+            {selectedVeda === "samaveda" && (
+              <SelectDropdown
+                label="Section"
+                {...register("section")}
+                error={errors?.section}
+                options={["Purvarchika", "Uttararchika"]}
+                isRequired={false}
+              />
+            )}
 
-            <TextInput
-              label="Verse Number"
-              placeholder="Enter Verse Number"
-              type="number"
-              {...register("verseNumber", {
-                required: "Verse Number is required",
-              })}
-              error={errors.verseNumber}
-            />
+            {selectedVeda === "samaveda" && (
+              <TextInput
+                label="Chant Number"
+                placeholder="Enter Chant Number"
+                type="number"
+                {...register("chantNumber")}
+                error={errors.chantNumber}
+                isRequired={false}
+              />
+            )}
 
-            <TextInput
-              label="Book Number"
-              placeholder="Enter Book Number"
-              type="number"
-              {...register("bookNumber", {
-                required: "Book Number is required",
-              })}
-              error={errors.bookNumber}
-            />
+            {selectedVeda === "yajurveda" && (
+              <SelectDropdown
+                label="Branch"
+                {...register("branch")}
+                error={errors?.branch}
+                options={["Shukla", "Krishna"]}
+                isRequired={false}
+              />
+            )}
 
-            <TextInput
-              label="Chapter Number"
-              placeholder="Enter Chapter Number"
-              type="number"
-              {...register("chapterNumber", {
-                required: "Chapter Number is required",
-              })}
-              error={errors.chapterNumber}
-            />
+            {selectedVeda === "yajurveda" && (
+              <TextInput
+                label="Chapter Number"
+                placeholder="Enter Chapter Number"
+                type="number"
+                {...register("chapterNumber")}
+                error={errors.chapterNumber}
+                isRequired={false}
+              />
+            )}
+
+            {(selectedVeda === "rigveda" ||
+              selectedVeda === "yajurveda" ||
+              selectedVeda === "atharvaveda") && (
+              <TextInput
+                label="Verse Number"
+                placeholder="Enter Verse Number"
+                type="number"
+                {...register("verseNumber")}
+                error={errors.verseNumber}
+                isRequired={false}
+              />
+            )}
+
+            {selectedVeda === "atharvaveda" && (
+              <TextInput
+                label="Kand Number"
+                placeholder="Enter Kand Number"
+                type="number"
+                {...register("kandNumber")}
+                error={errors.kandNumber}
+                isRequired={false}
+              />
+            )}
+
+            {(selectedVeda === "rigveda" || selectedVeda === "atharvaveda") && (
+              <TextInput
+                label="Sukta Number"
+                placeholder="Enter Sukta Number"
+                type="number"
+                {...register("suktaNumber")}
+                error={errors.suktaNumber}
+                isRequired={false}
+              />
+            )}
 
             <div>
               <TextInput

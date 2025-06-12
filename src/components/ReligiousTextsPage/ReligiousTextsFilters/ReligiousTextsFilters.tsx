@@ -3,40 +3,21 @@ import { Search } from "lucide-react";
 type TReligiousTextsFiltersProps = {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  language : string;
   setLanguage: (status: string) => void;
 };
 const ReligiousTextsFilters: React.FC<TReligiousTextsFiltersProps> = ({
   searchQuery,
   setSearchQuery,
+  language,
   setLanguage,
 }) => {
 
  const allLanguages = [
-  { code: 'sa', name: 'Sanskrit', script: 'Devanagari' },
-  { code: 'en', name: 'English', script: 'Latin' },
-  { code: 'hi', name: 'Hindi', script: 'Devanagari' },
-  { code: 'bn', name: 'Bengali', script: 'Bengali' },
-  { code: 'ta', name: 'Tamil', script: 'Tamil' },
-  { code: 'te', name: 'Telugu', script: 'Telugu' },
-  { code: 'kn', name: 'Kannada', script: 'Kannada' },
-  { code: 'ml', name: 'Malayalam', script: 'Malayalam' },
-  { code: 'gu', name: 'Gujarati', script: 'Gujarati' },
-  { code: 'mr', name: 'Marathi', script: 'Devanagari' },
-  { code: 'pa', name: 'Punjabi', script: 'Gurmukhi' },
-  { code: 'or', name: 'Odia', script: 'Odia' },
-  { code: 'as', name: 'Assamese', script: 'Bengali' },
-  { code: 'ks', name: 'Kashmiri', script: 'Perso-Arabic' },
-  { code: 'sd', name: 'Sindhi', script: 'Perso-Arabic' },
-  { code: 'ur', name: 'Urdu', script: 'Perso-Arabic' },
-  { code: 'ne', name: 'Nepali', script: 'Devanagari' },
-  { code: 'si', name: 'Sinhala', script: 'Sinhala' },
-  { code: 'my', name: 'Myanmar', script: 'Myanmar' },
-  { code: 'km', name: 'Khmer', script: 'Khmer' },
-  { code: 'th', name: 'Thai', script: 'Thai' },
-  { code: 'lo', name: 'Lao', script: 'Lao' },
-  { code: 'bo', name: 'Tibetan', script: 'Tibetan' },
-  { code: 'dz', name: 'Dzongkha', script: 'Tibetan' },
-  { code: 'pi', name: 'Pali', script: 'Various' }
+  "Rigveda",
+  "Samaveda",
+  "Yajurveda",
+  "Atharvaveda",
 ];
   return (
     <div className="flex flex-wrap gap-4">
@@ -53,7 +34,7 @@ const ReligiousTextsFilters: React.FC<TReligiousTextsFiltersProps> = ({
         </div>
       </div>
       <select
-        value={status}
+        value={language}
         onChange={(e) => setLanguage(e.target.value)}
         className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
       >
@@ -62,8 +43,8 @@ const ReligiousTextsFilters: React.FC<TReligiousTextsFiltersProps> = ({
         {/* to be changed to active instated of processing */}
         {
           allLanguages.map((language) => (
-            <option key={language.name} value={language.name}>
-              {language.name}
+            <option key={language} value={language} className="capitalize">
+              {language}
             </option>
           ))
         }
