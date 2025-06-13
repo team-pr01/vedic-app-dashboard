@@ -1,11 +1,15 @@
 import { useForm } from "react-hook-form";
 import Textarea from "../../Reusable/TextArea/TextArea";
 import TextInput from "../../Reusable/TextInput/TextInput";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
 import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
-import { useAddReligiousTextsApiMutation } from "../../../redux/Features/Religious Texts/religiousTextsApi";
+import {
+  useAddReligiousTextsApiMutation,
+  useUpdateReligiousTextsMutation,
+} from "../../../redux/Features/Religious Texts/religiousTextsApi";
+import toast from "react-hot-toast";
 
 type TFormValues = {
   vedaName: string;
@@ -46,8 +50,8 @@ const AddReligiousTextForm: React.FC<TAddReligiousTextFormProps> = ({
   defaultValues,
   selectedVeda,
 }) => {
-  const [addReligiousTextsApi, { isLoading }] =
-    useAddReligiousTextsApiMutation();
+  const [addReligiousTextsApi, { isLoading }] =useAddReligiousTextsApiMutation();
+  const [updateReligiousTexts, { isLoading: isUpdating }] = useUpdateReligiousTextsMutation();
   const {
     register,
     handleSubmit,
@@ -75,7 +79,41 @@ const AddReligiousTextForm: React.FC<TAddReligiousTextFormProps> = ({
     setTags(filtered);
   };
 
-  const handleAddReligiousText = async (data: TFormValues) => {
+  // Fetching default values
+  useEffect(() => {
+    if (mode === "edit" && defaultValues) {
+      // Set all default values
+      Object.entries(defaultValues).forEach(([key, value]) => {
+        if (
+          [
+            "vedaName",
+            "originalText",
+            "devanagariText",
+            "hindiTranslation",
+            "englishTranslation",
+            "tags",
+            "notes",
+            "mandala",
+            "section",
+            "chantNumber",
+            "branch",
+            "chapterNumber",
+            "verseNumber",
+            "kandNumber",
+            "suktaNumber",
+          ].includes(key)
+        ) {
+          setValue(
+            key as keyof TFormValues,
+            value as string | number | string[] | null | undefined
+          );
+        }
+      });
+      setTags(defaultValues.tags || []);
+    }
+  }, [defaultValues, mode, setValue]);
+
+  const handleSubmitReligiousText = async (data: TFormValues) => {
     try {
       const payload = {
         vedaName: selectedVeda,
@@ -94,30 +132,58 @@ const AddReligiousTextForm: React.FC<TAddReligiousTextFormProps> = ({
         suktaNumber: data.suktaNumber,
         tags: tags,
       };
-      const response = await addReligiousTextsApi(payload).unwrap();
-      if (response?.success) {
-        setShowForm(false);
-        reset();
+
+      let response;
+      if (mode === "edit" && defaultValues?._id) {
+        // Update API
+        response = await updateReligiousTexts({
+          id: defaultValues?._id,
+          data: payload,
+        }).unwrap();
+        if (response?.success) {
+          toast.success("Updated successfully");
+          setShowForm(false);
+        }
+      } else {
+        // Add API
+        response = await addReligiousTextsApi(payload).unwrap();
+        if (response?.success) {
+          setShowForm(false);
+        }
       }
+
+      setShowForm(false);
+      reset();
     } catch (error) {
-      console.log(error);
+      const errMsg =
+        typeof error === "object" &&
+        error !== null &&
+        "data" in error &&
+        typeof (error as any).data?.message === "string"
+          ? (error as any).data.message
+          : "Something went wrong";
+      toast.error(errMsg);
     }
   };
-  const isUpdating = false;
-
-  console.log(selectedVeda);
 
   return (
     showForm && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[700px] overflow-y-auto p-5">
           <form
-            onSubmit={handleSubmit(handleAddReligiousText)}
+            onSubmit={handleSubmit(handleSubmitReligiousText)}
             className="flex flex-col gap-5"
           >
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Add Religious Text
+                {mode === "add"
+                  ? "Add Religious Text"
+                  : "Update Religious Text"}{" "}
+                {mode === "edit" && (
+                  <span className="text-blue-500 capitalize">
+                    ({selectedVeda})
+                  </span>
+                )}
               </h3>
               <button
                 type="button"

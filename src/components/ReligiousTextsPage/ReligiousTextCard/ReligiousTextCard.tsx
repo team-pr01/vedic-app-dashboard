@@ -51,6 +51,7 @@ type Props = {
   setId: (id: string) => void;
   setMode: (mode: "add" | "edit") => void;
   setShowForm: (visible: boolean) => void;
+  setSelectedVeda: (veda: string) => void;
 };
 
 export const ReligiousTextCard: React.FC<Props> = ({
@@ -58,6 +59,7 @@ export const ReligiousTextCard: React.FC<Props> = ({
   setId,
   setMode,
   setShowForm,
+  setSelectedVeda,
 }) => {
   const [deleteReligiousText] = useDeleteReligiousTextMutation();
 
@@ -82,7 +84,9 @@ export const ReligiousTextCard: React.FC<Props> = ({
           <button
             onClick={() => {
               setId(text?._id);
+              setSelectedVeda(text?.vedaName?.toLocaleLowerCase() || "");
               setMode("edit");
+              setShowForm(true);
             }}
             className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
           >

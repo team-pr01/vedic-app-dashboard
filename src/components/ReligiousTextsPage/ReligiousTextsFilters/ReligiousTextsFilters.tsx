@@ -38,7 +38,7 @@ const ReligiousTextsFilters: React.FC<TReligiousTextsFiltersProps> = ({
         onChange={(e) => setLanguage(e.target.value)}
         className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
       >
-        <option value="" selected disabled>All Language</option>
+        <option value="" selected>All</option>
 
         {/* to be changed to active instated of processing */}
         {

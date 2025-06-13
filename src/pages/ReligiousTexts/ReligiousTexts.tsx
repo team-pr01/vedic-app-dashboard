@@ -4,7 +4,7 @@ import ReligiousTextsFilters from "../../components/ReligiousTextsPage/Religious
 import { ReligiousTextCard, TReligiousText } from "../../components/ReligiousTextsPage/ReligiousTextCard/ReligiousTextCard";
 import AddReligiousTextForm from "../../components/ReligiousTextsPage/AddReligiousTextForm/AddReligiousTextForm";
 import { Book } from "lucide-react";
-import { useGetAllReligiousTextsQuery } from "../../redux/Features/Religious Texts/religiousTextsApi";
+import { useGetAllReligiousTextsQuery, useGetSingleYogaReligiousTextQuery } from "../../redux/Features/Religious Texts/religiousTextsApi";
 import Loader from "../../components/Shared/Loader/Loader";
 
 export const VEDA_TYPES = [
@@ -86,14 +86,14 @@ const ReligiousTexts = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [id, setId] = useState("");
   const [mode, setMode] = useState<"add" | "edit">("add");
-  //   const { data: singleVastuData } = useGetSingleVastuQuery(id);
+    const { data: singleReligiousText } = useGetSingleYogaReligiousTextQuery(id);
+    console.log(singleReligiousText);
 
   const { data, isLoading, isFetching } = useGetAllReligiousTextsQuery({
     keyword: searchQuery,
     vedaName: language.toLocaleLowerCase(),
   });
 
-  console.log(data);
   return (
     <div className="flex flex-col gap-10">
       <PageHeader
@@ -102,6 +102,7 @@ const ReligiousTexts = () => {
         icon={<Book className="w-6 h-6 mr-2 text-blue-500" />}
         onClick={() => {
           setShowForm(true);
+          setMode("add");
         }}
       />
 
@@ -143,6 +144,7 @@ const ReligiousTexts = () => {
             setId={setId}
             setMode={setMode}
             setShowForm={setShowForm}
+            setSelectedVeda={setSelectedVeda}
           />
         ))
       )}
@@ -153,7 +155,7 @@ const ReligiousTexts = () => {
           showForm={showForm}
           setShowForm={setShowForm}
           selectedVeda={selectedVeda}
-          //   defaultValues={singleVastuData?.data}
+            defaultValues={singleReligiousText?.data}
           mode={mode}
         />
       )}

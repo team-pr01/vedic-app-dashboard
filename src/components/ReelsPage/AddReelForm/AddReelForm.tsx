@@ -70,7 +70,6 @@ const AddReelForm: React.FC<TAddReelFormProps> = ({
       let response;
       if (mode === "edit" && defaultValues?._id) {
         // Update API
-        console.log(defaultValues?._id);
         response = await updateReel({
           id: defaultValues?._id,
           data: payload,

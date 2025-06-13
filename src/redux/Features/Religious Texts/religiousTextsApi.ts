@@ -17,13 +17,13 @@ const religiousTextsApi = baseApi.injectEndpoints({
       providesTags: ["religiousTexts"],
     }),
 
-    getSingleYoga: builder.query({
+    getSingleYogaReligiousText: builder.query({
       query: (id) => ({
-        url: `/yoga/${id}`,
+        url: `/religiousTexts/${id}`,
         method: "GET",
         credentials: "include",
       }),
-      providesTags: ["yoga"],
+      providesTags: ["religiousTexts"],
     }),
 
     addReligiousTextsApi: builder.mutation<any, any>({
@@ -45,22 +45,22 @@ const religiousTextsApi = baseApi.injectEndpoints({
       invalidatesTags: ["religiousTexts"],
     }),
 
-    updateYoga: builder.mutation<any, any>({
+    updateReligiousTexts: builder.mutation<any, any>({
       query: ({id, data}) => ({
-        url: `/yoga/${id}`,
+        url: `/religiousTexts/${id}`,
         method: "PUT",
         body : data,
         credentials: "include",
       }),
-      invalidatesTags: ["yoga"],
+      invalidatesTags: ["religiousTexts"],
     }),
   }),
 });
 
 export const {
   useGetAllReligiousTextsQuery,
-  useGetSingleYogaQuery,
+  useGetSingleYogaReligiousTextQuery,
   useAddReligiousTextsApiMutation,
   useDeleteReligiousTextMutation,
-  useUpdateYogaMutation
+  useUpdateReligiousTextsMutation
 } = religiousTextsApi;
