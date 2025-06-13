@@ -22,7 +22,9 @@ import {
   Key,
   Film,
 } from "lucide-react";
+import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
+import { useCurrentUser } from "../redux/Features/Auth/authSlice";
 
 interface SidebarProps {
   isDarkMode: boolean;
@@ -43,7 +45,11 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
     { icon: Film, label: "Reels", path: "/dashboard/reels" },
     { icon: Lotus, label: "Yoga", path: "/dashboard/yoga" },
     { icon: Home, label: "Vastu", path: "/dashboard/vastu" },
-    { icon: LandPlot, label: "Temple Management", path: "/dashboard/temple-management" },
+    {
+      icon: LandPlot,
+      label: "Temple Management",
+      path: "/dashboard/temple-management",
+    },
     { icon: Building, label: "Organization", path: "/dashboard/organizations" },
     { icon: Newspaper, label: "News", path: "/dashboard/news" },
     {
@@ -65,6 +71,8 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
     { icon: HelpCircle, label: "Help", path: "/dashboard/help" },
   ];
 
+  const user = useSelector(useCurrentUser) as any;
+
   return (
     <div className="h-screen w-[270px] sticky top-0 left-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
       <div className="px-4 py-[23px] border-b border-gray-200 dark:border-gray-700">
@@ -75,20 +83,23 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
 
       <nav className="flex-1 p-4 overflow-y-auto bg-white dark:bg-gray-800">
         <div className="space-y-2">
-          {sidebarLinks.map((item) => (
-            <Link
-              key={item.label}
-              to={item.path}
-              className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
-                item.path === location.pathname
-                  ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                  : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-              }`}
-            >
-              <item.icon className="w-5 h-5" />
-              <span>{item.label}</span>
-            </Link>
-          ))}
+          {sidebarLinks.map(
+            (item) =>
+              user!.assignedPages?.includes(item.path) && (
+                <Link
+                  key={item.label}
+                  to={item.path}
+                  className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
+                    item.path === location.pathname
+                      ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  <item.icon className="w-5 h-5" />
+                  <span>{item.label}</span>
+                </Link>
+              )
+          )}
         </div>
       </nav>
 

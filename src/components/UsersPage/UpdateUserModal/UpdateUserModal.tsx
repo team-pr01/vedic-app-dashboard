@@ -3,7 +3,10 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
 import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
-import { useAssignPagesMutation, useChangeUserRoleMutation } from "../../../redux/Features/Auth/authApi";
+import {
+  useAssignPagesMutation,
+  useChangeUserRoleMutation,
+} from "../../../redux/Features/Auth/authApi";
 import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
 import Loader from "../../Shared/Loader/Loader";
 
@@ -33,8 +36,10 @@ const UpdateUserModal: React.FC<TUpdateUserModalProps> = ({
     formState: { errors },
   } = useForm<TFormValues>();
 
-  const [changeUserRole, { isLoading: isUserRoleUpdating }] =useChangeUserRoleMutation();
-  const [assignPages, { isLoading: isAssigningPage }] =useAssignPagesMutation();
+  const [changeUserRole, { isLoading: isUserRoleUpdating }] =
+    useChangeUserRoleMutation();
+  const [assignPages, { isLoading: isAssigningPage }] =
+    useAssignPagesMutation();
 
   const [assignedPages, setAssignedPages] = useState<string[]>([]);
 
@@ -75,7 +80,8 @@ const UpdateUserModal: React.FC<TUpdateUserModalProps> = ({
         pages: assignedPages,
       };
       const response = await assignPages(payload).unwrap();
-      if(response?.success) toast.success(response?.message || "Pages updated successfully");
+      if (response?.success)
+        toast.success(response?.message || "Pages updated successfully");
       setShowForm(false);
       reset();
     } catch (error) {
@@ -96,25 +102,25 @@ const UpdateUserModal: React.FC<TUpdateUserModalProps> = ({
   };
 
   const pages = [
-    { name: "Dashboard", value: "dashboard" },
-    { name: "Emergency", value: "dashboard/emergency" },
-    { name: "Users", value: "dashboard/users" },
-    { name: "Religious Texts", value: "dashboard/religious-texts" },
-    { name: "Reels", value: "dashboard/reels" },
-    { name: "Yoga", value: "dashboard/yoga" },
-    { name: "Vastu", value: "dashboard/vastu" },
-    { name: "Temple Management", value: "dashboard/temple-management" },
-    { name: "Organization", value: "dashboard/organizations" },
-    { name: "News", value: "dashboard/news" },
-    { name: "Notifications", value: "dashboard/notifications" },
-    { name: "Popups", value: "dashboard/popups" },
-    { name: "Consultancy Service", value: "dashboard/consultancy" },
-    { name: "Content Management", value: "dashboard/content" },
-    { name: "API Keys", value: "dashboard/api-keys" },
-    { name: "Analytics", value: "dashboard/analytics" },
-    { name: "Activity", value: "dashboard/activity" },
-    { name: "Settings", value: "dashboard/settings" },
-    { name: "Help", value: "dashboard/help" },
+    { name: "Dashboard", value: "/dashboard" },
+    { name: "Emergency", value: "/dashboard/emergency" },
+    { name: "Users", value: "/dashboard/users" },
+    { name: "Religious Texts", value: "/dashboard/religious-texts" },
+    { name: "Reels", value: "/dashboard/reels" },
+    { name: "Yoga", value: "/dashboard/yoga" },
+    { name: "Vastu", value: "/dashboard/vastu" },
+    { name: "Temple Management", value: "/dashboard/temple-management" },
+    { name: "Organization", value: "/dashboard/organizations" },
+    { name: "News", value: "/dashboard/news" },
+    { name: "Notifications", value: "/dashboard/notifications" },
+    { name: "Popups", value: "/dashboard/popups" },
+    { name: "Consultancy Service", value: "/dashboard/consultancy" },
+    { name: "Content Management", value: "/dashboard/content" },
+    { name: "API Keys", value: "/dashboard/api-keys" },
+    { name: "Analytics", value: "/dashboard/analytics" },
+    { name: "Activity", value: "/dashboard/activity" },
+    { name: "Settings", value: "/dashboard/settings" },
+    { name: "Help", value: "/dashboard/help" },
   ];
 
   return (
@@ -220,7 +226,9 @@ const UpdateUserModal: React.FC<TUpdateUserModalProps> = ({
                   >
                     Cancel
                   </button>
-                  <SubmitButton isLoading={isAssigningPage || isUserRoleUpdating} />
+                  <SubmitButton
+                    isLoading={isAssigningPage || isUserRoleUpdating}
+                  />
                 </div>
               </form>
             </div>

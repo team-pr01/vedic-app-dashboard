@@ -14,6 +14,8 @@ import Notification from "../pages/Notification/Notification";
 import Popups from "../pages/Popups/Popups";
 import Dashboard from "../pages/Dashboard/Dashboard";
 import ContentManagement from "../pages/ContentManagement/ContentManagement";
+import { ProtectedRoute } from "./ProtectedRoute";
+import Unauthorized from "../pages/Unauthorized/Unauthorized";
 
 export const router = createBrowserRouter([
   {
@@ -21,8 +23,12 @@ export const router = createBrowserRouter([
     element: <Login />,
   },
   {
+    path: "/unauthorized",
+    element: <Unauthorized />,
+  },
+  {
     path: "dashboard",
-    element: <Layout />,
+    element: <ProtectedRoute><Layout /></ProtectedRoute>,
     // errorElement: <NotFound />,
     children: [
       {

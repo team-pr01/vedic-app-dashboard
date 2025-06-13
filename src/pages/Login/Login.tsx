@@ -36,12 +36,11 @@ const Login = () => {
       reset();
       const user = res.data.user;
       const token = res.data.accessToken;
-      console.log(token);
       toast.success("Logged in successfully.");
 
       // Setting the user in Redux state
       dispatch(setUser({ user, token }));
-      navigate("/dashboard");
+      navigate(user?.assignedPages[0]);
     } catch (err) {
       toast.error("Invalid email or password!");
     }

@@ -1,35 +1,17 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
-import { useSelector } from "react-redux";
-import { Navigate, useLocation } from "react-router-dom";
+// components/ProtectedRoute.tsx
+import { useSelector } from 'react-redux';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useCurrentUser } from '../redux/Features/Auth/authSlice';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  adminPath?: string; // Path to redirect admins
-  userPath?: string; // Path to redirect users
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
-  children,
-  adminPath = "/admin/courses",
-  userPath = "/dashboard",
-}) => {
-  const user = useSelector((state: any) => state.auth.user);
-  const location = useLocation();
-
-  if (!user) {
-    return <Navigate to="/auth/login" state={{ from: location }} replace />;
+export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+  const pathname = useLocation().pathname;
+  const user = useSelector(useCurrentUser) as any;
+  if (!user?.assignedPages.includes(pathname)) {
+    return <Navigate to="/unauthorized" />;
   }
-
-  if (user.role === "admin" && location.pathname.startsWith("/dashboard")) {
-    return <Navigate to={adminPath} replace />;
-  }
-
-  if (user.role === "user" && location.pathname.startsWith("/admin")) {
-    return <Navigate to={userPath} replace />;
-  }
-
   return <>{children}</>;
 };
-
-export default ProtectedRoute;
