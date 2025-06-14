@@ -16,6 +16,8 @@ import Dashboard from "../pages/Dashboard/Dashboard";
 import ContentManagement from "../pages/ContentManagement/ContentManagement";
 import { ProtectedRoute } from "./ProtectedRoute";
 import Unauthorized from "../pages/Unauthorized/Unauthorized";
+// import APIKey from "../pages/APIKey/APIKey";
+import NotFound from "../pages/NotFound/NotFound";
 
 export const router = createBrowserRouter([
   {
@@ -29,7 +31,7 @@ export const router = createBrowserRouter([
   {
     path: "dashboard",
     element: <ProtectedRoute><Layout /></ProtectedRoute>,
-    // errorElement: <NotFound />,
+    errorElement: <NotFound />,
     children: [
       {
         path: "",
@@ -82,6 +84,14 @@ export const router = createBrowserRouter([
       {
         path: "content",
         element: <ContentManagement />,
+      },
+      // {
+      //   path: "api-keys",
+      //   element: <APIKey />,
+      // },
+      {
+        path: "*",
+        element: <NotFound />,
       },
     ],
   },

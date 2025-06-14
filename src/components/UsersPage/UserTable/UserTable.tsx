@@ -11,7 +11,8 @@ const UserTable = () => {
   const [id, setId] = useState<string>("");
   const { data, isLoading, isFetching } = useGetAllUsersQuery({});
 
-  const { data: singleUserData, isLoading: isUserDataLoading } = useGetSingleUserByIdQuery(id);
+  const { data: singleUserData, isLoading: isUserDataLoading } =
+    useGetSingleUserByIdQuery(id);
 
   const [showForm, setShowForm] = useState<boolean>(false);
   return (
@@ -50,7 +51,7 @@ const UserTable = () => {
             </tr>
           </tbody>
         ) : (
-          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700 max-w-[1000px]">
             {data?.data?.map((user: any) => (
               <tr key={user.id}>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -94,9 +95,12 @@ const UserTable = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 capitalize">
                   {user?.assignedPages?.length > 0
-                    ? user?.assignedPages?.join(", ")
+                    ? user.assignedPages.join(", ").length > 50
+                      ? `${user.assignedPages.join(", ").slice(0, 50)}...`
+                      : user.assignedPages.join(", ")
                     : "N/A"}
                 </td>
+
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex items-center justify-end space-x-2">
                     <button
