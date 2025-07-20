@@ -3,10 +3,11 @@ import { TBook } from "../../../pages/Books/Books";
 
 type BookCardProps = {
   book: TBook;
-    setId: (id: string) => void;
+  setId: (id: string) => void;
+  setShowAddChapterForm: (show: boolean) => void;
 };
 
-const BookCard: React.FC<BookCardProps> = ({ book, setId }) => {
+const BookCard: React.FC<BookCardProps> = ({ book, setId, setShowAddChapterForm }) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 max-w-[400px]">
       <img
@@ -20,20 +21,25 @@ const BookCard: React.FC<BookCardProps> = ({ book, setId }) => {
           {book?.title}
         </h3>
         <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-3">
-  {book?.description.length > 40
-    ? `${book.description.slice(0, 40)}...`
-    : book.description}
-</p>
-
+          {book?.description.length > 40
+            ? `${book.description.slice(0, 40)}...`
+            : book.description}
+        </p>
 
         <div className="mt-4 flex flex-wrap gap-3">
-          <button className="px-4 py-2 bg-[#20B486] text-white text-sm font-medium rounded-md hover:bg-[#199c6d] transition-all">
+          <button onClick={() => {
+            setId(book?._id);
+            setShowAddChapterForm(true);
+          }} className="px-4 py-2 bg-[#20B486] text-white text-sm font-medium rounded-md hover:bg-[#199c6d] transition-all">
             Add Chapter
           </button>
           <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-all">
             Add Slok
           </button>
-          <button onClick={() => setId(book?._id)} className="px-4 py-2 bg-gray-700 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-all">
+          <button
+            onClick={() => setId(book?._id)}
+            className="px-4 py-2 bg-gray-700 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-all"
+          >
             View Book
           </button>
         </div>

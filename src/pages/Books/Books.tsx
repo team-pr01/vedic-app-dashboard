@@ -7,6 +7,7 @@ import {
   useGetSingleBookQuery,
 } from "../../redux/Features/Book/bookApi";
 import BookCard from "../../components/BookPage/BookCard/BookCard";
+import AddChapterForm from "../../components/BookPage/AddChapterForm/AddChapterForm";
 
 export type TBook = {
   _id: string;
@@ -20,6 +21,7 @@ export type TBook = {
 
 const Books = () => {
   const [showForm, setShowForm] = useState<boolean>(false);
+  const [showAddChapterForm, setShowAddChapterForm] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [id, setId] = useState("");
   const { data: singleBook } = useGetSingleBookQuery(id);
@@ -68,7 +70,7 @@ const Books = () => {
                 key={book._id}
                 book={book}
                 setId={setId}
-                setShowForm={setShowForm}
+                setShowAddChapterForm={setShowAddChapterForm}
               />
             ))}
           </div>
@@ -78,6 +80,9 @@ const Books = () => {
       {/* Add Form Modal */}
       {showForm && (
         <AddBookForm showForm={showForm} setShowForm={setShowForm} />
+      )}
+      {showAddChapterForm && (
+        <AddChapterForm showForm={showAddChapterForm} setShowForm={setShowAddChapterForm} bookId={id} />
       )}
     </div>
   );

@@ -3,16 +3,15 @@ import { baseApi } from "../../API/baseApi";
 const bookApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllBooks: builder.query<any, { keyword?: string }>({
-  query: ({ keyword = "" }) => {
-    return {
-      url: `/book?keyword=${encodeURIComponent(keyword)}`,
-      method: "GET",
-      credentials: "include",
-    };
-  },
-  providesTags: ["book"],
-}),
-
+      query: ({ keyword = "" }) => {
+        return {
+          url: `/book?keyword=${encodeURIComponent(keyword)}`,
+          method: "GET",
+          credentials: "include",
+        };
+      },
+      providesTags: ["book"],
+    }),
 
     getSingleBook: builder.query({
       query: (id) => ({
@@ -54,6 +53,17 @@ const bookApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["book"],
     }),
+
+    // Chapter apis
+    addChapter: builder.mutation<any, any>({
+      query: (data) => ({
+        url: `/chapter/create-chapter`,
+        method: "POST",
+        body: data,
+        credentials: "include",
+      }),
+      invalidatesTags: ["book"],
+    }),
   }),
 });
 
@@ -63,4 +73,5 @@ export const {
   useCreateBookMutation,
   useDeleteBookMutation,
   useUpdateBookMutation,
+  useAddChapterMutation,
 } = bookApi;
