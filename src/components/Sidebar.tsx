@@ -39,6 +39,11 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
     { icon: Users, label: "Users", path: "/dashboard/users" },
     {
       icon: BookOpen,
+      label: "Books",
+      path: "/dashboard/religious-texts",
+    },
+    {
+      icon: BookOpen,
       label: "Religious Texts",
       path: "/dashboard/religious-texts",
     },

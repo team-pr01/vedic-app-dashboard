@@ -29,6 +29,13 @@ const EmergencyPostForm: React.FC<EmergencyPostFormProps> = ({
   const handleSendEmergencyMessage = async (data: TFormValues) => {
     console.log("object", data);
   };
+
+  // const categroy = [
+  //   "reels"
+  // vastu
+  // news
+  //
+  // ]
   return (
     showForm && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">

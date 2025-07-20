@@ -18,6 +18,7 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import Unauthorized from "../pages/Unauthorized/Unauthorized";
 // import APIKey from "../pages/APIKey/APIKey";
 import NotFound from "../pages/NotFound/NotFound";
+import Books from "../pages/Books/Books";
 
 export const router = createBrowserRouter([
   {
@@ -67,8 +68,12 @@ export const router = createBrowserRouter([
       },
       {
         path: "religious-texts",
-        element: <ReligiousTexts />,
+        element: <Books />,
       },
+      // {
+      //   path: "religious-texts",
+      //   element: <ReligiousTexts />,
+      // },
       {
         path: "news",
         element: <News />,

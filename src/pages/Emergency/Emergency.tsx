@@ -14,6 +14,7 @@ const Emergency = () => {
     keyword: searchQuery,
     status,
   });
+  console.log(data);
   return (
     <div className="space-y-6">
       <EmergencyPageHeader setShowForm={setShowForm} />
