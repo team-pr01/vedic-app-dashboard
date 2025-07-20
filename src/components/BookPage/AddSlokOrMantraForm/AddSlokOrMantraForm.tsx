@@ -7,11 +7,11 @@ import { useState } from "react";
 import { Trash } from "lucide-react";
 
 type TFormValues = {
-  chapterTitle: string;
+  title: string;
   order: string;
 };
 
-const AddChapterForm = ({
+const AddSlokOrMantraForm = ({
   showForm,
   setShowForm,
   bookId,
@@ -27,12 +27,12 @@ const AddChapterForm = ({
     formState: { errors },
   } = useForm<TFormValues>();
 
-  const [typeFields, setTypeFields] = useState([""]);
+  const [typeFields, setTypeFields] = useState([{ type: "" }]);
 
   const [addChapter, { isLoading }] = useAddChapterMutation();
 
   const handleAddTypeField = () => {
-    setTypeFields([...typeFields, ""]);
+    setTypeFields([...typeFields, { type: "" }]);
   };
 
   const handleRemoveTypeField = (index: number) => {
@@ -44,29 +44,26 @@ const AddChapterForm = ({
 
   const handleTypeFieldChange = (index: number, value: string) => {
     const updated = [...typeFields];
-    updated[index] = value;
+    updated[index].type = value;
     setTypeFields(updated);
   };
 
   const handleAddChapter = async (data: TFormValues) => {
     try {
-      const chapter = {
-        chapterTitle: data.chapterTitle,
+      const payload = {
+        bookId: bookId,
+        title: data.title,
         order: Number(data.order),
         type: typeFields,
       };
 
-      const payload = {
-        chapters: [chapter],
-      };
-
-      const response = await addChapter({ data: payload, id: bookId }).unwrap();
+      const response = await addChapter(payload).unwrap();
 
       if (response?.success) {
         toast.success("Chapter created successfully");
         setShowForm(false);
         reset();
-        setTypeFields([""]);
+        setTypeFields([{ type: "" }]); // reset types
       }
     } catch (error) {
       const errMsg =
@@ -107,8 +104,8 @@ const AddChapterForm = ({
             <TextInput
               label="Chapter Title"
               placeholder="Enter Chapter Title"
-              {...register("chapterTitle", { required: "Title is required" })}
-              error={errors.chapterTitle}
+              {...register("title", { required: "Title is required" })}
+              error={errors.title}
             />
 
             <TextInput
@@ -128,7 +125,7 @@ const AddChapterForm = ({
                 <div key={index} className="flex items-center gap-3">
                   <input
                     type="text"
-                    value={field}
+                    value={field.type}
                     onChange={(e) =>
                       handleTypeFieldChange(index, e.target.value)
                     }
@@ -175,4 +172,4 @@ const AddChapterForm = ({
   );
 };
 
-export default AddChapterForm;
+export default AddSlokOrMantraForm;

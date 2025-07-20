@@ -56,9 +56,9 @@ const bookApi = baseApi.injectEndpoints({
 
     // Chapter apis
     addChapter: builder.mutation<any, any>({
-      query: (data) => ({
-        url: `/chapter/create-chapter`,
-        method: "POST",
+      query: ({data, id}) => ({
+        url: `/book/add-chapters/${id}`,
+        method: "PUT",
         body: data,
         credentials: "include",
       }),

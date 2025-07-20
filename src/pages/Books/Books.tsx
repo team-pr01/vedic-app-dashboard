@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PageHeader from "../../components/Reusable/PageHeader/PageHeader";
-import { Book, Loader, Search } from "lucide-react";
+import { Book, Search } from "lucide-react";
 import AddBookForm from "../../components/BookPage/AddBookForm/AddBookForm";
 import {
   useGetAllBooksQuery,
@@ -8,6 +8,7 @@ import {
 } from "../../redux/Features/Book/bookApi";
 import BookCard from "../../components/BookPage/BookCard/BookCard";
 import AddChapterForm from "../../components/BookPage/AddChapterForm/AddChapterForm";
+import Loader from "../../components/Shared/Loader/Loader";
 
 export type TBook = {
   _id: string;
