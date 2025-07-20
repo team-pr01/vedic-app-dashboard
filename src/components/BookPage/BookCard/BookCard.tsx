@@ -5,9 +5,11 @@ type BookCardProps = {
   book: TBook;
   setId: (id: string) => void;
   setShowAddChapterForm: (show: boolean) => void;
+  setShowAddSlokOrMantraForm: (show: boolean) => void;
+  setSelectedChapters: (chapters: any[]) => void;
 };
 
-const BookCard: React.FC<BookCardProps> = ({ book, setId, setShowAddChapterForm }) => {
+const BookCard: React.FC<BookCardProps> = ({ book, setId, setShowAddChapterForm, setShowAddSlokOrMantraForm, setSelectedChapters }) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 max-w-[400px]">
       <img
@@ -33,7 +35,11 @@ const BookCard: React.FC<BookCardProps> = ({ book, setId, setShowAddChapterForm 
           }} className="px-4 py-2 bg-[#20B486] text-white text-sm font-medium rounded-md hover:bg-[#199c6d] transition-all">
             Add Chapter
           </button>
-          <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-all">
+          <button onClick={() => {
+            setId(book?._id);
+            setShowAddSlokOrMantraForm(true);
+            setSelectedChapters(book?.chapters);
+          }} className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-all">
             Add Slok
           </button>
           <button

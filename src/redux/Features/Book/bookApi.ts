@@ -64,6 +64,17 @@ const bookApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["book"],
     }),
+
+    // Chapter apis
+    addSlokOrMantra: builder.mutation<any, any>({
+      query: ({data, id, chapterIndex}) => ({
+        url: `/book/${id}/chapters/${chapterIndex}/slokOrMantra`,
+        method: "PUT",
+        body: data,
+        credentials: "include",
+      }),
+      invalidatesTags: ["book"],
+    }),
   }),
 });
 
@@ -74,4 +85,5 @@ export const {
   useDeleteBookMutation,
   useUpdateBookMutation,
   useAddChapterMutation,
+  useAddSlokOrMantraMutation,
 } = bookApi;

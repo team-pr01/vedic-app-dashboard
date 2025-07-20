@@ -9,12 +9,14 @@ import {
 import BookCard from "../../components/BookPage/BookCard/BookCard";
 import AddChapterForm from "../../components/BookPage/AddChapterForm/AddChapterForm";
 import Loader from "../../components/Shared/Loader/Loader";
+import AddSlokOrMantraForm from "../../components/BookPage/AddSlokOrMantraForm/AddSlokOrMantraForm";
 
 export type TBook = {
   _id: string;
   title: string;
   description: string;
   imageUrl: string;
+  chapters : any[];
   createdAt: string;
   updatedAt: string;
   __v: number;
@@ -23,6 +25,8 @@ export type TBook = {
 const Books = () => {
   const [showForm, setShowForm] = useState<boolean>(false);
   const [showAddChapterForm, setShowAddChapterForm] = useState<boolean>(false);
+  const [showAddSlokOrMantraForm, setShowAddSlokOrMantraForm] = useState<boolean>(false);
+  const [selectedChapters, setSelectedChapters] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [id, setId] = useState("");
   const { data: singleBook } = useGetSingleBookQuery(id);
@@ -72,6 +76,9 @@ const Books = () => {
                 book={book}
                 setId={setId}
                 setShowAddChapterForm={setShowAddChapterForm}
+                setShowAddSlokOrMantraForm={setShowAddSlokOrMantraForm}
+                // selectedChapters={selectedChapters}
+                setSelectedChapters={setSelectedChapters}
               />
             ))}
           </div>
@@ -84,6 +91,9 @@ const Books = () => {
       )}
       {showAddChapterForm && (
         <AddChapterForm showForm={showAddChapterForm} setShowForm={setShowAddChapterForm} bookId={id} />
+      )}
+      {showAddSlokOrMantraForm && (
+        <AddSlokOrMantraForm showForm={showAddSlokOrMantraForm} setShowForm={setShowAddSlokOrMantraForm} bookId={id} selectedChapters={selectedChapters} />
       )}
     </div>
   );
