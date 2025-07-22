@@ -10,6 +10,8 @@ import BookCard from "../../components/BookPage/BookCard/BookCard";
 import AddChapterForm from "../../components/BookPage/AddChapterForm/AddChapterForm";
 import Loader from "../../components/Shared/Loader/Loader";
 import AddSlokOrMantraForm from "../../components/BookPage/AddSlokOrMantraForm/AddSlokOrMantraForm";
+import ViewBookModal from "../../components/BookPage/ViewBookModal/ViewBookModal";
+import EditBookModal from "../../components/BookPage/EditBookModal/EditBookModal";
 
 export type TBook = {
   _id: string;
@@ -26,10 +28,12 @@ const Books = () => {
   const [showForm, setShowForm] = useState<boolean>(false);
   const [showAddChapterForm, setShowAddChapterForm] = useState<boolean>(false);
   const [showAddSlokOrMantraForm, setShowAddSlokOrMantraForm] = useState<boolean>(false);
+  const [showBookDetailsModal, setShowBookDetailsModal] = useState<boolean>(false);
+  const [showEditBookModalOpen, setShowEditBookModalOpen] = useState(false);
   const [selectedChapters, setSelectedChapters] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [id, setId] = useState("");
-  const { data: singleBook } = useGetSingleBookQuery(id);
+  const { data: singleBook, isLoading: isSingleBookLoading } = useGetSingleBookQuery(id);
   console.log(singleBook);
 
   const {
@@ -79,6 +83,7 @@ const Books = () => {
                 setShowAddSlokOrMantraForm={setShowAddSlokOrMantraForm}
                 // selectedChapters={selectedChapters}
                 setSelectedChapters={setSelectedChapters}
+                setShowBookDetailsModal={setShowBookDetailsModal}
               />
             ))}
           </div>
@@ -95,6 +100,12 @@ const Books = () => {
       {showAddSlokOrMantraForm && (
         <AddSlokOrMantraForm showForm={showAddSlokOrMantraForm} setShowForm={setShowAddSlokOrMantraForm} bookId={id} selectedChapters={selectedChapters} />
       )}
+      {
+        showBookDetailsModal && <ViewBookModal book={singleBook} showForm={showBookDetailsModal} setShowForm={setShowBookDetailsModal} setShowEditBookModalOpen={setShowEditBookModalOpen} isLoading={isSingleBookLoading} />
+      }
+      {
+        showEditBookModalOpen && <EditBookModal book={singleBook} showForm={showEditBookModalOpen} setShowForm={setShowEditBookModalOpen} isLoading={isSingleBookLoading} />
+      }
     </div>
   );
 };

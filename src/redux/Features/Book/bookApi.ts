@@ -46,7 +46,7 @@ const bookApi = baseApi.injectEndpoints({
 
     updateBook: builder.mutation<any, any>({
       query: ({ id, data }) => ({
-        url: `/book/${id}`,
+        url: `/book/update-book/${id}`,
         method: "PUT",
         body: data,
         credentials: "include",

@@ -7,9 +7,17 @@ type BookCardProps = {
   setShowAddChapterForm: (show: boolean) => void;
   setShowAddSlokOrMantraForm: (show: boolean) => void;
   setSelectedChapters: (chapters: any[]) => void;
+  setShowBookDetailsModal: (show: boolean) => void;
 };
 
-const BookCard: React.FC<BookCardProps> = ({ book, setId, setShowAddChapterForm, setShowAddSlokOrMantraForm, setSelectedChapters }) => {
+const BookCard: React.FC<BookCardProps> = ({
+  book,
+  setId,
+  setShowAddChapterForm,
+  setShowAddSlokOrMantraForm,
+  setSelectedChapters,
+  setShowBookDetailsModal,
+}) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 max-w-[400px]">
       <img
@@ -29,21 +37,30 @@ const BookCard: React.FC<BookCardProps> = ({ book, setId, setShowAddChapterForm,
         </p>
 
         <div className="mt-4 flex flex-wrap gap-3">
-          <button onClick={() => {
-            setId(book?._id);
-            setShowAddChapterForm(true);
-          }} className="px-4 py-2 bg-[#20B486] text-white text-sm font-medium rounded-md hover:bg-[#199c6d] transition-all">
+          <button
+            onClick={() => {
+              setId(book?._id);
+              setShowAddChapterForm(true);
+            }}
+            className="px-4 py-2 bg-[#20B486] text-white text-sm font-medium rounded-md hover:bg-[#199c6d] transition-all"
+          >
             Add Chapter
           </button>
-          <button onClick={() => {
-            setId(book?._id);
-            setShowAddSlokOrMantraForm(true);
-            setSelectedChapters(book?.chapters);
-          }} className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-all">
+          <button
+            onClick={() => {
+              setId(book?._id);
+              setShowAddSlokOrMantraForm(true);
+              setSelectedChapters(book?.chapters);
+            }}
+            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-all"
+          >
             Add Slok
           </button>
           <button
-            onClick={() => setId(book?._id)}
+            onClick={() => {
+              setId(book?._id);
+              setShowBookDetailsModal(true);
+            }}
             className="px-4 py-2 bg-gray-700 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-all"
           >
             View Book
