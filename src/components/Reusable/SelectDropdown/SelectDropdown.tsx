@@ -8,6 +8,7 @@ interface DropdownProps {
   error?: FieldError | Merge<FieldError, FieldErrorsImpl<any>>;
   isRequired?: boolean;
   selected?: boolean;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 const SelectDropdown = forwardRef<HTMLSelectElement, DropdownProps>(
