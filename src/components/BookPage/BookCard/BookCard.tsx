@@ -1,5 +1,8 @@
 import React from "react";
 import { TBook } from "../../../pages/Books/Books";
+import { Trash } from "lucide-react";
+import toast from "react-hot-toast";
+import { useDeleteBookMutation } from "../../../redux/Features/Book/bookApi";
 
 type BookCardProps = {
   book: TBook;
@@ -18,8 +21,20 @@ const BookCard: React.FC<BookCardProps> = ({
   setSelectedChapters,
   setShowBookDetailsModal,
 }) => {
+
+  const [deleteBook] = useDeleteBookMutation();
+      const handleDeleteBook = async () => {
+        if (!window.confirm("Are you sure you want to delete?")) return;
+    
+        toast.promise(deleteBook({id:book?._id}).unwrap(), {
+          loading: "Deleting book...",
+          success: "Book deleted successfully!",
+          error: "Failed to delete book.",
+        });
+      };
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 max-w-[400px]">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 max-w-[400px] relative">
+      <button onClick={handleDeleteBook} className="absolute top-2 right-2 z-10 bg-red-500 p-2 rounded-lg text-white"><Trash className="size-5" /></button>
       <img
         src={book?.imageUrl}
         alt={book?.title}

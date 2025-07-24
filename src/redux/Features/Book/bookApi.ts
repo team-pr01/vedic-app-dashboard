@@ -34,9 +34,9 @@ const bookApi = baseApi.injectEndpoints({
 
     deleteBook: builder.mutation<
       any,
-      { contentId: string; type: "image" | "video"; url: string }
+      { id: string }
     >({
-      query: (id) => ({
+      query: ({id}) => ({
         url: `/book/delete-book/${id}`,
         method: "DELETE",
         credentials: "include",
