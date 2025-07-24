@@ -38,17 +38,14 @@ const ReelCategories = ({
   const handleAddReelCategory = async (data: TFormValues) => {
     try {
       const payload = {
-        ...data,
+        category: data.category,
       };
 
-      const response = await addReelCategory({
-        data: payload,
-      }).unwrap();
+      const response = await addReelCategory(payload).unwrap();
       if (response?.success) {
         toast.success("Category added successfully");
       }
-
-      setShowModal(false);
+      setIsAddCategoryFormVisible(false);
       reset();
     } catch (error) {
       const errMsg =
@@ -107,7 +104,7 @@ const ReelCategories = ({
             {categories?.data?.map((category: any) => (
               <div
                 key={category?._id}
-                className="bg-white border border-gray-300 rounded-xl p-3 text-xl font-semibold text-neutral-800 flex items-center gap-2 justify-between"
+                className="bg-white border border-gray-300 rounded-xl p-3 font-semibold text-neutral-800 flex items-center gap-2 justify-between"
               >
                 <span>{category?.category}</span>
                 <button
