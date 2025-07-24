@@ -31,7 +31,6 @@ const ReelCategories = ({
     useState(false);
 
   const { data: categories } = useGetAllReelCategoriesQuery({});
-  console.log(categories);
   const [addReelCategory, { isLoading: isAdding }] =
     useAddReelCategoryMutation();
 

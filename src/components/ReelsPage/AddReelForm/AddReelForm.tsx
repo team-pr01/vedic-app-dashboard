@@ -10,6 +10,8 @@ import {
 import toast from "react-hot-toast";
 import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
 import { TReels } from "../../../pages/Reels/Reels";
+import { useGetAllReelCategoriesQuery } from "../../../redux/Features/Categories/ReelCategory/reelCategory";
+import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
 
 type TFormValues = {
   title: string;
@@ -40,6 +42,8 @@ const AddReelForm: React.FC<TAddReelFormProps> = ({
     reset,
     formState: { errors },
   } = useForm<TFormValues>();
+
+  const { data: categories } = useGetAllReelCategoriesQuery({});
 
   // Fetching default values
   useEffect(() => {
@@ -117,6 +121,10 @@ const AddReelForm: React.FC<TAddReelFormProps> = ({
     setTags(filtered);
   };
 
+  const allCategories = categories?.data?.map(
+    (category: any) => category.category
+  );
+
   return (
     showForm && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -175,11 +183,11 @@ const AddReelForm: React.FC<TAddReelFormProps> = ({
                 error={errors.videoUrl}
               />
 
-              <TextInput
+              <SelectDropdown
                 label="Category"
-                placeholder="Enter video category"
-                {...register("category", { required: "category is required" })}
-                error={errors.category}
+                {...register("category")}
+                error={errors?.category}
+                options={allCategories}
               />
 
               <div>
