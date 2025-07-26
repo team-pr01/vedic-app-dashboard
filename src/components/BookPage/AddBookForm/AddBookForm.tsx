@@ -91,6 +91,7 @@ const AddBookForm = ({
       const response = await updateBook({id, data:formData}).unwrap();
       if (response?.success) {
         toast.success("Book updated successfully");
+        window.location.reload();
         setShowForm(false);
       }
     } else {

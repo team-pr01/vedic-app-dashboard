@@ -56,7 +56,7 @@ const BookCard: React.FC<BookCardProps> = ({
         </p>
 
         <div className="mt-4 flex flex-wrap gap-3">
-          <button
+          {/* <button
             onClick={() => {
               setId(book?._id);
               setShowAddChapterForm(true);
@@ -64,7 +64,7 @@ const BookCard: React.FC<BookCardProps> = ({
             className="px-4 py-2 bg-[#20B486] text-white text-sm font-medium rounded-md hover:bg-[#199c6d] transition-all"
           >
             Add Chapter
-          </button>
+          </button> */}
           <button
             onClick={() => {
               setFormType("edit");
