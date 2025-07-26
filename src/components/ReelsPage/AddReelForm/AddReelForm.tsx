@@ -121,7 +121,11 @@ const AddReelForm: React.FC<TAddReelFormProps> = ({
     setTags(filtered);
   };
 
-  const allCategories = categories?.data?.map(
+  const filteredCategory = categories?.data?.filter(
+    (category: any) => category.areaName === "reels"
+  );
+
+  const allCategories = filteredCategory?.map(
     (category: any) => category.category
   );
 

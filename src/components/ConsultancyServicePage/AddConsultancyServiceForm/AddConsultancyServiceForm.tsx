@@ -9,6 +9,8 @@ import {
   useUpdateConsultancyServiceMutation,
 } from "../../../redux/Features/ConsultancyService/consultancyServiceApi";
 import Loader from "../../Shared/Loader/Loader";
+import { useGetAllCategoriesQuery } from "../../../redux/Features/Categories/ReelCategory/categoriesApi";
+import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
 
 type TConsultancyServiceFormProps = {
   setShowForm: (show: boolean) => void;
@@ -34,6 +36,7 @@ const AddConsultancyServiceForm = ({
   defaultValues,
   isSingleDataLoading,
 }: TConsultancyServiceFormProps) => {
+  const { data: categories } = useGetAllCategoriesQuery({});
   const [addConsultancyService, { isLoading }] =
     useAddConsultancyServiceMutation();
   const [updateConsultancyService, { isLoading: isUpdating }] =
@@ -116,6 +119,14 @@ const AddConsultancyServiceForm = ({
     }
   };
 
+  const filteredCategory = categories?.data?.filter(
+    (category: any) => category.areaName === "consultancyService"
+  );
+
+  const allCategories = filteredCategory?.map(
+    (category: any) => category.category
+  );
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -161,11 +172,11 @@ const AddConsultancyServiceForm = ({
                 })}
                 error={errors.experience}
               />
-              <TextInput
+              <SelectDropdown
                 label="Category"
-                placeholder="Enter category"
-                {...register("category", { required: "Category is required" })}
-                error={errors.category}
+                {...register("category")}
+                error={errors?.category}
+                options={allCategories}
               />
               <TextInput
                 label="Available Time"

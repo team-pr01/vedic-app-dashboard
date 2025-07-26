@@ -69,14 +69,13 @@ const ConsultancyService = () => {
       {/* Organization List */}
       {isLoading || isFetching ? (
         <Loader size="size-10" />
+      ) : data?.data?.length < 1 ? (
+        <h1 className="text-center text-xl font-semibold text-gray-600">
+          No Data Found
+        </h1>
       ) : (
-         data?.data?.length < 1 ?
-          <h1 className="text-center text-xl font-semibold text-gray-600">No Data Found</h1> :
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {
-         
-          
-          data?.data?.map((service: TConsultancyService) => (
+          {data?.data?.map((service: TConsultancyService) => (
             <ConsultancyServiceCard
               key={service?._id}
               service={service}
@@ -99,7 +98,11 @@ const ConsultancyService = () => {
       )}
 
       {/* Category management */}
-      <Categories showModal={showCategoryForm} setShowModal={setShowCategoryForm} areaName="consultancyService" />
+      <Categories
+        showModal={showCategoryForm}
+        setShowModal={setShowCategoryForm}
+        areaName="consultancyService"
+      />
     </div>
   );
 };
