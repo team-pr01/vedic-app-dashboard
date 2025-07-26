@@ -18,22 +18,25 @@ export type TBook = {
   title: string;
   description: string;
   imageUrl: string;
-  chapters : any[];
+  chapters: any[];
   createdAt: string;
   updatedAt: string;
   __v: number;
 };
 
 const Books = () => {
+  const [formType, setFormType] = useState<"add" | "edit">("add");
   const [showForm, setShowForm] = useState<boolean>(false);
   const [showAddChapterForm, setShowAddChapterForm] = useState<boolean>(false);
-  const [showAddSlokOrMantraForm, setShowAddSlokOrMantraForm] = useState<boolean>(false);
-  const [showBookDetailsModal, setShowBookDetailsModal] = useState<boolean>(false);
+  const [showAddSlokOrMantraForm, setShowAddSlokOrMantraForm] =
+    useState<boolean>(false);
+  const [showBookDetailsModal, setShowBookDetailsModal] =
+    useState<boolean>(false);
   const [showEditBookModalOpen, setShowEditBookModalOpen] = useState(false);
   const [selectedChapters, setSelectedChapters] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [id, setId] = useState("");
-  const { data: singleBook, isLoading: isSingleBookLoading } = useGetSingleBookQuery(id);
+  const { data: singleBook, isLoading: isSingleBookLoading } =useGetSingleBookQuery(id);
   console.log(singleBook);
 
   const {
@@ -84,6 +87,8 @@ const Books = () => {
                 // selectedChapters={selectedChapters}
                 setSelectedChapters={setSelectedChapters}
                 setShowBookDetailsModal={setShowBookDetailsModal}
+                setFormType={setFormType}
+                setShowForm={setShowForm}
               />
             ))}
           </div>
@@ -92,20 +97,42 @@ const Books = () => {
 
       {/* Add Form Modal */}
       {showForm && (
-        <AddBookForm showForm={showForm} setShowForm={setShowForm} />
+        <AddBookForm showForm={showForm} setShowForm={setShowForm} defaultValues={singleBook} id={id} formType={formType} />
       )}
+
+
       {showAddChapterForm && (
-        <AddChapterForm showForm={showAddChapterForm} setShowForm={setShowAddChapterForm} bookId={id} />
+        <AddChapterForm
+          showForm={showAddChapterForm}
+          setShowForm={setShowAddChapterForm}
+          bookId={id}
+        />
       )}
       {showAddSlokOrMantraForm && (
-        <AddSlokOrMantraForm showForm={showAddSlokOrMantraForm} setShowForm={setShowAddSlokOrMantraForm} bookId={id} selectedChapters={selectedChapters} />
+        <AddSlokOrMantraForm
+          showForm={showAddSlokOrMantraForm}
+          setShowForm={setShowAddSlokOrMantraForm}
+          bookId={id}
+          selectedChapters={selectedChapters}
+        />
       )}
-      {
-        showBookDetailsModal && <ViewBookModal book={singleBook} showForm={showBookDetailsModal} setShowForm={setShowBookDetailsModal} setShowEditBookModalOpen={setShowEditBookModalOpen} isLoading={isSingleBookLoading} />
-      }
-      {
-        showEditBookModalOpen && <EditBookModal book={singleBook} showForm={showEditBookModalOpen} setShowForm={setShowEditBookModalOpen} isLoading={isSingleBookLoading} />
-      }
+      {showBookDetailsModal && (
+        <ViewBookModal
+          book={singleBook}
+          showForm={showBookDetailsModal}
+          setShowForm={setShowBookDetailsModal}
+          setShowEditBookModalOpen={setShowEditBookModalOpen}
+          isLoading={isSingleBookLoading}
+        />
+      )}
+      {showEditBookModalOpen && (
+        <EditBookModal
+          book={singleBook}
+          showForm={showEditBookModalOpen}
+          setShowForm={setShowEditBookModalOpen}
+          isLoading={isSingleBookLoading}
+        />
+      )}
     </div>
   );
 };

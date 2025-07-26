@@ -11,6 +11,8 @@ type BookCardProps = {
   setShowAddSlokOrMantraForm: (show: boolean) => void;
   setSelectedChapters: (chapters: any[]) => void;
   setShowBookDetailsModal: (show: boolean) => void;
+  setShowForm: (show: boolean) => void;
+  setFormType : (type : "add" | "edit") => void
 };
 
 const BookCard: React.FC<BookCardProps> = ({
@@ -19,7 +21,9 @@ const BookCard: React.FC<BookCardProps> = ({
   setShowAddChapterForm,
   setShowAddSlokOrMantraForm,
   setSelectedChapters,
+  setShowForm,
   setShowBookDetailsModal,
+  setFormType,
 }) => {
 
   const [deleteBook] = useDeleteBookMutation();
@@ -63,13 +67,18 @@ const BookCard: React.FC<BookCardProps> = ({
           </button>
           <button
             onClick={() => {
+              setFormType("edit");
               setId(book?._id);
-              setShowAddSlokOrMantraForm(true);
-              setSelectedChapters(book?.chapters);
+              setShowForm(true);
             }}
+            // onClick={() => {
+            //   setId(book?._id);
+            //   setShowAddSlokOrMantraForm(true);
+            //   setSelectedChapters(book?.chapters);
+            // }}
             className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-all"
           >
-            Add Slok
+            Edit Book
           </button>
           <button
             onClick={() => {
