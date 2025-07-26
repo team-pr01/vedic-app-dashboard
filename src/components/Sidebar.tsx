@@ -67,7 +67,7 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
     {
       icon: Headphones,
       label: "Consultancy Service",
-      path: "/dashboard/consultancy",
+      path: "/dashboard/consultancy-service",
     },
     { icon: Key, label: "API Keys", path: "/dashboard/api-keys" },
     { icon: BarChart2, label: "Analytics", path: "/dashboard/analytics" },

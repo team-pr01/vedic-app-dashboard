@@ -19,6 +19,7 @@ import Unauthorized from "../pages/Unauthorized/Unauthorized";
 // import APIKey from "../pages/APIKey/APIKey";
 import NotFound from "../pages/NotFound/NotFound";
 import Books from "../pages/Books/Books";
+import ConsultancyService from "../pages/ConsultancyService/ConsultancyService";
 
 export const router = createBrowserRouter([
   {
@@ -89,6 +90,10 @@ export const router = createBrowserRouter([
       {
         path: "content",
         element: <ContentManagement />,
+      },
+      {
+        path: "consultancy-service",
+        element: <ConsultancyService/>,
       },
       // {
       //   path: "api-keys",

@@ -71,6 +71,7 @@ export const baseApi = createApi({
     "religiousTexts",
     "book",
     "reelCategory",
+    "consultancyService",
   ],
   endpoints: () => ({}),
 });
