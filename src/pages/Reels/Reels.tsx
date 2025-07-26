@@ -7,7 +7,7 @@ import {
   useGetSingleReelQuery,
 } from "../../redux/Features/Reels/reelsApi";
 import Loader from "../../components/Shared/Loader/Loader";
-import ReelCategories from "../../components/ReelsPage/ReelCategories/ReelCategories";
+import Categories from "../../components/Categories/Categories";
 
 export type TReels = {
   _id: string;
@@ -22,8 +22,9 @@ export type TReels = {
   updatedAt?: Date;
 };
 
+
 const Reels = () => {
-  const [showReelCategoryForm, setShowReelCategoryForm] = useState(false);
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const { data, isLoading } = useGetAllReelsQuery({});
   const [reelId, setReelId] = useState("");
@@ -32,7 +33,7 @@ const Reels = () => {
   const { data: singleReelData } = useGetSingleReelQuery(reelId);
   return (
     <div className="space-y-6">
-      <ReelsPageHeader setShowForm={setShowForm} setMode={setMode} setShowReelCategoryForm={setShowReelCategoryForm}  />
+      <ReelsPageHeader setShowForm={setShowForm} setMode={setMode} setShowCategoryForm={setShowCategoryForm}  />
 
       {isLoading ? (
         <Loader size="size-10" />
@@ -58,7 +59,8 @@ const Reels = () => {
         mode={mode}
       />
 
-      <ReelCategories showModal={showReelCategoryForm} setShowModal={setShowReelCategoryForm} />
+      {/* Category management */}
+      <Categories showModal={showCategoryForm} setShowModal={setShowCategoryForm} areaName="reels" />
     </div>
   );
 };

@@ -9,6 +9,7 @@ import {
 import ConsultancyServiceCard from "../../components/ConsultancyServicePage/ConsultancyServiceCard/ConsultancyServiceCard";
 import Loader from "../../components/Shared/Loader/Loader";
 import AddConsultancyServiceForm from "../../components/ConsultancyServicePage/AddConsultancyServiceForm/AddConsultancyServiceForm";
+import Categories from "../../components/Categories/Categories";
 
 export type TConsultancyService = {
   _id: string;
@@ -26,6 +27,7 @@ export type TConsultancyService = {
 };
 
 const ConsultancyService = () => {
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [consultancyServiceId, setConsultancyServiceId] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [mode, setMode] = useState<"add" | "edit">("add");
@@ -53,6 +55,7 @@ const ConsultancyService = () => {
           setMode && setMode("add");
           setShowForm(true);
         }}
+        setShowCategoryForm={setShowCategoryForm}
       />
 
       {/* Filters and Search */}
@@ -60,14 +63,20 @@ const ConsultancyService = () => {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         setCategory={setCategory}
+        category={category}
       />
 
       {/* Organization List */}
       {isLoading || isFetching ? (
         <Loader size="size-10" />
       ) : (
+         data?.data?.length < 1 ?
+          <h1 className="text-center text-xl font-semibold text-gray-600">No Data Found</h1> :
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {data?.data?.map((service: TConsultancyService) => (
+          {
+         
+          
+          data?.data?.map((service: TConsultancyService) => (
             <ConsultancyServiceCard
               key={service?._id}
               service={service}
@@ -88,6 +97,9 @@ const ConsultancyService = () => {
           isSingleDataLoading={isSingleDataLoading || isSingleDataFetching}
         />
       )}
+
+      {/* Category management */}
+      <Categories showModal={showCategoryForm} setShowModal={setShowCategoryForm} areaName="consultancyService" />
     </div>
   );
 };

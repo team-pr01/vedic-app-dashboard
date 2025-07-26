@@ -1,24 +1,27 @@
 import { useForm } from "react-hook-form";
-import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
-import TextInput from "../../Reusable/TextInput/TextInput";
 import toast from "react-hot-toast";
-import {
-  useAddReelCategoryMutation,
-  useDeleteReelCategoryMutation,
-  useGetAllReelCategoriesQuery,
-} from "../../../redux/Features/Categories/ReelCategory/reelCategory";
 import { Trash } from "lucide-react";
 import { useState } from "react";
+import TextInput from "../Reusable/TextInput/TextInput";
+import SubmitButton from "../Reusable/SubmitButton/SubmitButton";
+import {
+  useAddCategoryMutation,
+  useDeleteCategoryMutation,
+  useGetAllCategoriesQuery,
+} from "../../redux/Features/Categories/ReelCategory/categoriesApi";
+import Loader from "../Shared/Loader/Loader";
 
 type TFormValues = {
   category: string;
 };
-const ReelCategories = ({
+const Categories = ({
   showModal,
   setShowModal,
+  areaName,
 }: {
   showModal: boolean;
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
+  areaName: string;
 }) => {
   const {
     register,
@@ -30,17 +33,21 @@ const ReelCategories = ({
   const [isAddCategoryFormVisible, setIsAddCategoryFormVisible] =
     useState(false);
 
-  const { data: categories } = useGetAllReelCategoriesQuery({});
-  const [addReelCategory, { isLoading: isAdding }] =
-    useAddReelCategoryMutation();
+  const { data: categories, isLoading } = useGetAllCategoriesQuery({});
+  const filteredCategories = categories?.data?.filter(
+    (category: any) => category.areaName === areaName
+  );
+  
+  const [addCategory, { isLoading: isAdding }] = useAddCategoryMutation();
 
-  const handleAddReelCategory = async (data: TFormValues) => {
+  const handleAddCategory = async (data: TFormValues) => {
     try {
       const payload = {
         category: data.category,
+        areaName,
       };
 
-      const response = await addReelCategory(payload).unwrap();
+      const response = await addCategory(payload).unwrap();
       if (response?.success) {
         toast.success("Category added successfully");
       }
@@ -58,11 +65,11 @@ const ReelCategories = ({
     }
   };
 
-  const [deleteReelCategory] = useDeleteReelCategoryMutation();
-  const handleDeleteReelCategory = async (id: string) => {
+  const [deleteCategory] = useDeleteCategoryMutation();
+  const handleDeleteCategory = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete?")) return;
 
-    toast.promise(deleteReelCategory(id).unwrap(), {
+    toast.promise(deleteCategory(id).unwrap(), {
       loading: "Deleting book...",
       success: "Book deleted successfully!",
       error: "Failed to delete book.",
@@ -74,7 +81,7 @@ const ReelCategories = ({
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[700px] overflow-y-auto p-6">
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Manage Reel Categories
+              Manage Categories
             </h3>
             <button
               type="button"
@@ -99,25 +106,33 @@ const ReelCategories = ({
               +Add New
             </button>
           </div>
-          <div className="grid grid-cols-2 gap-4 mt-3">
-            {categories?.data?.map((category: any) => (
-              <div
-                key={category?._id}
-                className="bg-white border border-gray-300 rounded-xl p-3 font-semibold text-neutral-800 flex items-center gap-2 justify-between"
-              >
-                <span>{category?.category}</span>
-                <button
-                  onClick={() => handleDeleteReelCategory(category?._id)}
-                  className="text-red-500"
-                >
-                  <Trash className="size-5" />
-                </button>
-              </div>
-            ))}
-          </div>
+          {isLoading ? (
+            <Loader size="size-10" />
+          ) : (
+            <div className="grid grid-cols-2 gap-4 mt-3">
+              {filteredCategories?.length < 1 ? (
+                <p className="mt-3 text-gray-500">No categories found</p>
+              ) : (
+                filteredCategories?.map((category: any) => (
+                  <div
+                    key={category?._id}
+                    className="bg-white border border-gray-300 rounded-xl p-3 font-semibold text-neutral-800 flex items-center gap-2 justify-between"
+                  >
+                    <span>{category?.category}</span>
+                    <button
+                      onClick={() => handleDeleteCategory(category?._id)}
+                      className="text-red-500"
+                    >
+                      <Trash className="size-5" />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
           {isAddCategoryFormVisible && (
             <form
-              onSubmit={handleSubmit(handleAddReelCategory)}
+              onSubmit={handleSubmit(handleAddCategory)}
               className="space-y-6 mt-10"
             >
               <TextInput
@@ -147,4 +162,4 @@ const ReelCategories = ({
   );
 };
 
-export default ReelCategories;
+export default Categories;

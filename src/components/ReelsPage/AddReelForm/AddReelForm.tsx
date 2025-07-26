@@ -10,8 +10,8 @@ import {
 import toast from "react-hot-toast";
 import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
 import { TReels } from "../../../pages/Reels/Reels";
-import { useGetAllReelCategoriesQuery } from "../../../redux/Features/Categories/ReelCategory/reelCategory";
 import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
+import { useGetAllCategoriesQuery } from "../../../redux/Features/Categories/ReelCategory/categoriesApi";
 
 type TFormValues = {
   title: string;
@@ -43,7 +43,7 @@ const AddReelForm: React.FC<TAddReelFormProps> = ({
     formState: { errors },
   } = useForm<TFormValues>();
 
-  const { data: categories } = useGetAllReelCategoriesQuery({});
+  const { data: categories } = useGetAllCategoriesQuery({});
 
   // Fetching default values
   useEffect(() => {

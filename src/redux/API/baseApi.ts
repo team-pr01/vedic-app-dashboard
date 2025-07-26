@@ -70,7 +70,7 @@ export const baseApi = createApi({
     "popup",
     "religiousTexts",
     "book",
-    "reelCategory",
+    "category",
     "consultancyService",
   ],
   endpoints: () => ({}),

@@ -1,6 +1,8 @@
 import { Dispatch, FC, SetStateAction } from "react";
 import { Pencil, Trash2, Star, Clock } from "lucide-react";
 import { TConsultancyService } from "../../../pages/ConsultancyService/ConsultancyService";
+import { useDeleteConsultancyServiceMutation } from "../../../redux/Features/ConsultancyService/consultancyServiceApi";
+import toast from "react-hot-toast";
 
 type TConsultancyServiceCardProps = {
   service: TConsultancyService;
@@ -21,10 +23,18 @@ const ConsultancyServiceCard: FC<TConsultancyServiceCardProps> = ({
     setShowForm(true);
   };
 
-  const handleDelete = () => {
-    setConsultancyServiceId(service._id);
-    setShowForm(true);
-  };
+  const [deleteConsultancyService] = useDeleteConsultancyServiceMutation();
+  
+    const handleDeleteService = async (id: string) => {
+      console.log("object");
+      if (!window.confirm("Are you sure you want to delete?")) return;
+  
+      toast.promise(deleteConsultancyService(id).unwrap(), {
+        loading: "Deleting...",
+        success: "Deleted successfully!",
+        error: "Failed to delete.",
+      });
+    };
 
   return (
     <div className="flex gap-4 p-4 rounded-2xl shadow-md bg-white items-center hover:shadow-lg transition">
@@ -66,9 +76,9 @@ const ConsultancyServiceCard: FC<TConsultancyServiceCardProps> = ({
             <Pencil size={18} />
           </button>
           <button
-            onClick={handleDelete}
+            onClick={() => handleDeleteService(service._id)}
             className="text-red-500 hover:text-red-600"
-            title="Delete"
+            type="button"
           >
             <Trash2 size={18} />
           </button>

@@ -21,9 +21,9 @@ const OrganizationCard = ({
       if (!window.confirm("Are you sure you want to delete?")) return;
   
       toast.promise(deleteOrganization(id).unwrap(), {
-        loading: "Deleting organization...",
-        success: "Organization deleted successfully!",
-        error: "Failed to delete organization.",
+        loading: "Deleting...",
+        success:  "Deleted successfully!",
+        error: "Failed to delete.",
       });
     };
 
