@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { NotificationCenter } from "../../components/NotificationCenter";
 import PageHeader from "../../components/Reusable/PageHeader/PageHeader";
 import { Send } from "lucide-react";
 import NotificationCard from "../../components/NotificationPage/NotificationCard/NotificationCard";
@@ -56,7 +55,6 @@ export const dummyNotifications = [
 const Notification = () => {
   const [showForm, setShowForm] = useState<boolean>(false);
   const { data, isLoading } = useGetAllNotificationsQuery({});
-  console.log(data);
 
 
   return (
@@ -90,7 +88,6 @@ const Notification = () => {
       {showForm && (
         <SendNotificationForm showForm={showForm} setShowForm={setShowForm} />
       )}
-      <NotificationCenter />
     </div>
   );
 };
