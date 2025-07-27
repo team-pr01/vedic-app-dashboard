@@ -16,7 +16,7 @@ const PageHeader = ({
   icon,
   onClick,
   setShowCategoryForm,
-  isCategoryButtonVisible,
+  isCategoryButtonVisible = true,
 }: PageHeaderProps) => {
   return (
     <div className="flex items-center justify-between mb-6">

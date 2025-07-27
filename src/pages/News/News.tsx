@@ -8,10 +8,10 @@ import {
   useDeleteNewsMutation,
   useGetAllNewsQuery,
   useGetSingleNewsQuery,
-  useUpdateNewsMutation,
 } from "../../redux/Features/News/newsApi";
 import Loader from "../../components/Shared/Loader/Loader";
 import toast from "react-hot-toast";
+import Categories from "../../components/Categories/Categories";
 
 export const dummyArticles = [
   {
@@ -63,6 +63,7 @@ export const dummyArticles = [
 ];
 
 const News = () => {
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [showForm, setShowForm] = useState<boolean>(false);
   // const [language, setLanguage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -102,6 +103,7 @@ const News = () => {
           setMode("add");
           setShowForm(true);
         }}
+        setShowCategoryForm={setShowCategoryForm}
       />
 
       <div className="flex flex-col gap-10">
@@ -145,6 +147,13 @@ const News = () => {
             mode={mode}
           />
         )}
+
+        {/* Category management */}
+        <Categories
+          showModal={showCategoryForm}
+          setShowModal={setShowCategoryForm}
+          areaName="news"
+        />
       </div>
     </div>
   );
