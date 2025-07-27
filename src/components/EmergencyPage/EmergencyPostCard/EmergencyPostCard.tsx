@@ -1,4 +1,13 @@
-import { Bell, Check, Copy, Trash2, Users } from "lucide-react";
+import {
+  Check,
+  Copy,
+  Mail,
+  MapPin,
+  Phone,
+  Timer,
+  Trash2,
+  Users,
+} from "lucide-react";
 import {
   useChangeStatusToResolvedMutation,
   useDeleteEmergencyMutation,
@@ -68,11 +77,10 @@ const EmergencyPostCard: React.FC<TEmergencyPostCardProps> = ({ post }) => {
     }
   };
 
+  console.log(post);
+
   return (
-    <div
-      key={post.id}
-      className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6"
-    >
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-2">
@@ -114,12 +122,32 @@ const EmergencyPostCard: React.FC<TEmergencyPostCardProps> = ({ post }) => {
           </p>
           <div className="mt-4 flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
             <span className="flex items-center">
-              <Bell className="h-4 w-4 mr-1" />
-              {new Date(post.sent_at).toLocaleString()}
+              <Timer className="h-4 w-4 mr-1" />
+              {new Date(post.createdAt).toLocaleString()}
             </span>
             <span className="flex items-center">
               <Users className="h-4 w-4 mr-1" />
               {post?.target_groups?.join(", ")}
+            </span>
+          </div>
+
+          <h1 className="text-purple-600 font-semibold mt-4">User Info</h1>
+          <div className="mt-2 grid grid-cols-2 gap-4 text-sm text-gray-500 dark:text-gray-400">
+            <span className="flex items-center">
+              <Users className="h-4 w-4 mr-1" />
+              {post?.user?.name || "Unknown User"}
+            </span>
+            <span className="flex items-center">
+              <Mail className="h-4 w-4 mr-1" />
+              {post?.user?.email || "No Email"}
+            </span>
+            <a href={`tel:${post?.user?.phoneNumber}`} className="flex items-center hover:underline w-fit text-green-600">
+              <Phone className="h-4 w-4 mr-1" />
+              {post?.user?.phoneNumber || "No Phone"}
+            </a>
+            <span className="flex items-center">
+              <MapPin className="h-4 w-4 mr-1" />
+              {post?.location || "No Location"}
             </span>
           </div>
         </div>

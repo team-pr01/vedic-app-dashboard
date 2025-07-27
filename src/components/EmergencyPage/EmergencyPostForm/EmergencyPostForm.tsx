@@ -2,7 +2,6 @@ import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import TextInput from "../../Reusable/TextInput/TextInput";
 import Textarea from "../../Reusable/TextArea/TextArea";
-import { useSendNotificationMutation } from "../../../redux/Features/Notification/notificationApi";
 import toast from "react-hot-toast";
 import Loader from "../../Shared/Loader/Loader";
 import { useState } from "react";

@@ -66,6 +66,8 @@ const Notification = () => {
         onClick={() => {
           setShowForm(true);
         }}
+        setShowCategoryForm={() => {}}
+        isCategoryButtonVisible={false}
       />
 
       {isLoading ? (
