@@ -1,9 +1,10 @@
-import { Bell, Trash2, Users } from "lucide-react";
+import { Bell, Check, Copy, Trash2, Users } from "lucide-react";
 import {
   useChangeStatusToResolvedMutation,
   useDeleteEmergencyMutation,
 } from "../../../redux/Features/Emergencies/emergencyApi";
 import toast from "react-hot-toast";
+import { useState } from "react";
 
 type TEmergencyPostCardProps = {
   post: any;
@@ -11,7 +12,7 @@ type TEmergencyPostCardProps = {
 const EmergencyPostCard: React.FC<TEmergencyPostCardProps> = ({ post }) => {
   const [deleteEmergency] = useDeleteEmergencyMutation();
   const [changeStatusToResolved] = useChangeStatusToResolvedMutation();
-  
+
   const handleChangeStatus = async (messageId: string, status: string) => {
     try {
       toast.promise(
@@ -52,6 +53,21 @@ const EmergencyPostCard: React.FC<TEmergencyPostCardProps> = ({ post }) => {
     }
   };
 
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const handleCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedId(text); // mark as copied
+
+      setTimeout(() => {
+        setCopiedId(null); // reset after 3 seconds
+      }, 3000);
+    } catch (err) {
+      console.error("Copy failed:", err);
+    }
+  };
+
   return (
     <div
       key={post.id}
@@ -59,10 +75,21 @@ const EmergencyPostCard: React.FC<TEmergencyPostCardProps> = ({ post }) => {
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {post.title}
+              {post._id}
             </h3>
+            {copiedId === post._id ? (
+              <Check className="w-5 h-5 text-green-500" />
+            ) : (
+              <Copy
+                className="w-5 h-5 text-gray-500 cursor-pointer hover:text-black dark:hover:text-white"
+                onClick={() => handleCopy(post._id)}
+              />
+            )}
+          </div>
+
+          <div className="flex items-center mt-3 space-x-2 ">
             <span
               className={`px-2 py-1 rounded-full text-xs font-medium ${getSeverityColor(
                 post.severity

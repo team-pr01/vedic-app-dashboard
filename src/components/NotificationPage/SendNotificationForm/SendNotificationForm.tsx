@@ -8,9 +8,9 @@ import Loader from "../../Shared/Loader/Loader";
 import { useState } from "react";
 
 type TFormValues = {
+  notificationId: string;
   title: string;
-  endDate: string;
-  message: string;
+  adminMessage: string;
 };
 
 type TSendNotificationFormProps = {
@@ -92,32 +92,32 @@ const SendNotificationForm: React.FC<TSendNotificationFormProps> = ({
 
             <div className="space-y-4">
               <TextInput
-                label="Title"
+                label="Notification Id"
                 placeholder="Enter Title"
                 {...register("title", {
                   required: "Title is required",
                 })}
                 error={errors.title}
               />
-
               <TextInput
-                label="End Date"
-                type="datetime-local"
-                placeholder="Enter End date"
-                {...register("endDate", {
-                  required: "End date is required",
+                label="Title"
+                placeholder="Enter Title"
+                {...register("title", {
+                  required: "Title is required",
                 })}
-                error={errors.endDate}
+                error={errors.title}
+                isRequired={false}
               />
 
               <Textarea
-                label="Message"
+                label="Admin Message"
                 placeholder="Write Message here..."
                 rows={6}
-                error={errors.message}
-                {...register("message", {
-                  required: "Message is required",
+                error={errors.adminMessage}
+                {...register("adminMessage", {
+                  required: "Admin Message is required",
                 })}
+                isRequired={false}
               />
 
               <div>
