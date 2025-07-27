@@ -36,15 +36,14 @@ const Books = () => {
   const [selectedChapters, setSelectedChapters] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [id, setId] = useState("");
-  const { data: singleBook, isLoading: isSingleBookLoading } =useGetSingleBookQuery(id);
-  console.log(singleBook);
+  const { data: singleBook, isLoading: isSingleBookLoading } =
+    useGetSingleBookQuery(id);
 
   const {
     data: books,
     isLoading,
     isFetching,
   } = useGetAllBooksQuery({ keyword: searchQuery });
-  console.log(books);
 
   return (
     <div className="flex flex-col">
@@ -55,6 +54,8 @@ const Books = () => {
         onClick={() => {
           setShowForm(true);
         }}
+        setShowCategoryForm={() => {}}
+        isCategoryButtonVisible={false}
       />
 
       <div className="relative">
@@ -97,9 +98,14 @@ const Books = () => {
 
       {/* Add Form Modal */}
       {showForm && (
-        <AddBookForm showForm={showForm} setShowForm={setShowForm} defaultValues={singleBook} id={id} formType={formType} />
+        <AddBookForm
+          showForm={showForm}
+          setShowForm={setShowForm}
+          defaultValues={singleBook}
+          id={id}
+          formType={formType}
+        />
       )}
-
 
       {showAddChapterForm && (
         <AddChapterForm
