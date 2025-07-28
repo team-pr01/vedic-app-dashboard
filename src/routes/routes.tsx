@@ -8,7 +8,7 @@ import Yoga from "../pages/Yoga/Yoga";
 import Vastu from "../pages/Vastu/Vastu";
 import TempleManagement from "../pages/TempleManagement/TempleManagement";
 import Organizations from "../pages/Organizations/Organizations";
-import ReligiousTexts from "../pages/ReligiousTexts/ReligiousTexts";
+// import ReligiousTexts from "../pages/ReligiousTexts/ReligiousTexts";
 import News from "../pages/News/News";
 import Notification from "../pages/Notification/Notification";
 import Popups from "../pages/Popups/Popups";
@@ -20,6 +20,7 @@ import Unauthorized from "../pages/Unauthorized/Unauthorized";
 import NotFound from "../pages/NotFound/NotFound";
 import Books from "../pages/Books/Books";
 import ConsultancyService from "../pages/ConsultancyService/ConsultancyService";
+import APIKey from "../pages/APIKey/APIKey";
 
 export const router = createBrowserRouter([
   {
@@ -95,10 +96,10 @@ export const router = createBrowserRouter([
         path: "consultancy-service",
         element: <ConsultancyService/>,
       },
-      // {
-      //   path: "api-keys",
-      //   element: <APIKey />,
-      // },
+      {
+        path: "api-keys",
+        element: <APIKey />,
+      },
       {
         path: "*",
         element: <NotFound />,
