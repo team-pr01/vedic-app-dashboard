@@ -75,6 +75,7 @@ export const baseApi = createApi({
     "consultancyService",
     "apiKeys",
     "course",
+    "recipe",
   ],
   endpoints: () => ({}),
 });

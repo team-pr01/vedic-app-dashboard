@@ -22,6 +22,7 @@ import Books from "../pages/Books/Books";
 import ConsultancyService from "../pages/ConsultancyService/ConsultancyService";
 import APIKey from "../pages/APIKey/APIKey";
 import Course from "../pages/Course/Course";
+import Recipe from "../pages/Recipe/Recipe";
 
 export const router = createBrowserRouter([
   {
@@ -96,6 +97,10 @@ export const router = createBrowserRouter([
       {
         path: "consultancy-service",
         element: <ConsultancyService/>,
+      },
+      {
+        path: "recipe",
+        element: <Recipe/>,
       },
       {
         path: "api-keys",
