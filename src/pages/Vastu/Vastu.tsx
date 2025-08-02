@@ -8,22 +8,19 @@ import {
   useGetSingleVastuQuery,
 } from "../../redux/Features/Vastu/vastuApi";
 import Loader from "../../components/Shared/Loader/Loader";
+import Categories from "../../components/Categories/Categories";
 
 export type TVastu = {
   _id: string;
   title: string;
-  description: string;
   category: string;
-  direction: string;
-  imageUrl: string;
-  importance: "high" | "medium" | "low";
-  recommendations: string[];
-  createdBy: string;
+  videoUrl: string;
   createdAt?: Date;
   updatedAt?: Date;
 };
 
 const Vastu = () => {
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const { data, isLoading } = useGetAllVastuQuery({});
   const [vastuId, setVastuId] = useState("");
@@ -34,11 +31,12 @@ const Vastu = () => {
     <div className="space-y-6">
       <PageHeader
         title="Vastu Management"
-        buttonText="Add New Principle"
+        buttonText="Add New Vastu Principle"
         icon={<Plus className="h-4 w-4" />}
         onClick={() => {
           setShowForm(true);
         }}
+        setShowCategoryForm={setShowCategoryForm}
       />
 
       {isLoading ? (
@@ -65,6 +63,13 @@ const Vastu = () => {
           mode={mode}
         />
       )}
+
+      {/* Category management */}
+      <Categories
+        showModal={showCategoryForm}
+        setShowModal={setShowCategoryForm}
+        areaName="vastu"
+      />
     </div>
   );
 };

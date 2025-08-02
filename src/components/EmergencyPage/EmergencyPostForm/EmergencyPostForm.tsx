@@ -59,7 +59,7 @@ const EmergencyPostForm: React.FC<TSendNotificationFormProps> = ({
     }
   };
 
-  const audiences = ["All Users", "Moderator", "Admin"];
+  const audiences = ["Moderator", "Admin"];
 
   const toggleAudience = (audience: string) => {
     setTargetedAudience((prev) =>

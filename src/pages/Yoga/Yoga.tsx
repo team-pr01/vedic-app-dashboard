@@ -40,6 +40,7 @@ const Yoga = () => {
           setMode && setMode("add");
           setShowForm(true);
         }}
+        isCategoryButtonVisible={false}
       />
 
       {isLoading ? (

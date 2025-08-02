@@ -1,9 +1,8 @@
 import { X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import TextInput from "../../Reusable/TextInput/TextInput";
-import Textarea from "../../Reusable/TextArea/TextArea";
 import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { TVastu } from "../../../pages/Vastu/Vastu";
 import toast from "react-hot-toast";
 import {
@@ -11,41 +10,13 @@ import {
   useUpdateVastuMutation,
 } from "../../../redux/Features/Vastu/vastuApi";
 import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
+import { useGetAllCategoriesQuery } from "../../../redux/Features/Categories/ReelCategory/categoriesApi";
 
 type TFormValues = {
   title: string;
-  sanskritName?: string;
-  description: string;
   category: string;
-  direction: string;
-  imageUrl?: string;
-  importance?: string;
-  recommendations?: string;
+  videoUrl: string;
 };
-
-const DIRECTIONS = [
-  "north",
-  "south",
-  "east",
-  "west",
-  "northeast",
-  "northwest",
-  "southeast",
-  "southwest",
-  "center",
-];
-
-const CATEGORIES = [
-  "entrance",
-  "kitchen",
-  "bedroom",
-  "bathroom",
-  "living room",
-  "study room",
-  "pooja room",
-  "balcony",
-  "garden",
-];
 
 type TAddAddYogaFormProps = {
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
@@ -58,6 +29,7 @@ const AddVastuForm: React.FC<TAddAddYogaFormProps> = ({
   mode,
   defaultValues,
 }) => {
+  const { data: categories } = useGetAllCategoriesQuery({});
   const [addVastu, { isLoading }] = useAddVastuMutation();
   const [updateVastu, { isLoading: isVastuUpdating }] =
     useUpdateVastuMutation();
@@ -70,46 +42,19 @@ const AddVastuForm: React.FC<TAddAddYogaFormProps> = ({
     formState: { errors },
   } = useForm<TFormValues>();
 
-  const [tagInput, setTagInput] = useState("");
-  const [recommendations, setRecommendations] = useState<string[]>([]);
-  console.log(defaultValues);
-
   useEffect(() => {
     if (mode === "edit" && defaultValues) {
       setValue("title", defaultValues?.title);
-      setValue("description", defaultValues?.description);
-      setValue("category", defaultValues?.category?.toLowerCase() as any);
-      setValue("direction", defaultValues?.direction?.toLowerCase() as any);
-      setValue("imageUrl", defaultValues?.imageUrl);
-      setValue("importance", defaultValues?.importance);
-      setRecommendations(defaultValues?.recommendations || []);
+      setValue("category", defaultValues?.category);
+      setValue("videoUrl", defaultValues?.videoUrl);
     }
   }, [defaultValues, mode, setValue]);
-
-  //   To enter recommendations
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const trimmed = tagInput.trim();
-      if (trimmed && !recommendations.includes(trimmed)) {
-        const newTags = [...recommendations, trimmed];
-        setRecommendations(newTags);
-      }
-      setTagInput("");
-    }
-  };
-
-  const removeRecommendation = (tagToRemove: string) => {
-    const filtered = recommendations.filter((tag) => tag !== tagToRemove);
-    setRecommendations(filtered);
-  };
 
   //   Function to add or edit vastu
   const handleSubmitVastu = async (data: TFormValues) => {
     try {
       const payload = {
         ...data,
-        recommendations,
       };
 
       let response;
@@ -145,6 +90,14 @@ const AddVastuForm: React.FC<TAddAddYogaFormProps> = ({
     }
   };
 
+  const filteredCategory = categories?.data?.filter(
+    (category: any) => category.areaName === "vastu"
+  );
+
+  const allCategories = filteredCategory?.map(
+    (category: any) => category.category
+  );
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[700px] overflow-y-auto">
@@ -176,79 +129,18 @@ const AddVastuForm: React.FC<TAddAddYogaFormProps> = ({
               error={errors.title}
             />
 
-            <Textarea
-              label="Description"
-              placeholder="Write description here..."
-              rows={6}
-              error={errors.description}
-              {...register("description", {
-                required: "Description is required",
-              })}
-            />
-
             <SelectDropdown
               label="Category"
               {...register("category")}
               error={errors?.category}
-              options={CATEGORIES}
-            />
-
-            <SelectDropdown
-              label="Direction"
-              {...register("direction")}
-              error={errors?.direction}
-              options={DIRECTIONS}
+              options={allCategories}
             />
 
             <TextInput
-              label="Image Url"
-              placeholder="Enter image URL"
-              {...register("imageUrl", { required: "Image Url is required" })}
-              error={errors.imageUrl}
-            />
-
-            <div>
-              <TextInput
-                label="Recommendations"
-                name="recommendations"
-                placeholder="Enter recommendation. Press enter to add another"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                error={
-                  Array.isArray(errors.recommendations)
-                    ? errors.recommendations[0]
-                    : errors.recommendations
-                }
-                isRequired={false}
-              />
-              {/* Display tags below the input */}
-              <div className="flex flex-wrap gap-2 mt-2">
-                {recommendations.map(
-                  (recommendation: string, index: number) => (
-                    <div
-                      key={index}
-                      className="flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm"
-                    >
-                      <span>{recommendation}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeRecommendation(recommendation)}
-                        className="ml-1 text-blue-500 hover:text-red-500"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
-
-            <SelectDropdown
-              label="Importance"
-              {...register("importance")}
-              error={errors?.importance}
-              options={["high", "medium", "low"]}
+              label="Video Url"
+              placeholder="Enter Video URL"
+              {...register("videoUrl", { required: "Video Url is required" })}
+              error={errors.videoUrl}
             />
           </div>
 

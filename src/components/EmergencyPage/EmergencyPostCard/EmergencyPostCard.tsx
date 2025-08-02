@@ -125,10 +125,6 @@ const EmergencyPostCard: React.FC<TEmergencyPostCardProps> = ({ post }) => {
               <Timer className="h-4 w-4 mr-1" />
               {new Date(post.createdAt).toLocaleString()}
             </span>
-            <span className="flex items-center">
-              <Users className="h-4 w-4 mr-1" />
-              {post?.target_groups?.join(", ")}
-            </span>
           </div>
 
           <h1 className="text-purple-600 font-semibold mt-4">User Info</h1>
