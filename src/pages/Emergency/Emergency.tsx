@@ -71,9 +71,15 @@ const Emergency = () => {
         {isLoading || isFetching ? (
           <Loader size="size-10" />
         ) : (
-          data?.data?.map((post: any) => (
-            <EmergencyPostCard key={post?._id} post={post} />
-          ))
+          [...(data?.data || [])]
+            .sort(
+              (a, b) =>
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime()
+            )
+            .map((post: any) => (
+              <EmergencyPostCard key={post?._id} post={post} />
+            ))
         )}
       </div>
 

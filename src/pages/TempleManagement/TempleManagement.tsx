@@ -39,8 +39,7 @@ const TempleManagement = () => {
     { key: "add", label: "Add New Temple", resetSelection: true },
     { key: "details", label: "Temple Details", condition: selectedTemple },
   ];
-
-  console.log(data);
+  
   return (
     <div>
       <div className="flex space-x-4 mb-6">

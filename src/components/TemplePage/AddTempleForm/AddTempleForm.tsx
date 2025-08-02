@@ -1,11 +1,11 @@
 import { useForm } from "react-hook-form";
 import Textarea from "../../Reusable/TextArea/TextArea";
 import TextInput from "../../Reusable/TextInput/TextInput";
-import { X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAddTempleMutation } from "../../../redux/Features/Temple/templeApi";
-import { useState } from "react";
 import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
+import { useSelector } from "react-redux";
+import { useCurrentUser } from "../../../redux/Features/Auth/authSlice";
 
 export type TFormValues = {
   name: string;
@@ -17,17 +17,16 @@ export type TFormValues = {
   country: string;
   establishedYear: number;
   visitingHours: string;
-  contactInfo: {
-    phone: string;
-    email: string;
-    website?: string;
-  };
-  imageUrl: string;
+  phone: string;
+  email: string;
+  website?: string;
+  file: any;
   mediaGallery: string[];
   videoUrl?: string;
 };
 
 const AddTempleForm = () => {
+  const user = useSelector(useCurrentUser) as any;
   const {
     register,
     handleSubmit,
@@ -35,41 +34,43 @@ const AddTempleForm = () => {
     formState: { errors },
   } = useForm<TFormValues>();
 
-  const [mediaGallery, setMediaGallery] = useState<string[]>([]);
-  const [mediaGalleryInput, setMediaGalleryInput] = useState("");
+  // const [mediaGallery, setMediaGallery] = useState<string[]>([]);
+  // const [mediaGalleryInput, setMediaGalleryInput] = useState("");
 
   //   To enter image
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const trimmed = mediaGalleryInput.trim();
-      if (trimmed && !mediaGallery.includes(trimmed)) {
-        const newTags = [...mediaGallery, trimmed];
-        setMediaGallery(newTags);
-      }
-      setMediaGalleryInput("");
-    }
-  };
+  // const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  //   if (e.key === "Enter") {
+  //     e.preventDefault();
+  //     const trimmed = mediaGalleryInput.trim();
+  //     if (trimmed && !mediaGallery.includes(trimmed)) {
+  //       const newTags = [...mediaGallery, trimmed];
+  //       setMediaGallery(newTags);
+  //     }
+  //     setMediaGalleryInput("");
+  //   }
+  // };
 
-  const removeImage = (tagToRemove: string) => {
-    const filtered = mediaGallery.filter((tag) => tag !== tagToRemove);
-    setMediaGallery(filtered);
-  };
+  // const removeImage = (tagToRemove: string) => {
+  //   const filtered = mediaGallery.filter((tag) => tag !== tagToRemove);
+  //   setMediaGallery(filtered);
+  // };
 
   const [addTemple, { isLoading }] = useAddTempleMutation();
   const handleAddTemple = async (data: TFormValues) => {
     try {
-      const payload = {
-        ...data,
-        contactInfo : {
-          phone: data.contactInfo.phone,
-          email: data.contactInfo.email,
-          website: data.contactInfo.website
-        },
-        mediaGallery,
-      };
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (key === "file" && value instanceof FileList && value.length > 0) {
+          formData.append("file", value[0]);
+        } else {
+          formData.append(key, value as string);
+        }
+      });
 
-      const response = await addTemple(payload).unwrap();
+      // Creator ID
+      formData.append("createdBy", user?._id);
+
+      const response = await addTemple(formData).unwrap();
       if (response?.success) {
         toast.success(response?.message || "Temple added successfully");
         window.location.reload();
@@ -181,39 +182,37 @@ const AddTempleForm = () => {
           label="Phone"
           type="text"
           placeholder="Enter phone number"
-          {...register("contactInfo.phone", {
+          {...register("phone", {
             required: "Phone number is required",
           })}
-          error={errors.contactInfo?.phone}
+          error={errors.phone}
         />
 
         <TextInput
           label="Email"
           type="email"
           placeholder="Enter email address"
-          {...register("contactInfo.email", {
+          {...register("email", {
             required: "Email is required",
           })}
-          error={errors.contactInfo?.email}
+          error={errors.email}
         />
 
         <TextInput
           label="Website"
           placeholder="https://example.com"
-          {...register("contactInfo.website")}
-          error={errors.contactInfo?.website}
+          {...register("website")}
+          error={errors.website}
         />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* File upload */}
         <TextInput
-          label="Temple Image URL"
-          type="text"
-          placeholder="Enter image URL"
-          {...register("imageUrl", {
-            required: "Image URL is required",
-          })}
-          error={errors.imageUrl}
+          label="Image"
+          type="file"
+          {...register("file")}
+          error={errors.file as any}
         />
 
         <TextInput
@@ -224,7 +223,7 @@ const AddTempleForm = () => {
           error={errors.videoUrl}
         />
 
-        <div>
+        {/* <div>
           <TextInput
             label="Media Gallery (Image URLs) "
             name="mediaGallery"
@@ -235,7 +234,6 @@ const AddTempleForm = () => {
             error={Array.isArray(errors.mediaGallery) ? errors.mediaGallery[0] : errors.mediaGallery}
             isRequired={false}
           />
-          {/* Display tags below the input */}
           <div className="flex flex-wrap gap-2 mt-2">
             {mediaGallery.map((tag, index) => (
               <div
@@ -253,11 +251,11 @@ const AddTempleForm = () => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
 
       <div className="flex justify-end">
-       <SubmitButton isLoading={isLoading} />
+        <SubmitButton isLoading={isLoading} />
       </div>
     </form>
   );

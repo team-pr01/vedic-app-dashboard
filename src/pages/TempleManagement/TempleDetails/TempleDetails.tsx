@@ -130,23 +130,21 @@ const TempleDetails = ({ templeDetails }: { templeDetails: any }) => {
           </h3>
           <div className="space-y-2">
             <p className="text-gray-700 dark:text-gray-300">
-              <span className="font-medium">Phone:</span>{" "}
-              {templeDetails?.contactInfo?.phone}
+              <span className="font-medium">Phone:</span> {templeDetails?.phone}
             </p>
             <p className="text-gray-700 dark:text-gray-300">
-              <span className="font-medium">Email:</span>{" "}
-              {templeDetails?.contactInfo?.email}
+              <span className="font-medium">Email:</span> {templeDetails?.email}
             </p>
-            {templeDetails?.contactInfo?.website && (
+            {templeDetails?.website && (
               <p className="text-gray-700 dark:text-gray-300">
                 <span className="font-medium">Website:</span>{" "}
                 <a
-                  href={templeDetails?.contactInfo?.website}
+                  href={templeDetails?.website}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 dark:text-blue-400 hover:underline"
                 >
-                  {templeDetails?.contactInfo?.website}
+                  {templeDetails?.website}
                 </a>
               </p>
             )}
@@ -235,33 +233,15 @@ const TempleDetails = ({ templeDetails }: { templeDetails: any }) => {
 
         <div className="mb-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            Media Gallery
+            Video
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {templeDetails?.mediaGallery &&
-              templeDetails?.mediaGallery?.map(
-                (image: string, index: number) => (
-                  <div
-                    key={`image-${index}`}
-                    className="rounded-lg overflow-hidden h-72"
-                  >
-                    <img
-                      src={image}
-                      alt={`${templeDetails?.name} ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )
-              )}
-
-            <div className="rounded-lg overflow-hidden h-72">
-              <video
-                src={templeDetails?.videoUrl}
-                controls
-                className="w-full h-full object-cover"
-              />
-            </div>
+          <div className="rounded-lg overflow-hidden h-[600px]">
+            <video
+              src={templeDetails?.videoUrl}
+              controls
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
       </div>

@@ -20,6 +20,7 @@ type TFormValues = {
   name: string;
   category: string;
   duration: string;
+  url: string;
   file?: FileList;
 };
 
@@ -45,7 +46,7 @@ const AddCourseForm = ({
 
   useEffect(() => {
     if (mode === "edit" && defaultValues) {
-      const fields = ["name", "category", "duration"] as (keyof TFormValues)[];
+      const fields = ["name", "category", "duration", "url"] as (keyof TFormValues)[];
       fields.forEach((field) => setValue(field, defaultValues[field]));
     }
   }, [defaultValues, mode, setValue]);
@@ -123,6 +124,12 @@ const AddCourseForm = ({
                 placeholder="Enter course duration"
                 {...register("duration", { required: "Duration is required" })}
                 error={errors.duration}
+              />
+              <TextInput
+                label="Course URL"
+                placeholder="Add course url"
+                {...register("url", { required: "URL is required" })}
+                error={errors.url}
               />
               <SelectDropdown
                 label="Category"

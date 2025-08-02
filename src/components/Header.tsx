@@ -31,6 +31,7 @@ export function Header() {
     });
 
     socket.on("new-notification", (data) => {
+      console.log(data);
       setNotifications((prev) => [data, ...prev]);
       setUnreadCount((prev) => prev + 1);
     });

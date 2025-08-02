@@ -11,17 +11,13 @@ import CourseCard from "../../components/CoursePage/CourseCard/CourseCard";
 import AddCourseForm from "../../components/CoursePage/AddCourseForm/AddCourseForm";
 import Loader from "../../components/Shared/Loader/Loader";
 
-export type TConsultancyService = {
+export type TCourse = {
   _id: string;
   imageUrl?: string;
   name: string;
-  specialty: string;
-  experience: string;
+  url: string;
+  duration: string;
   category: string;
-  availableTime: string;
-  availabilityType: string[];
-  fees: string;
-  rating: string;
   createdAt?: Date;
   updatedAt?: Date;
 };
@@ -34,7 +30,7 @@ const Course = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [category, setCategory] = useState("");
 
-  //   Get all Consultancy Services
+  //   Get all Courses
   const { data, isLoading, isFetching } = useGetAlCoursesQuery({
     keyword: searchQuery,
     category,
@@ -75,7 +71,7 @@ const Course = () => {
         </h1>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {data?.data?.map((course: TConsultancyService) => (
+          {data?.data?.map((course: TCourse) => (
             <CourseCard
               key={course?._id}
               course={course}
