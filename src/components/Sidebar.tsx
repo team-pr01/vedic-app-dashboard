@@ -42,11 +42,17 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
       label: "Books",
       path: "/dashboard/religious-texts",
     },
+   
     // {
     //   icon: BookOpen,
     //   label: "Religious Texts",
     //   path: "/dashboard/religious-texts",
     // },
+     {
+      icon: BookOpen,
+      label: "Course",
+      path: "/dashboard/course",
+    },
     { icon: Film, label: "Reels", path: "/dashboard/reels" },
     { icon: Lotus, label: "Yoga", path: "/dashboard/yoga" },
     { icon: Home, label: "Vastu", path: "/dashboard/vastu" },
