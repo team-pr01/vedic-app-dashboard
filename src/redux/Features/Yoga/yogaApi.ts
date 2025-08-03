@@ -2,6 +2,18 @@ import { baseApi } from "../../API/baseApi";
 
 const yogaApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+     getAdminStats: builder.query({ 
+      query: () => {
+        return {
+          url: `/yoga/admin-stats`,
+          method: "GET",
+          credentials: "include",
+        };
+      },
+      providesTags: ["yoga"],
+    }),
+
+
     getAllYoga: builder.query({
       query: () => {
         return {
@@ -54,6 +66,7 @@ const yogaApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useGetAdminStatsQuery,
   useGetAllYogaQuery,
   useGetSingleYogaQuery,
   useAddYogaMutation,
