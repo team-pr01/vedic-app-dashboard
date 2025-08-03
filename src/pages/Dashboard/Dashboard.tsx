@@ -15,9 +15,12 @@ import {
   Briefcase,
   ChefHat,
   Key,
+  Trash2,
   // Activity,
 } from "lucide-react";
 import { useGetAdminStatsQuery } from "../../redux/Features/Yoga/yogaApi";
+import { useGetAllUsersQuery } from "../../redux/Features/Auth/authApi";
+import Loader from "../../components/Shared/Loader/Loader";
 
 const donations = [
   { id: 1, donor: "Alice", amount: 100, date: "2024-05-01" },
@@ -46,6 +49,17 @@ const renderOverviewCard = (
 );
 
 const Dashboard: React.FC = () => {
+  const { data: users, isLoading, isFetching } = useGetAllUsersQuery({});
+
+const thirtyDaysAgo = new Date();
+thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+const recentUsers = users?.data?.filter((user:any) => {
+  const joinedDate = new Date(user.createdAt);
+  return joinedDate >= thirtyDaysAgo;
+});
+
+console.log(recentUsers);
   const { data } = useGetAdminStatsQuery({});
 
   return (
@@ -120,7 +134,83 @@ const Dashboard: React.FC = () => {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Recent Users
           </h3>
-          <UserTable />
+          <div className="overflow-x-auto">
+      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead className="bg-gray-200 dark:bg-gray-900">
+          <tr>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Name
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Role
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Phone Number
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Joined
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Assigned Pages
+            </th>
+            <th className="relative px-6 py-3">
+              <span className="sr-only">Actions</span>
+            </th>
+          </tr>
+        </thead>
+        {isLoading || isFetching ? (
+          <tbody>
+            <tr>
+              <td colSpan={6}>
+                <div className="flex justify-center items-center py-10">
+                  <Loader size="size-10" />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        ) : (
+          <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700 max-w-[1000px]">
+            {recentUsers?.map((user: any) => (
+              <tr key={user._id}>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center">
+                    <div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        {user.name}
+                      </div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        {user.email}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                    {user.role}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {user.phoneNumber}
+                  </span>
+                </td>
+             
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  {new Date(user.createdAt).toLocaleString()}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 capitalize">
+                  {user?.assignedPages?.length > 0
+                    ? user.assignedPages.join(", ").length > 50
+                      ? `${user.assignedPages.join(", ").slice(0, 50)}...`
+                      : user.assignedPages.join(", ")
+                    : "N/A"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        )}
+      </table>
+    </div>
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
