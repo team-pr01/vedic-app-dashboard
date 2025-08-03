@@ -10,7 +10,7 @@ const contentApi = baseApi.injectEndpoints({
           credentials: "include",
         };
       },
-      providesTags: ["popup"],
+      providesTags: ["content"],
     }),
 
     getSingleContent: builder.query({
@@ -19,7 +19,7 @@ const contentApi = baseApi.injectEndpoints({
         method: "GET",
         credentials: "include",
       }),
-      providesTags: ["popup"],
+      providesTags: ["content"],
     }),
 
     addContent: builder.mutation<any, any>({
@@ -29,29 +29,29 @@ const contentApi = baseApi.injectEndpoints({
         body: data,
         credentials: "include",
       }),
-      invalidatesTags: ["popup"],
+      invalidatesTags: ["content"],
     }),
 
     deleteContent: builder.mutation<
       any,
       { contentId: string; type: "image" | "video"; url: string }
     >({
-      query: (contentId ) => ({
+      query: (contentId) => ({
         url: `/content/delete-content/${contentId}`,
         method: "DELETE",
         credentials: "include",
       }),
-      invalidatesTags: ["popup"],
+      invalidatesTags: ["content"],
     }),
 
     updateContent: builder.mutation<any, any>({
       query: ({ id, data }) => ({
-        url: `/popup/${id}`,
+        url: `/content/${id}`,
         method: "PUT",
         body: data,
         credentials: "include",
       }),
-      invalidatesTags: ["popup"],
+      invalidatesTags: ["content"],
     }),
   }),
 });

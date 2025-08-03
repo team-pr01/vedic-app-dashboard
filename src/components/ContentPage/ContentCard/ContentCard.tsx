@@ -33,42 +33,50 @@ const ContentCard: React.FC<TContentCardProps> = ({
   };
   return (
     <>
-      <div className="flex flex-col gap-4 rounded-2xl shadow-md bg-white  hover:shadow-lg transition">
-        <img
-          src={content?.imageUrl}
-          alt={content?.title}
-          className="w-full h-72 rounded-t-2xl"
-        />
-        <div className="p-4">
-            <div>
-          <h2 className="text-lg font-semibold text-gray-800">
-            {content?.title}
-          </h2>
-          <p className="text-sm text-gray-700 font-medium">
-            {content?.subtitle}
-          </p>
-          <p className="text-sm text-gray-700 font-medium">
-            {content?.description}
-          </p>
-        </div>
+      <div className="flex flex-col gap-4 rounded-2xl shadow-md bg-white  hover:shadow-lg transition w-96 h-96">
+        <div className="relative">
+             <div className="flex justify-end gap-2 absolute top-4 right-4 z-20">
+            <button
+              onClick={handleEdit}
+              className="text-white hover:text-blue-600"
+              title="Edit"
+            >
+              <Pencil size={18} />
+            </button>
+            <button
+              onClick={handleConfirmDelete}
+              className="text-red-500 hover:text-red-600"
+              type="button"
+            >
+              <Trash2 size={18} />
+            </button>
+          </div>
+          <div>
+            <img
+              src={content?.imageUrl}
+              alt={content?.title}
+              className="w-full h-96 rounded-2xl relative"
+            />
+            <div className="bg-gray-700/50 w-full h-full absolute top-0 bottom-0 right-0 left-0 rounded-2xl"></div>
+          </div>
 
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={handleEdit}
-            className="text-blue-500 hover:text-blue-600"
-            title="Edit"
-          >
-            <Pencil size={18} />
-          </button>
-          <button
-            onClick={handleConfirmDelete}
-            className="text-red-500 hover:text-red-600"
-            type="button"
-          >
-            <Trash2 size={18} />
-          </button>
+           <div className="p-4 absolute bottom-0">
+          <div>
+            <h2 className="text-lg font-semibold text-white">
+              {content?.title}
+            </h2>
+            <p className="text-sm text-white font-medium mt-2">
+              {content?.subtitle}
+            </p>
+            <p className="text-sm text-white mt-1">
+              {content?.description}
+            </p>
+          </div>
+
+         
         </div>
         </div>
+       
       </div>
     </>
   );
