@@ -12,8 +12,8 @@ import { setUser } from "../Features/Auth/authSlice";
 
 const baseQuery = fetchBaseQuery({
   // baseUrl: "https://vedic-app-server.vercel.app/api/v1",
-  // baseUrl: "https://vedic-app-server.onrender.com/api/v1",
-  baseUrl: "http://localhost:5000/api/v1",
+  baseUrl: "https://vedic-app-server.onrender.com/api/v1",
+  // baseUrl: "http://localhost:5000/api/v1",
   credentials: "include",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
@@ -34,7 +34,7 @@ const baseQueryWithRefreshToken: BaseQueryFn<
 
   if (result.error?.status === 401) {
     const res = await fetch(
-      "https://vedic-app-server.vercel.app/api/v1/auth/refresh-token",
+      "https://vedic-app-server.onrender.com/api/v1/auth/refresh-token",
       // "http://localhost:5000/api/v1/auth/refresh-token",
       {
         credentials: "include",
