@@ -1,73 +1,82 @@
 import { useForm } from "react-hook-form";
 import TextInput from "../../Reusable/TextInput/TextInput";
-import { useState } from "react";
 import Loader from "../../Shared/Loader/Loader";
-import { useAddContentMutation } from "../../../redux/Features/Content/contentApi";
-import { X } from "lucide-react";
+import {
+  useAddContentMutation,
+  useUpdateContentMutation,
+} from "../../../redux/Features/Content/contentApi";
+import toast from "react-hot-toast";
+import { useEffect } from "react";
 
 type TFormValues = {
-  imageUrl: string[];
-  videoUrl: string[];
+  title: string;
+  subtitle: string;
+  description: string;
+  file: any;
 };
 
 const AddContentForm = ({
   showForm,
   setShowForm,
+  mode = "add",
+  setMode,
+  defaultValues,
 }: {
   showForm: boolean;
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
+  mode?: "add" | "edit";
+  setMode?: React.Dispatch<React.SetStateAction<"add" | "edit">>;
+  defaultValues?: any;
 }) => {
   const [addContent, { isLoading }] = useAddContentMutation();
+  const [updateContent, { isLoading: isUpdating }] = useUpdateContentMutation();
   const {
+    register,
     handleSubmit,
+    setValue,
     reset,
+    formState: { errors },
   } = useForm<TFormValues>();
 
-  const [imageInput, setImageInput] = useState("");
-  const [videoInput, setVideoInput] = useState("");
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [videoUrls, setVideoUrls] = useState<string[]>([]);
-
-  const handleKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>,
-    value: string,
-    setValue: React.Dispatch<React.SetStateAction<string>>,
-    urls: string[],
-    setUrls: React.Dispatch<React.SetStateAction<string[]>>
-  ) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const trimmed = value.trim();
-      if (trimmed && !urls.includes(trimmed)) {
-        setUrls([...urls, trimmed]);
-      }
-      setValue("");
+  useEffect(() => {
+    if (mode === "edit" && defaultValues) {
+      const fields = [
+        "title",
+        "subtitle",
+        "description",
+      ] as (keyof TFormValues)[];
+      fields.forEach((field) => setValue(field, defaultValues[field]));
     }
-  };
+  }, [defaultValues, mode, setValue]);
 
-  const removeUrl = (
-    urlToRemove: string,
-    urls: string[],
-    setUrls: React.Dispatch<React.SetStateAction<string[]>>
-  ) => {
-    const filtered = urls.filter((url) => url !== urlToRemove);
-    setUrls(filtered);
-  };
-
-  const handleAddContent = async () => {
-    const payload: TFormValues = {
-      imageUrl: imageUrls,
-      videoUrl: videoUrls,
-    };
-
+  const handleSubmitContent = async (data: TFormValues) => {
     try {
-      await addContent(payload).unwrap();
+      const formData = new FormData();
+      Object.entries(data).forEach(([key, value]) => {
+        if (key === "file" && value instanceof FileList && value.length > 0) {
+          formData.append("file", value[0]);
+        } else {
+          formData.append(key, value as string);
+        }
+      });
+
+      let response;
+      if (mode === "edit" && defaultValues?._id) {
+        response = await updateContent({
+          id: defaultValues._id,
+          data: formData,
+        }).unwrap();
+        toast.success(response?.message || "Content updated");
+      } else {
+        response = await addContent(formData).unwrap();
+        toast.success(response?.message || "Content added");
+      }
+
       reset();
-      setImageUrls([]);
-      setVideoUrls([]);
       setShowForm(false);
-    } catch (error) {
-      console.error("Failed to add content", error);
+    } catch (error: any) {
+      const err = error?.data?.message || "Something went wrong";
+      toast.error(err);
     }
   };
 
@@ -76,17 +85,18 @@ const AddContentForm = ({
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           <form
-            onSubmit={handleSubmit(handleAddContent)}
+            onSubmit={handleSubmit(handleSubmitContent)}
             className="p-6 space-y-6"
           >
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Add New Content
+                {mode === "add" ? "Add New" : "Update"} Content
               </h3>
               <button
                 type="button"
                 onClick={() => {
                   setShowForm(false);
+                  setMode && setMode("add");
                   reset();
                 }}
                 className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 text-2xl"
@@ -95,70 +105,38 @@ const AddContentForm = ({
               </button>
             </div>
 
-            {/* Image URL input */}
-            <div>
+            <div className="flex flex-col gap-6">
               <TextInput
-                label="Image URL"
-                name="imageUrl"
-                placeholder="Enter image URL. Press enter to add"
-                value={imageInput}
-                onChange={(e) => setImageInput(e.target.value)}
-                onKeyDown={(e) =>
-                  handleKeyDown(e, imageInput, setImageInput, imageUrls, setImageUrls)
-                }
-                error={undefined}
-                isRequired={false}
+                label="Title"
+                placeholder="Enter title"
+                {...register("title", { required: "Title is required" })}
+                error={errors.title}
               />
-              <div className="flex flex-wrap gap-2 mt-2">
-                {imageUrls.map((url, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm"
-                  >
-                    <span>{url}</span>
-                    <button
-                      type="button"
-                      onClick={() => removeUrl(url, imageUrls, setImageUrls)}
-                      className="ml-1 text-green-500 hover:text-red-500"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
+              <TextInput
+                label="Subtitle"
+                placeholder="Enter subtitle"
+                {...register("subtitle", {
+                  required: "Subtitle is required",
+                })}
+                error={errors.subtitle}
+              />
+              <TextInput
+                label="Description"
+                placeholder="Enter description"
+                {...register("description", {
+                  required: "Description is required",
+                })}
+                error={errors.description}
+              />
 
-            {/* Video URL input */}
-            <div>
+              {/* File upload */}
               <TextInput
-                label="Video URL"
-                name="videoUrl"
-                placeholder="Enter video URL. Press enter to add"
-                value={videoInput}
-                onChange={(e) => setVideoInput(e.target.value)}
-                onKeyDown={(e) =>
-                  handleKeyDown(e, videoInput, setVideoInput, videoUrls, setVideoUrls)
-                }
-                error={undefined}
-                isRequired={false}
+                label="Image"
+                type="file"
+                {...register("file")}
+                error={errors.file as any}
+                isRequired={mode === "add"}
               />
-              <div className="flex flex-wrap gap-2 mt-2">
-                {videoUrls.map((url, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-sm"
-                  >
-                    <span>{url}</span>
-                    <button
-                      type="button"
-                      onClick={() => removeUrl(url, videoUrls, setVideoUrls)}
-                      className="ml-1 text-purple-500 hover:text-red-500"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
             </div>
 
             <div className="flex justify-end space-x-3">
@@ -173,7 +151,7 @@ const AddContentForm = ({
                 type="submit"
                 className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                {isLoading ? <Loader size="size-4" /> : "Submit"}
+                {isLoading || isUpdating ? <Loader size="size-4" /> : "Submit"}
               </button>
             </div>
           </form>

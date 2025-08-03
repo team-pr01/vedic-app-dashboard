@@ -36,8 +36,8 @@ const contentApi = baseApi.injectEndpoints({
       any,
       { contentId: string; type: "image" | "video"; url: string }
     >({
-      query: ({ contentId, type, url }) => ({
-        url: `/content/delete-content/${contentId}/${type}/${encodeURIComponent(url)}`,
+      query: (contentId ) => ({
+        url: `/content/delete-content/${contentId}`,
         method: "DELETE",
         credentials: "include",
       }),
