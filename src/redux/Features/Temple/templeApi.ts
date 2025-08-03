@@ -67,6 +67,16 @@ const templeApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["temple"],
     }),
+
+    approveTemple: builder.mutation<any, any>({
+      query: ({ id, data }) => ({
+        url: `/temple/update-status/${id}`,
+        method: "PUT",
+        body: data,
+        credentials: "include",
+      }),
+      invalidatesTags: ["temple"],
+    }),
   }),
 });
 
@@ -78,4 +88,5 @@ export const {
   useDeleteTempleMutation,
   useDeleteEventMutation,
   useUpdateTempleMutation,
+  useApproveTempleMutation,
 } = templeApi;

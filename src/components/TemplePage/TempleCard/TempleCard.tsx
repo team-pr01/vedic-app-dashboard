@@ -1,5 +1,8 @@
 import { Info, MapPin } from "lucide-react";
-import { useDeleteTempleMutation } from "../../../redux/Features/Temple/templeApi";
+import {
+  useApproveTempleMutation,
+  useDeleteTempleMutation,
+} from "../../../redux/Features/Temple/templeApi";
 import toast from "react-hot-toast";
 import DeleteConfirmationModal from "../../DeleteConfirmationModal/DeleteConfirmationModal";
 import { useState } from "react";
@@ -14,6 +17,7 @@ const TempleCard: React.FC<TTempleCardProps> = ({
   setActiveTab,
   setTempleId,
 }) => {
+  const [approveTemple] = useApproveTempleMutation();
   const [deleteTemple] = useDeleteTempleMutation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -26,15 +30,45 @@ const TempleCard: React.FC<TTempleCardProps> = ({
     setShowDeleteModal(false);
   };
 
+  const handleApproveTemple = async () => {
+    const payload = {
+      status: "approved",
+    };
+
+    toast.promise(
+      approveTemple({
+        id: temple?._id,
+        data: payload,
+      }).unwrap(),
+      {
+        loading: "Approving temple...",
+        success: "Temple approved successfully!",
+        error: "Failed to approve temple.",
+      }
+    );
+  };
+
   return (
     <>
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-        <div className="h-72 overflow-hidden">
+        <div className="h-72 overflow-hidden relative">
           <img
             src={temple?.imageUrl}
             alt={temple.name}
             className="w-full h-full object-cover"
           />
+
+          <div
+            className={`capitalize text-xs px-4 py-2 rounded-3xl text-white absolute top-4 right-4 ${
+              temple?.status === "approved"
+                ? "bg-green-500"
+                : temple?.status === "pending"
+                ? "bg-yellow-500"
+                : "bg-red-500"
+            }`}
+          >
+            {temple?.status}
+          </div>
         </div>
         <div className="p-4">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white capitalize">
@@ -67,6 +101,14 @@ const TempleCard: React.FC<TTempleCardProps> = ({
             >
               Delete
             </button>
+            {temple?.status === "pending" && (
+              <button
+                onClick={handleApproveTemple}
+                className="px-3 py-1 bg-green-100 dark:bg-green-600 text-green-500 dark:text-green-500 rounded-md text-sm"
+              >
+                Approve
+              </button>
+            )}
           </div>
         </div>
       </div>
