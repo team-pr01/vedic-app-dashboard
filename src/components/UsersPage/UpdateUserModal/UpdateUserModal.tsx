@@ -226,9 +226,7 @@ const UpdateUserModal: React.FC<TUpdateUserModalProps> = ({
                   >
                     Cancel
                   </button>
-                  <SubmitButton
-                    isLoading={isAssigningPage || isUserRoleUpdating}
-                  />
+                  <SubmitButton isLoading={isAssigningPage} />
                 </div>
               </form>
             </div>

@@ -2,10 +2,13 @@ import { Edit2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import UpdateUserModal from "../UpdateUserModal/UpdateUserModal";
 import {
+  useDeleteUserMutation,
   useGetAllUsersQuery,
   useGetSingleUserByIdQuery,
 } from "../../../redux/Features/Auth/authApi";
 import Loader from "../../Shared/Loader/Loader";
+import toast from "react-hot-toast";
+import DeleteConfirmationModal from "../../DeleteConfirmationModal/DeleteConfirmationModal";
 
 const UserTable = () => {
   const [id, setId] = useState<string>("");
@@ -15,6 +18,17 @@ const UserTable = () => {
     useGetSingleUserByIdQuery(id);
 
   const [showForm, setShowForm] = useState<boolean>(false);
+
+  const [deleteUser] = useDeleteUserMutation();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const handleConfirmDelete = async () => {
+    toast.promise(deleteUser(id).unwrap(), {
+      loading: "Deleting...",
+      success: "Deleted successfully!",
+      error: "Failed to delete.",
+    });
+  };
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -76,20 +90,6 @@ const UserTable = () => {
                     {user.phoneNumber}
                   </span>
                 </td>
-                {/* <td className="px-6 py-4 whitespace-nowrap">
-                <button
-                  onClick={() =>
-                    handleUpdateStatus()
-                  }
-                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    user.status === "active"
-                      ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
-                      : "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
-                  }`}
-                >
-                  {user.status}
-                </button>
-              </td> */}
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   {new Date(user.createdAt).toLocaleString()}
                 </td>
@@ -113,7 +113,10 @@ const UserTable = () => {
                       <Edit2 className="w-4 h-4" />
                     </button>
                     <button
-                      // onClick={() => handleDeleteUser(user.id)}
+                      onClick={() => {
+                        setShowDeleteModal(true);
+                        setId(user?._id);
+                      }}
                       className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -131,6 +134,13 @@ const UserTable = () => {
         defaultValues={singleUserData?.data}
         isLoading={isUserDataLoading}
       />
+
+      {showDeleteModal && (
+        <DeleteConfirmationModal
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
     </div>
   );
 };
