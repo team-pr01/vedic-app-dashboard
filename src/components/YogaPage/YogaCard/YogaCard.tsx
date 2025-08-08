@@ -2,6 +2,12 @@ import { Clock, Edit2, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useDeleteYogaMutation } from "../../../redux/Features/Yoga/yogaApi";
 
+export const getEmbedUrl = (url: string) => {
+  const videoIdMatch = url.match(/(?:\?v=|\/embed\/|\.be\/)([\w\-]{11})/);
+  return videoIdMatch
+    ? `https://www.youtube.com/embed/${videoIdMatch[1]}`
+    : null;
+};
 type TYogaCardProps = {
   yoga: any;
   setShowForm: (visible: boolean) => void;
@@ -23,13 +29,6 @@ const YogaCard: React.FC<TYogaCardProps> = ({
       success: "Yoga deleted successfully!",
       error: "Failed to delete yoga.",
     });
-  };
-
-  const getEmbedUrl = (url: string) => {
-    const videoIdMatch = url.match(/(?:\?v=|\/embed\/|\.be\/)([\w\-]{11})/);
-    return videoIdMatch
-      ? `https://www.youtube.com/embed/${videoIdMatch[1]}`
-      : null;
   };
 
   const embedUrl = yoga?.videoUrl ? getEmbedUrl(yoga.videoUrl) : null;

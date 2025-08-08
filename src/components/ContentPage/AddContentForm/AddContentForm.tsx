@@ -9,10 +9,8 @@ import toast from "react-hot-toast";
 import { useEffect } from "react";
 
 type TFormValues = {
-  title: string;
-  subtitle: string;
-  description: string;
-  file: any;
+  videoUrl?: string;
+  file?: any;
 };
 
 const AddContentForm = ({
@@ -40,11 +38,7 @@ const AddContentForm = ({
 
   useEffect(() => {
     if (mode === "edit" && defaultValues) {
-      const fields = [
-        "title",
-        "subtitle",
-        "description",
-      ] as (keyof TFormValues)[];
+      const fields = ["videoUrl"] as (keyof TFormValues)[];
       fields.forEach((field) => setValue(field, defaultValues[field]));
     }
   }, [defaultValues, mode, setValue]);
@@ -107,26 +101,11 @@ const AddContentForm = ({
 
             <div className="flex flex-col gap-6">
               <TextInput
-                label="Title"
-                placeholder="Enter title"
-                {...register("title", { required: "Title is required" })}
-                error={errors.title}
-              />
-              <TextInput
-                label="Subtitle"
-                placeholder="Enter subtitle"
-                {...register("subtitle", {
-                  required: "Subtitle is required",
-                })}
-                error={errors.subtitle}
-              />
-              <TextInput
-                label="Description"
-                placeholder="Enter description"
-                {...register("description", {
-                  required: "Description is required",
-                })}
-                error={errors.description}
+                label="Video Url"
+                placeholder="Enter video url"
+                {...register("videoUrl")}
+                error={errors.videoUrl}
+                isRequired={false}
               />
 
               {/* File upload */}
@@ -135,7 +114,7 @@ const AddContentForm = ({
                 type="file"
                 {...register("file")}
                 error={errors.file as any}
-                isRequired={mode === "add"}
+                isRequired={false}
               />
             </div>
 

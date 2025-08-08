@@ -2,6 +2,7 @@ import React, { Dispatch, SetStateAction } from "react";
 import toast from "react-hot-toast";
 import { Pencil, Trash2 } from "lucide-react";
 import { useDeleteContentMutation } from "../../../redux/Features/Content/contentApi";
+import { getEmbedUrl } from "../../YogaPage/YogaCard/YogaCard";
 
 type TContentCardProps = {
   content: any;
@@ -31,11 +32,13 @@ const ContentCard: React.FC<TContentCardProps> = ({
       error: "Failed to delete.",
     });
   };
+
+  const embedUrl = content?.videoUrl ? getEmbedUrl(content.videoUrl) : null;
   return (
     <>
-      <div className="flex flex-col gap-4 rounded-2xl shadow-md bg-white  hover:shadow-lg transition w-96 h-96">
+      <div className="flex flex-col gap-4 rounded-2xl shadow-md bg-white hover:shadow-lg transition w-96 h-96">
         <div className="relative">
-             <div className="flex justify-end gap-2 absolute top-4 right-4 z-20">
+          <div className="flex justify-end gap-2 absolute top-4 right-4 z-20">
             <button
               onClick={handleEdit}
               className="text-white hover:text-blue-600"
@@ -51,32 +54,24 @@ const ContentCard: React.FC<TContentCardProps> = ({
               <Trash2 size={18} />
             </button>
           </div>
-          <div>
+
+          {content?.videoUrl ? (
+            <iframe
+              className="w-full h-96 rounded-2xl"
+              src={embedUrl as string}
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          ) : (
             <img
               src={content?.imageUrl}
               alt={content?.title}
-              className="w-full h-96 rounded-2xl relative"
+              className="w-full h-96 rounded-2xl"
             />
-            <div className="bg-gray-700/50 w-full h-full absolute top-0 bottom-0 right-0 left-0 rounded-2xl"></div>
-          </div>
-
-           <div className="p-4 absolute bottom-0">
-          <div>
-            <h2 className="text-lg font-semibold text-white">
-              {content?.title}
-            </h2>
-            <p className="text-sm text-white font-medium mt-2">
-              {content?.subtitle}
-            </p>
-            <p className="text-sm text-white mt-1">
-              {content?.description}
-            </p>
-          </div>
-
-         
+          )}
         </div>
-        </div>
-       
       </div>
     </>
   );
