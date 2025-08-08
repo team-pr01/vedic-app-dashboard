@@ -13,7 +13,7 @@ import toast from "react-hot-toast";
 import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
 export type TFormValues = {
   name: string;
-  type: "gurukul" | "vedic_institution" | "ashram";
+  category: "gurukul" | "vedic_institution" | "ashram";
   description: string;
   headTeacher: string;
   studentCapacity: number;
@@ -55,7 +55,7 @@ const AddOrganizationForm = ({
   useEffect(() => {
     if (mode === "edit" && defaultValues) {
       setValue("name", defaultValues?.name);
-      setValue("type", defaultValues?.type);
+      setValue("category", defaultValues?.category);
       setValue("description", defaultValues?.description);
       setValue("headTeacher", defaultValues?.headTeacher);
       setValue("studentCapacity", defaultValues?.studentCapacity);
@@ -142,8 +142,8 @@ const AddOrganizationForm = ({
 
             <SelectDropdown
               label="Type"
-              {...register("type")}
-              error={errors?.type}
+              {...register("category")}
+              error={errors?.category}
               options={["gurukul", "vedic_institution", "ashram"]}
             />
 

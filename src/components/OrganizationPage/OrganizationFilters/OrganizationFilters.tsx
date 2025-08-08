@@ -1,11 +1,13 @@
 import { Search } from "lucide-react";
 
 type TOrganizationFiltersFiltersProps = {
+  status: string;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   setStatus: (status: string) => void;
 };
 const OrganizationFilters: React.FC<TOrganizationFiltersFiltersProps> = ({
+  status,
   searchQuery,
   setSearchQuery,
   setStatus,

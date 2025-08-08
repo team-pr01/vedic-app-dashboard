@@ -13,7 +13,7 @@ import Loader from "../../components/Shared/Loader/Loader";
 export type TOrganization = {
   _id: string;
   name: string;
-  type: "gurukul" | "vedic_institution" | "ashram";
+  category: "gurukul" | "vedic_institution" | "ashram";
   description: string;
   headTeacher: string;
   imageUrl: string;
@@ -39,7 +39,7 @@ const Organizations = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { data, isLoading, isFetching } = useGetAllOrganizationQuery({
     keyword: searchQuery,
-    status,
+    category :status,
   });
 
   const [organizationId, setOrganizationId] = useState("");
@@ -65,24 +65,30 @@ const Organizations = () => {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         setStatus={setStatus}
+        status={status}
       />
 
       {/* Organization List */}
-      {isLoading || isFetching ? (
-        <Loader size="size-10" />
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {data?.data?.map((org: TOrganization) => (
-            <OrganizationCard
-              key={org._id}
-              org={org}
-              setOrganizationId={setOrganizationId}
-              setMode={setMode}
-              setShowForm={setShowForm}
-            />
-          ))}
-        </div>
-      )}
+     {isLoading || isFetching ? (
+  <Loader size="size-10" />
+) : data?.data?.length === 0 ? (
+  <div className="text-center text-gray-500 text-lg mt-10">
+    No data found
+  </div>
+) : (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {data?.data?.map((org: TOrganization) => (
+      <OrganizationCard
+        key={org._id}
+        org={org}
+        setOrganizationId={setOrganizationId}
+        setMode={setMode}
+        setShowForm={setShowForm}
+      />
+    ))}
+  </div>
+)}
+
 
       {/* Add/Edit Form Modal */}
       {showForm && (

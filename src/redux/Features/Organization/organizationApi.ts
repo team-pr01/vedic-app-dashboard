@@ -3,11 +3,19 @@ import { baseApi } from "../../API/baseApi";
 const organizationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllOrganization: builder.query({
-      query: () => ({
-        url: `/organization`,
-        method: "GET",
-        credentials: "include",
-      }),
+      query: ({ keyword, category }) => {
+        const params: Record<string, any> = {};
+
+        if (keyword) params.keyword = keyword;
+        if (category && category !== "all") params.category = category;
+
+        return {
+          url: `/organization`,
+          method: "GET",
+          credentials: "include",
+          params,
+        };
+      },
       providesTags: ["organization"],
     }),
 
