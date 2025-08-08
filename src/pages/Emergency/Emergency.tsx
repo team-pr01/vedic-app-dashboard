@@ -1,15 +1,12 @@
 import { useState } from "react";
 import { useGetAllEmergenciesQuery } from "../../redux/Features/Emergencies/emergencyApi";
-import EmergencyPageHeader from "../../components/EmergencyPage/EmergencyPageHeader/EmergencyPageHeader";
 import EmergencyPageFilters from "../../components/EmergencyPage/EmergencyPageFilters/EmergencyPageFilters";
 import Loader from "../../components/Shared/Loader/Loader";
 import EmergencyPostCard from "../../components/EmergencyPage/EmergencyPostCard/EmergencyPostCard";
-import EmergencyPostForm from "../../components/EmergencyPage/EmergencyPostForm/EmergencyPostForm";
-import { CheckCircle, RefreshCw, Clock } from "lucide-react";
+import { CheckCircle, RefreshCw, Clock, AlertTriangle } from "lucide-react";
 
 const Emergency = () => {
   const [status, setStatus] = useState("");
-  const [showForm, setShowForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { data, isLoading, isFetching } = useGetAllEmergenciesQuery({
     keyword: searchQuery,
@@ -57,7 +54,10 @@ const Emergency = () => {
         </div>
       </div>
 
-      <EmergencyPageHeader setShowForm={setShowForm} />
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+        <AlertTriangle className="h-6 w-6 mr-2 text-red-500" />
+        Emergency Messages
+      </h2>
 
       {/* Filters and Search */}
       <EmergencyPageFilters
@@ -82,9 +82,6 @@ const Emergency = () => {
             ))
         )}
       </div>
-
-      {/* New Message Form Modal */}
-      <EmergencyPostForm showForm={showForm} setShowForm={setShowForm} />
     </div>
   );
 };

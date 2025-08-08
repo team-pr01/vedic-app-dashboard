@@ -5,43 +5,9 @@ import Textarea from "../../Reusable/TextArea/TextArea";
 import toast from "react-hot-toast";
 import Loader from "../../Shared/Loader/Loader";
 import { useEffect, useState } from "react";
-import {
-  useGetSingleEmergencyQuery,
-  useSendMessageToGroupsMutation,
-} from "../../../redux/Features/Emergencies/emergencyApi";
+import { useSendMessageToGroupsMutation } from "../../../redux/Features/Emergencies/emergencyApi";
 import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
 import { useGetAllUsersQuery } from "../../../redux/Features/Auth/authApi";
-
-const users = [
-  {
-    _id: "u1",
-    name: "John Doe",
-    country: "Bangladesh",
-    district: "Dhaka",
-    phone: "+880123456789",
-  },
-  {
-    _id: "u2",
-    name: "John Doe",
-    country: "Bangladesh",
-    district: "Dhaka",
-    phone: "+880123456789",
-  },
-  {
-    _id: "u3",
-    name: "John Doe",
-    country: "Bangladesh",
-    district: "Dhaka",
-    phone: "+880123456789",
-  },
-  {
-    _id: "u4",
-    name: "John Doe",
-    country: "Bangladesh",
-    district: "Dhaka",
-    phone: "+880123456789",
-  },
-];
 
 type TFormValues = {
   emergencyMessageId: string;
@@ -54,11 +20,13 @@ type TFormValues = {
 };
 
 type TSendNotificationFormProps = {
+  postData: any;
   showForm: boolean;
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const EmergencyPostForm: React.FC<TSendNotificationFormProps> = ({
+  postData,
   showForm,
   setShowForm,
 }) => {
@@ -69,54 +37,20 @@ const EmergencyPostForm: React.FC<TSendNotificationFormProps> = ({
     reset,
   } = useForm<TFormValues>();
 
-  const [emergencyId, setEmergencyId] = useState<string>("");
-
-  const { data, isLoading: isSingleEmergencyLoading } =
-    useGetSingleEmergencyQuery(emergencyId);
-
   const [sendMessageToGroups, { isLoading }] = useSendMessageToGroupsMutation();
-  const [targetedAudience, setTargetedAudience] = useState<string[]>([]);
 
   useEffect(() => {
-    if (data) {
+    if (postData) {
       reset({
-        emergencyMessageId: data?.data?._id || "",
-        title: data?.data?.message || "",
-        location: data?.data?.location || "",
-        userName: data?.data?.user?.name || "",
-        phoneNumber: data?.data?.user?.phoneNumber || "",
-        status: data?.data?.status || "",
+        emergencyMessageId: postData?._id || "",
+        title: postData?.message || "",
+        location: postData?.location || "",
+        userName: postData?.user?.name || "",
+        phoneNumber: postData?.user?.phoneNumber || "",
+        status: postData?.status || "",
       });
     }
-  }, [data, reset]);
-
-  const handleSendNotification = async (data: TFormValues) => {
-    if (targetedAudience.length === 0) {
-      toast.error("Please select at least one targeted audience");
-      return;
-    }
-
-    try {
-      const payload = {
-        ...data,
-        targetedAudience,
-      };
-      const response = await sendMessageToGroups(payload).unwrap();
-      if (response?.success) {
-        toast.success(response?.message || "Message forwarded successfully");
-        setShowForm(false);
-      }
-    } catch (error) {
-      const errMsg =
-        typeof error === "object" &&
-        error !== null &&
-        "data" in error &&
-        typeof (error as any).data?.message === "string"
-          ? (error as any).data.message
-          : "Something went wrong";
-      toast.error(errMsg);
-    }
-  };
+  }, [postData, reset]);
 
   const bangladeshDistricts = [
     "Bagerhat",
@@ -199,22 +133,26 @@ const EmergencyPostForm: React.FC<TSendNotificationFormProps> = ({
     setSelectedDistrict(value);
   };
 
-  const { data:allUsers, isLoading:isUserLoading, isFetching } = useGetAllUsersQuery({});
+  const {
+    data: allUsers,
+    isLoading: isUserLoading,
+    isFetching,
+  } = useGetAllUsersQuery({});
 
   const filteredUsers = allUsers?.data?.filter(
-    (user:any) =>
+    (user: any) =>
       user?.country === selectedCountry && user?.city === selectedDistrict
   );
 
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 
-  const isAllSelected = selectedUserIds.length === filteredUsers.length;
+  const isAllSelected = selectedUserIds?.length === filteredUsers?.length;
 
   const toggleSelectAll = () => {
     if (isAllSelected) {
       setSelectedUserIds([]);
     } else {
-      const allIds = filteredUsers.map((user) => user._id);
+      const allIds = filteredUsers.map((user: any) => user._id);
       setSelectedUserIds(allIds);
     }
   };
@@ -224,6 +162,29 @@ const EmergencyPostForm: React.FC<TSendNotificationFormProps> = ({
       setSelectedUserIds((prev) => prev.filter((_id) => _id !== id));
     } else {
       setSelectedUserIds((prev) => [...prev, id]);
+    }
+  };
+
+  const handleSendNotification = async (data: TFormValues) => {
+    try {
+      const payload = {
+        ...data,
+        userIds: selectedUserIds,
+      };
+      const response = await sendMessageToGroups(payload).unwrap();
+      if (response?.success) {
+        toast.success(response?.message || "Message forwarded successfully");
+        setShowForm(false);
+      }
+    } catch (error) {
+      const errMsg =
+        typeof error === "object" &&
+        error !== null &&
+        "data" in error &&
+        typeof (error as any).data?.message === "string"
+          ? (error as any).data.message
+          : "Something went wrong";
+      toast.error(errMsg);
     }
   };
 
@@ -256,60 +217,50 @@ const EmergencyPostForm: React.FC<TSendNotificationFormProps> = ({
                   required: "Emergency Message Id is required",
                 })}
                 error={errors.title}
-                onChange={(e) => setEmergencyId(e.target.value)}
+                isDisabled={true}
               />
-              {isSingleEmergencyLoading && (
-                <p className="text-sm text-blue-500">
-                  Loading emergency data...
-                </p>
-              )}
-              {/* Step 3: Show rest of the inputs when data is loaded */}
-              {data?.data && emergencyId && (
-                <>
-                  <TextInput
-                    label="Title"
-                    placeholder="Emergency Title"
-                    {...register("title")}
-                    isDisabled={true}
-                    error={errors.title}
-                  />
-                  <TextInput
-                    label="User Name"
-                    placeholder="User name"
-                    {...register("userName")}
-                    isDisabled={true}
-                    error={errors.userName}
-                  />
-                  <TextInput
-                    label="Location"
-                    placeholder="User location"
-                    {...register("location")}
-                    isDisabled={true}
-                    error={errors.location}
-                  />
-                  <TextInput
-                    label="Phone Number"
-                    placeholder="User phone number"
-                    {...register("phoneNumber")}
-                    isDisabled={true}
-                    error={errors.phoneNumber}
-                  />
-                  <TextInput
-                    label="Status"
-                    placeholder="Status"
-                    {...register("status")}
-                    isDisabled={true}
-                    error={errors.status}
-                  />
+              <TextInput
+                label="Title"
+                placeholder="Emergency Title"
+                {...register("title")}
+                isDisabled={true}
+                error={errors.title}
+              />
+              <TextInput
+                label="User Name"
+                placeholder="User name"
+                {...register("userName")}
+                isDisabled={true}
+                error={errors.userName}
+              />
+              <TextInput
+                label="Location"
+                placeholder="User location"
+                {...register("location")}
+                isDisabled={true}
+                error={errors.location}
+              />
+              <TextInput
+                label="Phone Number"
+                placeholder="User phone number"
+                {...register("phoneNumber")}
+                isDisabled={true}
+                error={errors.phoneNumber}
+              />
+              <TextInput
+                label="Status"
+                placeholder="Status"
+                {...register("status")}
+                isDisabled={true}
+                error={errors.status}
+              />
 
-                  <Textarea
-                    label="Admin Message"
-                    placeholder="Write admin message"
-                    {...register("adminMessage")}
-                    error={errors.adminMessage}
-                  />
-                </>
-              )}
+              <Textarea
+                label="Admin Message"
+                placeholder="Write admin message"
+                {...register("adminMessage")}
+                error={errors.adminMessage}
+              />
 
               <SelectDropdown
                 label="Country"
@@ -362,7 +313,7 @@ const EmergencyPostForm: React.FC<TSendNotificationFormProps> = ({
                       </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-gray-900">
-                      {isUserLoading ? (
+                      {isUserLoading || isFetching ? (
                         <tr>
                           <td colSpan={5} className="py-6 text-center">
                             <Loader size="size-10" />
@@ -378,7 +329,7 @@ const EmergencyPostForm: React.FC<TSendNotificationFormProps> = ({
                           </td>
                         </tr>
                       ) : (
-                        filteredUsers?.map((user) => (
+                        filteredUsers?.map((user: any) => (
                           <tr
                             key={user._id}
                             className="border-b border-gray-300 dark:border-gray-700"
@@ -397,10 +348,10 @@ const EmergencyPostForm: React.FC<TSendNotificationFormProps> = ({
                               {user.name}
                             </td>
                             <td className="px-4 py-2 text-sm text-gray-800 dark:text-gray-100">
-                              {user.district}, {user.country}
+                              {user.district || "N/A"}, {user.country || "N/A"}
                             </td>
                             <td className="px-4 py-2 text-sm text-gray-800 dark:text-gray-100">
-                              {user.phone}
+                              {user.phone || "N/A"}
                             </td>
                           </tr>
                         ))
