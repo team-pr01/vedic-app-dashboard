@@ -44,8 +44,7 @@ const Organizations = () => {
 
   const [organizationId, setOrganizationId] = useState("");
   const [mode, setMode] = useState<"add" | "edit">("add");
-  const { data: singleOrganizationData } =
-    useGetSingleOrganizationQuery(organizationId);
+  const { data: singleOrganizationData } = useGetSingleOrganizationQuery(organizationId);
 
   return (
     <div className="space-y-6">
@@ -58,6 +57,7 @@ const Organizations = () => {
           setMode && setMode("add");
           setShowForm(true);
         }}
+        isCategoryButtonVisible={false}
       />
 
       {/* Filters and Search */}

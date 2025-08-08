@@ -48,7 +48,6 @@ const Popups = () => {
   const [id, setId] = useState("");
   const [showForm, setShowForm] = useState(false);
   const { data, isLoading } = useGetAllPopupsQuery({});
-  console.log(data);
   const { data: singlePopupData } = useGetSinglePopupQuery(id);
   const [mode, setMode] = useState<"add" | "edit">("add");
   return (
@@ -60,6 +59,7 @@ const Popups = () => {
         onClick={() => {
           setShowForm(true);
         }}
+        isCategoryButtonVisible={false}
       />
 
       {isLoading ? (
