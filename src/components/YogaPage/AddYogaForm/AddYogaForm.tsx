@@ -16,7 +16,6 @@ type TFormValues = {
   name: string;
   sanskritName?: string;
   description: string;
-  imageUrl?: string;
   videoUrl?: string;
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   duration: number; // in seconds
@@ -74,7 +73,6 @@ const AddYogaForm: React.FC<TAddAddYogaFormProps> = ({
       setValue("description", defaultValues.description);
       setValue("difficulty", defaultValues.difficulty as any);
       setValue("duration", defaultValues.duration);
-      setValue("imageUrl", defaultValues.imageUrl);
       setValue("videoUrl", defaultValues.videoUrl);
 
       setAllTags({
@@ -176,7 +174,7 @@ const AddYogaForm: React.FC<TAddAddYogaFormProps> = ({
               <button
                 type="button"
                 onClick={() => {
-                  setShowForm(false)
+                  setShowForm(false);
                   reset();
                 }}
                 className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
@@ -213,13 +211,6 @@ const AddYogaForm: React.FC<TAddAddYogaFormProps> = ({
               />
 
               <TextInput
-                label="Image Url"
-                placeholder="Enter image URL"
-                {...register("imageUrl", { required: "Image Url is required" })}
-                error={errors.imageUrl}
-              />
-
-              <TextInput
                 label="Video Url"
                 placeholder="Enter video URL"
                 {...register("videoUrl", { required: "Video Url is required" })}
@@ -234,8 +225,8 @@ const AddYogaForm: React.FC<TAddAddYogaFormProps> = ({
               />
 
               <TextInput
-                label="Duration (seconds)"
-                placeholder="Enter yoga duration in seconds"
+                label="Duration"
+                placeholder="Ex : 10mins, 15mins"
                 {...register("duration", { required: "Duration is required" })}
                 error={errors.duration}
               />
@@ -362,7 +353,7 @@ const AddYogaForm: React.FC<TAddAddYogaFormProps> = ({
               >
                 Cancel
               </button>
-             <SubmitButton isLoading={isLoading || isYogaUpdating} />
+              <SubmitButton isLoading={isLoading || isYogaUpdating} />
             </div>
           </form>
         </div>
