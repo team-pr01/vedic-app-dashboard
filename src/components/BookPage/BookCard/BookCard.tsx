@@ -82,7 +82,7 @@ const BookCard: React.FC<BookCardProps> = ({
             >
               Edit Book
             </button>
-            <button
+            {/* <button
               onClick={() => {
                 setId(book?._id);
                 setShowBookDetailsModal(true);
@@ -90,7 +90,7 @@ const BookCard: React.FC<BookCardProps> = ({
               className="px-4 py-2 bg-gray-700 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-all"
             >
               View Book
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
