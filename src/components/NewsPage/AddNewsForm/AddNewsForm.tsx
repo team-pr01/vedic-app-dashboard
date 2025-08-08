@@ -19,8 +19,8 @@ type TFormValues = {
   content: string;
   tags: string[];
   excerpt: string;
-  imageUrl: string;
   category: string;
+  file?: any;
 };
 
 type TAddNewsFormProps = {
@@ -76,7 +76,6 @@ const AddNewsForm: React.FC<TAddNewsFormProps> = ({
       setValue("excerpt", defaultValues?.excerpt);
       setValue("category", defaultValues?.category);
       setCurrentArticle({ content: defaultValues?.content || "" });
-      setValue("imageUrl", defaultValues?.imageUrl);
       setTags(defaultValues?.tags || []);
     }
   }, [defaultValues, mode, setValue]);
@@ -84,23 +83,35 @@ const AddNewsForm: React.FC<TAddNewsFormProps> = ({
   //   Function to add or edit vastu
   const handleSubmitNews = async (data: TFormValues) => {
     try {
-      const payload = {
-        ...data,
-        tags,
-        content: currentArticle.content, // ✅ manually include
-      };
+      const formData = new FormData();
+
+      Object.entries(data).forEach(([key, value]) => {
+        if (key === "file" && value instanceof FileList && value.length > 0) {
+          formData.append("file", value[0]);
+        } else {
+          formData.append(key, value as string);
+        }
+      });
+
+      // Append tags (as array)
+      tags.forEach((tag: string, index: number) => {
+        formData.append(`tags[${index}]`, tag);
+      });
+
+      // Append content
+      formData.append("content", currentArticle.content);
 
       let response;
       if (mode === "edit" && defaultValues?._id) {
         response = await updateNews({
           id: defaultValues._id,
-          data: payload,
+          data: formData,
         }).unwrap();
         if (response?.success) {
           toast.success(response?.message || "News updated successfully");
         }
       } else {
-        response = await addNews(payload).unwrap();
+        response = await addNews(formData).unwrap();
         if (response?.success) {
           toast.success(response?.message || "News added successfully");
         }
@@ -170,13 +181,13 @@ const AddNewsForm: React.FC<TAddNewsFormProps> = ({
               options={allCategories}
             />
 
+            {/* File upload */}
             <TextInput
-              label="Image URL"
-              placeholder="Enter Image URL"
-              {...register("imageUrl", {
-                required: "Image URL is required",
-              })}
-              error={errors.imageUrl}
+              label="Image"
+              type="file"
+              {...register("file")}
+              error={errors.file as any}
+              isRequired={mode === "add"}
             />
 
             <div>
