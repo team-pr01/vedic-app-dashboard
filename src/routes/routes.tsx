@@ -23,6 +23,7 @@ import ConsultancyService from "../pages/ConsultancyService/ConsultancyService";
 import APIKey from "../pages/APIKey/APIKey";
 import Course from "../pages/Course/Course";
 import Recipe from "../pages/Recipe/Recipe";
+import DonationPrograms from "../pages/DonationPrograms/DonationPrograms";
 
 export const router = createBrowserRouter([
   {
@@ -109,6 +110,10 @@ export const router = createBrowserRouter([
       {
         path: "course",
         element: <Course />,
+      },
+      {
+        path: "donation-programs",
+        element: <DonationPrograms />,
       },
       {
         path: "*",

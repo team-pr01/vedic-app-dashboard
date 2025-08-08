@@ -57,9 +57,7 @@ thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 const recentUsers = users?.data?.filter((user:any) => {
   const joinedDate = new Date(user.createdAt);
   return joinedDate >= thirtyDaysAgo;
-});
-
-console.log(recentUsers);
+}); 
   const { data } = useGetAdminStatsQuery({});
 
   return (

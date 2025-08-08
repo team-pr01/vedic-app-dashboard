@@ -76,9 +76,6 @@ const EmergencyPostCard: React.FC<TEmergencyPostCardProps> = ({ post }) => {
       console.error("Copy failed:", err);
     }
   };
-
-  console.log(post);
-
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
       <div className="flex items-start justify-between">

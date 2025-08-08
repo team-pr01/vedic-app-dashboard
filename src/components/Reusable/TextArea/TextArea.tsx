@@ -10,6 +10,7 @@ interface TextareaProps {
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   isRequired?: boolean;
+  isDisabled?: boolean;
 }
 
 const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
@@ -21,6 +22,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       rows = 4,
       error,
       isRequired = true,
+      isDisabled = false,
       ...rest
     },
     ref
@@ -41,6 +43,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           placeholder={placeholder}
           rows={rows}
           ref={ref}
+          disabled={isDisabled}
           className={`px-[18px] py-[14px] rounded-lg bg-neutral-70 border focus:outline-none focus:border-primary-500 transition duration-300 ${
             error ? "border-red-500" : "border-neutral-75"
           }`}
