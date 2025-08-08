@@ -1,4 +1,4 @@
-import { Calendar, Pen, Trash2 } from "lucide-react";
+import { Pen, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useDeletePopupMutation } from "../../../redux/Features/Popup/popupApi";
 
@@ -9,8 +9,6 @@ export type TPopup = {
   imageUrl: string;
   buttonText: string;
   buttonLink: string;
-  startDate: string;
-  endDate: string;
   displayFrequency: string;
 };
 
@@ -84,14 +82,6 @@ const PopupCard = ({ popup, setId, setShowForm, setMode }: PopupCardProps) => {
         <p className="mt-5 text-sm text-gray-600 dark:text-gray-300 line-clamp-3">
           Display Frequency : {popup?.displayFrequency}
         </p>
-
-        <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-          <div className="flex items-center">
-            <Calendar className="h-4 w-4 mr-1" />
-            Start : {new Date(popup?.startDate).toLocaleDateString()} - End :{" "}
-            {new Date(popup?.endDate).toLocaleDateString()}
-          </div>
-        </div>
       </div>
     </div>
   );

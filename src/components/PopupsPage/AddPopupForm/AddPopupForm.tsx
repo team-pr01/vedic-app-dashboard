@@ -11,12 +11,10 @@ import Loader from "../../Shared/Loader/Loader";
 type TFormValues = {
   title: string;
   content: string;
-  imageUrl: string;
   btnText : string;
   btnLink : string;
-  startDate: string;
-  endDate: string;
   displayFrequency: string;
+  file?: any;
 };
 
 type TAddPopupFormProps = {
@@ -47,11 +45,8 @@ const AddPopupForm: React.FC<TAddPopupFormProps> = ({
   if (mode === "edit" && defaultValues) {
     setValue("title", defaultValues.title);
     setValue("content", defaultValues.content || "");
-    setValue("imageUrl", defaultValues.imageUrl);
     setValue("btnText", defaultValues.btnText);
     setValue("btnLink", defaultValues.btnLink);
-    setValue("startDate", defaultValues.startDate);
-    setValue("endDate", defaultValues.endDate);
     setValue("displayFrequency", defaultValues.displayFrequency);
   }
 }, [mode, defaultValues, setValue]);
@@ -61,18 +56,25 @@ const AddPopupForm: React.FC<TAddPopupFormProps> = ({
   //   Function to add or edit vastu
   const handleSubmitPopup = async (data: TFormValues) => {
   try {
-    const payload = {
-      ...data,
-    };
+
+    const formData = new FormData();
+
+      Object.entries(data).forEach(([key, value]) => {
+        if (key === "file" && value instanceof FileList && value.length > 0) {
+          formData.append("file", value[0]);
+        } else {
+          formData.append(key, value as string);
+        }
+      });
 
     let response;
     if (mode === "edit" && defaultValues?._id) {
-      response = await updatePopup({ id: defaultValues._id, data: payload }).unwrap();
+      response = await updatePopup({ id: defaultValues._id, data: formData }).unwrap();
       if (response?.success) {
         toast.success(response?.message || "Popup updated successfully");
       }
     } else {
-      response = await sendPopup(payload).unwrap();
+      response = await sendPopup(formData).unwrap();
       if (response?.success) {
         toast.success(response?.message || "Popup added successfully");
       }
@@ -132,14 +134,14 @@ const AddPopupForm: React.FC<TAddPopupFormProps> = ({
                 })}
               />
 
-              <TextInput
-                label="Image URL"
-                placeholder="Enter Image URL"
-                {...register("imageUrl", {
-                  required: "Image URL is required",
-                })}
-                error={errors.imageUrl}
-              />
+              {/* File upload */}
+            <TextInput
+              label="Image"
+              type="file"
+              {...register("file")}
+              error={errors.file as any}
+              isRequired={mode === "add"}
+            />
 
               <div className="grid grid-cols-2 gap-4">
                 <TextInput
@@ -158,27 +160,6 @@ const AddPopupForm: React.FC<TAddPopupFormProps> = ({
                     required: "Button Link is required",
                   })}
                   error={errors.btnLink}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                 <TextInput
-                  label="Start Date"
-                  type="date"
-                  placeholder="Enter Start Date"
-                  {...register("startDate", {
-                    required: "Start Date is required",
-                  })}
-                  error={errors.startDate}
-                />
-                 <TextInput
-                  label="End Date"
-                  type="date"
-                  placeholder="Enter End Date"
-                  {...register("endDate", {
-                    required: "End Date is required",
-                  })}
-                  error={errors.endDate}
                 />
               </div>
 
