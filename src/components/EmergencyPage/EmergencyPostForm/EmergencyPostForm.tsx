@@ -5,7 +5,7 @@ import Textarea from "../../Reusable/TextArea/TextArea";
 import toast from "react-hot-toast";
 import Loader from "../../Shared/Loader/Loader";
 import { useEffect, useState } from "react";
-import { useSendMessageToGroupsMutation } from "../../../redux/Features/Emergencies/emergencyApi";
+import { useSendEmergencyPushNotificationToUsersMutation } from "../../../redux/Features/Emergencies/emergencyApi";
 import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
 import { useGetAllUsersQuery } from "../../../redux/Features/Auth/authApi";
 
@@ -37,7 +37,7 @@ const EmergencyPostForm: React.FC<TSendNotificationFormProps> = ({
     reset,
   } = useForm<TFormValues>();
 
-  const [sendMessageToGroups, { isLoading }] = useSendMessageToGroupsMutation();
+  const [sendEmergencyPushNotificationToUsers, { isLoading }] =   useSendEmergencyPushNotificationToUsersMutation();
 
   useEffect(() => {
     if (postData) {
@@ -168,10 +168,18 @@ const EmergencyPostForm: React.FC<TSendNotificationFormProps> = ({
   const handleSendNotification = async (data: TFormValues) => {
     try {
       const payload = {
-        ...data,
         userIds: selectedUserIds,
+        title : "Emergency Message",
+        message : data.title,
+        data : {
+          userName : data.userName,
+          phoneNumber : data.phoneNumber,
+          location : data.location,
+          status : data.status,
+          adminMessage : data.adminMessage
+        }
       };
-      const response = await sendMessageToGroups(payload).unwrap();
+      const response = await sendEmergencyPushNotificationToUsers(payload).unwrap();
       if (response?.success) {
         toast.success(response?.message || "Message forwarded successfully");
         setShowForm(false);
@@ -260,17 +268,18 @@ const EmergencyPostForm: React.FC<TSendNotificationFormProps> = ({
                 placeholder="Write admin message"
                 {...register("adminMessage")}
                 error={errors.adminMessage}
+                isRequired={false}
               />
 
               <SelectDropdown
-                label="Country"
+                label="Targeted Country"
                 value={selectedCountry}
                 onChange={handleCountryChange}
                 options={["Bangladesh"]}
               />
 
               <SelectDropdown
-                label="District"
+                label="Targeted District"
                 value={selectedDistrict}
                 onChange={handleDistrictChange}
                 options={

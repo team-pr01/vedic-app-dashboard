@@ -47,9 +47,9 @@ const menuApi = baseApi.injectEndpoints({
       invalidatesTags: ["emergencies"],
     }),
 
-     sendMessageToGroups: builder.mutation<any, any>({
+     sendEmergencyPushNotificationToUsers: builder.mutation<any, any>({
       query: (data) => ({
-        url: `/emergency/send-message`,
+        url: `/pushNotification/send-notification`,
         method: "POST",
         body: data,
         credentials: "include",
@@ -64,5 +64,5 @@ export const {
   useGetSingleEmergencyQuery,
   useDeleteEmergencyMutation,
   useChangeStatusToResolvedMutation,
-  useSendMessageToGroupsMutation
+  useSendEmergencyPushNotificationToUsersMutation
 } = menuApi;

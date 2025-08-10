@@ -51,19 +51,6 @@ const EmergencyPostCard: React.FC<TEmergencyPostCardProps> = ({ post }) => {
     });
   };
 
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case "critical":
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
-      case "high":
-        return "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200";
-      case "medium":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
-      default:
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
-    }
-  };
-
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const handleCopy = async (text: string) => {
