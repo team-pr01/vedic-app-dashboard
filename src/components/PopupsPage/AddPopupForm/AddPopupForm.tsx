@@ -5,15 +5,17 @@ import Textarea from "../../Reusable/TextArea/TextArea";
 import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
-import { useSendPopupMutation, useUpdatePopupMutation } from "../../../redux/Features/Popup/popupApi";
+import {
+  useSendPopupMutation,
+  useUpdatePopupMutation,
+} from "../../../redux/Features/Popup/popupApi";
 import Loader from "../../Shared/Loader/Loader";
 
 type TFormValues = {
   title: string;
   content: string;
-  btnText : string;
-  btnLink : string;
-  displayFrequency: string;
+  btnText: string;
+  btnLink: string;
   file?: any;
 };
 
@@ -30,9 +32,8 @@ const AddPopupForm: React.FC<TAddPopupFormProps> = ({
   mode,
   defaultValues,
 }) => {
-
-  const [sendPopup, {isLoading:isSending}] = useSendPopupMutation();
-  const [updatePopup, {isLoading:isUpdating}] = useUpdatePopupMutation();
+  const [sendPopup, { isLoading: isSending }] = useSendPopupMutation();
+  const [updatePopup, { isLoading: isUpdating }] = useUpdatePopupMutation();
   const {
     register,
     handleSubmit,
@@ -41,23 +42,19 @@ const AddPopupForm: React.FC<TAddPopupFormProps> = ({
     formState: { errors },
   } = useForm<TFormValues>();
 
- useEffect(() => {
-  if (mode === "edit" && defaultValues) {
-    setValue("title", defaultValues.title);
-    setValue("content", defaultValues.content || "");
-    setValue("btnText", defaultValues.btnText);
-    setValue("btnLink", defaultValues.btnLink);
-    setValue("displayFrequency", defaultValues.displayFrequency);
-  }
-}, [mode, defaultValues, setValue]);
-
-
+  useEffect(() => {
+    if (mode === "edit" && defaultValues) {
+      setValue("title", defaultValues.title);
+      setValue("content", defaultValues.content || "");
+      setValue("btnText", defaultValues.btnText);
+      setValue("btnLink", defaultValues.btnLink);
+    }
+  }, [mode, defaultValues, setValue]);
 
   //   Function to add or edit vastu
   const handleSubmitPopup = async (data: TFormValues) => {
-  try {
-
-    const formData = new FormData();
+    try {
+      const formData = new FormData();
 
       Object.entries(data).forEach(([key, value]) => {
         if (key === "file" && value instanceof FileList && value.length > 0) {
@@ -67,32 +64,35 @@ const AddPopupForm: React.FC<TAddPopupFormProps> = ({
         }
       });
 
-    let response;
-    if (mode === "edit" && defaultValues?._id) {
-      response = await updatePopup({ id: defaultValues._id, data: formData }).unwrap();
-      if (response?.success) {
-        toast.success(response?.message || "Popup updated successfully");
+      let response;
+      if (mode === "edit" && defaultValues?._id) {
+        response = await updatePopup({
+          id: defaultValues._id,
+          data: formData,
+        }).unwrap();
+        if (response?.success) {
+          toast.success(response?.message || "Popup updated successfully");
+        }
+      } else {
+        response = await sendPopup(formData).unwrap();
+        if (response?.success) {
+          toast.success(response?.message || "Popup added successfully");
+        }
       }
-    } else {
-      response = await sendPopup(formData).unwrap();
-      if (response?.success) {
-        toast.success(response?.message || "Popup added successfully");
-      }
-    }
 
-    setShowForm(false);
-    reset();
-  } catch (error) {
-    const errMsg =
-      typeof error === "object" &&
-      error !== null &&
-      "data" in error &&
-      typeof (error as any).data?.message === "string"
-        ? (error as any).data.message
-        : "Something went wrong";
-    toast.error(errMsg);
-  }
-};
+      setShowForm(false);
+      reset();
+    } catch (error) {
+      const errMsg =
+        typeof error === "object" &&
+        error !== null &&
+        "data" in error &&
+        typeof (error as any).data?.message === "string"
+          ? (error as any).data.message
+          : "Something went wrong";
+      toast.error(errMsg);
+    }
+  };
   return (
     showForm && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -135,13 +135,13 @@ const AddPopupForm: React.FC<TAddPopupFormProps> = ({
               />
 
               {/* File upload */}
-            <TextInput
-              label="Image"
-              type="file"
-              {...register("file")}
-              error={errors.file as any}
-              isRequired={mode === "add"}
-            />
+              <TextInput
+                label="Image"
+                type="file"
+                {...register("file")}
+                error={errors.file as any}
+                isRequired={mode === "add"}
+              />
 
               <div className="grid grid-cols-2 gap-4">
                 <TextInput
@@ -162,24 +162,6 @@ const AddPopupForm: React.FC<TAddPopupFormProps> = ({
                   error={errors.btnLink}
                 />
               </div>
-
-              <SelectDropdown
-                label="Display Frequency"
-                {...register("displayFrequency")}
-                error={errors?.displayFrequency}
-                options={["Once", "Every Visit", "Daily", "Weekly"]}
-              />
-
-              {/* <SelectDropdown
-                label="Targeted Audience"
-                {...register("targetedAuidence")}
-                error={errors?.targetedAuidence}
-                options={["All Users", "Every Visit", "Daily", "Weekly"]}
-              /> */}
-
-              
-
-              
             </div>
 
             <div className="flex justify-end space-x-3">
