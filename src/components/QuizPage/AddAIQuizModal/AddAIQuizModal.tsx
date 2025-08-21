@@ -65,7 +65,7 @@ const AddAIQuizModal: React.FC<TAddAIQuizModalProps> = ({
             {/* Quiz Title */}
             <TextInput
               label="Title"
-              placeholder="Enter quiz title"
+              placeholder="Enter quiz title/topic"
               {...register("title", { required: "Title is required" })}
               error={errors.title}
               isDisabled={!!generatedQuiz} // disable input once quiz is generated
