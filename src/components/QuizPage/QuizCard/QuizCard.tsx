@@ -29,7 +29,7 @@ const QuizCard = ({ quiz, selectedQuizData, setSelectedQuizData }: any) => {
 
       <div className="flex items-center gap-3 justify-between mt-4">
         <button
-          onClick={() => setSelectedQuizData(!quiz)}
+          onClick={() => setSelectedQuizData(quiz)}
           className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
         >
           <Eye className="h-4 w-4 mr-2" />

@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Cpu, Plus } from "lucide-react";
 import { useState } from "react";
 import AddManualQuizModal from "../../components/QuizPage/AddManualQuizModal/AddManualQuizModal";
 import AddAIQuizModal from "../../components/QuizPage/AddAIQuizModal/AddAIQuizModal";
@@ -22,9 +22,9 @@ const Quiz = () => {
         <div className="flex items-center gap-4">
           <button
             onClick={() => setAddAIQuizFormOpen(true)}
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-pink-500"
           >
-            <Plus className="h-4 w-4 mr-2" />
+            <Cpu className="h-4 w-4 mr-2" />
             Add Quiz by AI
           </button>
           <button
