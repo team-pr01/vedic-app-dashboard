@@ -54,6 +54,11 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
       label: "Course",
       path: "/dashboard/course",
     },
+     {
+      icon: BookOpen,
+      label: "Quiz",
+      path: "/dashboard/quiz",
+    },
     { icon: Film, label: "Reels", path: "/dashboard/reels" },
     { icon: Lotus, label: "Yoga", path: "/dashboard/yoga" },
     { icon: Home, label: "Vastu", path: "/dashboard/vastu" },

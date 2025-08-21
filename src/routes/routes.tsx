@@ -24,6 +24,7 @@ import APIKey from "../pages/APIKey/APIKey";
 import Course from "../pages/Course/Course";
 import Recipe from "../pages/Recipe/Recipe";
 import DonationPrograms from "../pages/DonationPrograms/DonationPrograms";
+import Quiz from "../pages/Quiz/Quiz";
 
 export const router = createBrowserRouter([
   {
@@ -114,6 +115,10 @@ export const router = createBrowserRouter([
       {
         path: "donation-programs",
         element: <DonationPrograms />,
+      },
+      {
+        path: "quiz",
+        element: <Quiz />,
       },
       {
         path: "*",
