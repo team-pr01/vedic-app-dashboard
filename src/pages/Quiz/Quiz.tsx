@@ -2,8 +2,14 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import AddManualQuizModal from "../../components/QuizPage/AddManualQuizModal/AddManualQuizModal";
 import AddAIQuizModal from "../../components/QuizPage/AddAIQuizModal/AddAIQuizModal";
+import { useGetAllQuizzesQuery } from "../../redux/Features/Quiz/quizApi";
+import Loader from "../../components/Shared/Loader/Loader";
+import QuizCard from "../../components/QuizPage/QuizCard/QuizCard";
+import QuizDetails from "../../components/QuizPage/QuizCard/QuizDetails";
 
 const Quiz = () => {
+  const [selectedQuizData, setSelectedQuizData] = useState<any>(null);
+  const { data, isLoading } = useGetAllQuizzesQuery({});
   const [addManualQuizFormOpen, setAddManualQuizFormOpen] =
     useState<boolean>(false);
   const [addAIQuizFormOpen, setAddAIQuizFormOpen] = useState<boolean>(false);
@@ -30,6 +36,25 @@ const Quiz = () => {
           </button>
         </div>
       </div>
+
+      {isLoading ? (
+        <Loader size="size-10" />
+      ) : (
+        <div className="flex gap-6 justify-between">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-[60%]">
+            {data?.data?.map((quiz: any) => (
+              <QuizCard
+                key={quiz?._id}
+                quiz={quiz}
+                selectedQuizData={selectedQuizData}
+                setSelectedQuizData={setSelectedQuizData}
+              />
+            ))}
+          </div>
+
+          <QuizDetails selectedQuizData={selectedQuizData} />
+        </div>
+      )}
 
       {/* Add manual quiz Form Modal */}
       <AddManualQuizModal

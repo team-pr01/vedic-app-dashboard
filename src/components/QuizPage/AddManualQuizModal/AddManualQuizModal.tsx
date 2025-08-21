@@ -20,7 +20,10 @@ type TAddManualQuizModalProps = {
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const AddManualQuizModal = ({ showForm, setShowForm }: TAddManualQuizModalProps) => {
+const AddManualQuizModal = ({
+  showForm,
+  setShowForm,
+}: TAddManualQuizModalProps) => {
   const [addQuizManually, { isLoading }] = useAddQuizManuallyMutation();
   const {
     register,
@@ -138,20 +141,16 @@ const AddManualQuizModal = ({ showForm, setShowForm }: TAddManualQuizModalProps)
                     <select
                       {...register(`questions.${qIndex}.correctAnswer`, {
                         required: "Correct answer is required",
+                        setValueAs: (v) => Number(v), // ensures it's number, not string
                       })}
                       className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-600 dark:text-white"
                     >
                       <option value="">Select Correct Answer</option>
-                      {Array(4)
-                        .fill(null)
-                        .map((_, optIndex) => (
-                          <option
-                            key={optIndex}
-                            value={/* use registered option value */ undefined}
-                          >
-                            Option {optIndex + 1}
-                          </option>
-                        ))}
+                      {[1, 2, 3, 4].map((num) => (
+                        <option key={num} value={num}>
+                          Option {num}
+                        </option>
+                      ))}
                     </select>
                     {errors.questions?.[qIndex]?.correctAnswer && (
                       <p className="text-red-500 text-sm">

@@ -2,24 +2,24 @@ import { baseApi } from "../../API/baseApi";
 
 const quizApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getAllRecipies: builder.query({
+    getAllQuizzes: builder.query({
       query: () => {
         return {
-          url: `/recipe`,
+          url: `/quiz`,
           method: "GET",
           credentials: "include",
         };
       },
-      providesTags: ["recipe"],
+      providesTags: ["quiz"],
     }),
 
-    getSingleRecipe: builder.query({
+    getSingleQuiz: builder.query({
       query: (id) => ({
-        url: `/recipe/${id}`,
+        url: `/quiz/${id}`,
         method: "GET",
         credentials: "include",
       }),
-      providesTags: ["recipe"],
+      providesTags: ["quiz"],
     }),
 
     addQuizManually: builder.mutation<any, any>({
@@ -42,32 +42,21 @@ const quizApi = baseApi.injectEndpoints({
       invalidatesTags: ["quiz"],
     }),
 
-    deleteRecipe: builder.mutation<any, string>({
+    deleteQuiz: builder.mutation<any, string>({
       query: (id) => ({
-        url: `/recipe/${id}`,
+        url: `/quiz/delete/${id}`,
         method: "DELETE",
         credentials: "include",
       }),
-      invalidatesTags: ["recipe"],
-    }),
-
-    updateRecipe: builder.mutation<any, any>({
-      query: ({ id, data }) => ({
-        url: `/recipe/${id}`,
-        method: "PUT",
-        body: data,
-        credentials: "include",
-      }),
-      invalidatesTags: ["recipe"],
+      invalidatesTags: ["quiz"],
     }),
   }),
 });
 
 export const {
-  useGetAllRecipiesQuery,
-  useGetSingleRecipeQuery,
+  useGetAllQuizzesQuery,
+  useGetSingleQuizQuery,
   useAddQuizManuallyMutation,
   useAddQuizByAIMutation,
-  useDeleteRecipeMutation,
-  useUpdateRecipeMutation,
+  useDeleteQuizMutation,
 } = quizApi;
