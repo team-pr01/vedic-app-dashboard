@@ -22,6 +22,8 @@ import {
   Key,
   Film,
   FolderDot,
+  CreditCard,
+  GraduationCap,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
@@ -50,12 +52,12 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
     //   path: "/dashboard/religious-texts",
     // },
      {
-      icon: BookOpen,
+      icon: GraduationCap,
       label: "Course",
       path: "/dashboard/course",
     },
      {
-      icon: BookOpen,
+      icon: FileText,
       label: "Quiz",
       path: "/dashboard/quiz",
     },
@@ -76,7 +78,7 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
     },
     { icon: MessageSquarePlus, label: "Popups", path: "/dashboard/popups" },
     { icon: FileText, label: "Content Management", path: "/dashboard/content" },
-    { icon: FileText, label: "Donation Programs", path: "/dashboard/donation-programs" },
+    { icon: CreditCard, label: "Donation Programs", path: "/dashboard/donation-programs" },
     {
       icon: Headphones,
       label: "Consultancy Service",

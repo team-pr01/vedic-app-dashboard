@@ -38,9 +38,9 @@ const Quiz = () => {
       </div>
 
       {isLoading ? (
-        <Loader size="size-10" />
+        <Loader size="size-10 mt-10" />
       ) : (
-        <div className="flex gap-6 justify-between">
+        <div className="flex gap-6 justify-between mt-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-[60%]">
             {data?.data?.map((quiz: any) => (
               <QuizCard
