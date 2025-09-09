@@ -2,6 +2,7 @@ import { Edit2, Trash2 } from "lucide-react";
 import { TReels } from "../../../pages/Reels/Reels";
 import { useDeleteReelMutation } from "../../../redux/Features/Reels/reelsApi";
 import toast from "react-hot-toast";
+import { getEmbedUrl } from "../../YogaPage/YogaCard/YogaCard";
 
 const ReelCard = ({
   reel,
@@ -24,13 +25,6 @@ const ReelCard = ({
       success: "Reel deleted successfully!",
       error: "Failed to delete reel.",
     });
-  };
-
-  const getEmbedUrl = (url: string) => {
-    const videoIdMatch = url.match(/(?:\?v=|\/embed\/|\.be\/)([\w\-]{11})/);
-    return videoIdMatch
-      ? `https://www.youtube.com/embed/${videoIdMatch[1]}`
-      : null;
   };
 
   const embedUrl = reel?.videoUrl ? getEmbedUrl(reel.videoUrl) : null;

@@ -63,7 +63,7 @@ const Course = () => {
         fieldName="course"
       />
 
-      {/* Organization List */}
+      {/* Course List */}
       {isLoading || isFetching ? (
         <Loader size="size-10" />
       ) : data?.data?.length < 1 ? (
