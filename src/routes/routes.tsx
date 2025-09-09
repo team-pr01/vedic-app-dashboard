@@ -25,6 +25,7 @@ import Course from "../pages/Course/Course";
 import Recipe from "../pages/Recipe/Recipe";
 import DonationPrograms from "../pages/DonationPrograms/DonationPrograms";
 import Quiz from "../pages/Quiz/Quiz";
+import Ayurveda from "../pages/Ayurveda/Ayurveda";
 
 export const router = createBrowserRouter([
   {
@@ -119,6 +120,10 @@ export const router = createBrowserRouter([
       {
         path: "quiz",
         element: <Quiz />,
+      },
+      {
+        path: "ayurveda",
+        element: <Ayurveda />,
       },
       {
         path: "*",

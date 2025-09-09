@@ -6,10 +6,10 @@ import {
   useGetAlCoursesQuery,
   useGetSingleCourseQuery,
 } from "../../redux/Features/Course/courseApi";
-import CourseFilters from "../../components/CoursePage/CourseFilters/CourseFilters";
 import CourseCard from "../../components/CoursePage/CourseCard/CourseCard";
 import AddCourseForm from "../../components/CoursePage/AddCourseForm/AddCourseForm";
 import Loader from "../../components/Shared/Loader/Loader";
+import Filters from "../../components/Reusable/Filters/Filters";
 
 export type TCourse = {
   _id: string;
@@ -55,11 +55,12 @@ const Course = () => {
       />
 
       {/* Filters and Search */}
-      <CourseFilters
+      <Filters
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         setCategory={setCategory}
         category={category}
+        fieldName="course"
       />
 
       {/* Organization List */}
