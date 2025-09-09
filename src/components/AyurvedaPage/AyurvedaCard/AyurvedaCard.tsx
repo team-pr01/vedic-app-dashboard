@@ -49,10 +49,28 @@ const AyurvedaCard: React.FC<TAyurvedaCardProps> = ({
         </div>
         <div className="p-4">
           <div className="flex flex-col gap-2">
-            <div className="bg-orange-100 rounded-3xl px-3 py-[6px] text-xs font-medium w-fit">
-              {ayurveda?.category}
+            <div className="flex items-center justify-between">
+              <div className="bg-orange-100 rounded-3xl px-3 py-[6px] text-xs font-medium w-fit">
+                {ayurveda?.category}
+              </div>
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={handleEdit}
+                  className="text-blue-500 hover:text-blue-600"
+                  title="Edit"
+                >
+                  <Pencil size={18} />
+                </button>
+                <button
+                  onClick={() => setShowDeleteModal(true)}
+                  className="text-red-500 hover:text-red-600"
+                  type="button"
+                >
+                  <Trash2 size={18} />
+                </button>
+              </div>
             </div>
-            <h2 className="text-lg font-semibold text-gray-800">
+            <h2 className="text-lg font-semibold text-gray-800 capitalize">
               {ayurveda?.content?.length > 30
                 ? `${ayurveda.content.slice(0, 30)}...`
                 : ayurveda?.content}
@@ -62,23 +80,6 @@ const AyurvedaCard: React.FC<TAyurvedaCardProps> = ({
               by <strong>{ayurveda?.expertName}</strong> | Duration :{" "}
               {ayurveda?.duration}
             </p>
-          </div>
-
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={handleEdit}
-              className="text-blue-500 hover:text-blue-600"
-              title="Edit"
-            >
-              <Pencil size={18} />
-            </button>
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              className="text-red-500 hover:text-red-600"
-              type="button"
-            >
-              <Trash2 size={18} />
-            </button>
           </div>
         </div>
       </div>

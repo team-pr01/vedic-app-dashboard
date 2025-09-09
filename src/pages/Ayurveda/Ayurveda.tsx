@@ -8,6 +8,8 @@ import {
 import Filters from "../../components/Reusable/Filters/Filters";
 import Loader from "../../components/Shared/Loader/Loader";
 import AyurvedaCard from "../../components/AyurvedaPage/AyurvedaCard/AyurvedaCard";
+import AddAyurvedaForm from "../../components/AyurvedaPage/AddAyurvedaForm/AddAyurvedaForm";
+import Categories from "../../components/Categories/Categories";
 
 export type TAyurveda = {
     _id : string;
@@ -61,7 +63,7 @@ const Ayurveda = () => {
         fieldName="ayurveda"
       />
 
-      {/* Course List */}
+      {/* Ayurveda List */}
       {isLoading || isFetching ? (
         <Loader size="size-10" />
       ) : data?.data?.length < 1 ? (
@@ -81,6 +83,23 @@ const Ayurveda = () => {
           ))}
         </div>
       )}
+
+      {/* Add/Edit Form Modal */}
+      {showForm && (
+        <AddAyurvedaForm
+          setShowForm={setShowForm}
+          defaultValues={singleAyurvedaData?.data}
+          mode={mode}
+          isSingleDataLoading={isSingleDataLoading || isSingleDataFetching}
+        />
+      )}
+
+      {/* Category management */}
+      <Categories
+        showModal={showCategoryForm}
+        setShowModal={setShowCategoryForm}
+        areaName="ayurveda"
+      />
     </div>
   );
 };
