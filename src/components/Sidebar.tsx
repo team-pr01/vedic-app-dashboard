@@ -25,6 +25,7 @@ import {
   CreditCard,
   GraduationCap,
   Leaf,
+  ShoppingBag,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
@@ -91,15 +92,22 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
       path: "/dashboard/recipe",
     },
     {
-      icon: Leaf,
-      label: "Ayurveda",
-      path: "/dashboard/ayurveda",
-    },
-    {
       icon: FolderDot,
       label: "Recipe",
       path: "/dashboard/recipe",
     },
+    {
+      icon: Leaf,
+      label: "Ayurveda",
+      path: "/dashboard/ayurveda",
+    },
+    
+    {
+      icon: ShoppingBag,
+      label: "Shop",
+      path: "/dashboard/shop",
+    },
+    
     { icon: Key, label: "API Keys", path: "/dashboard/api-keys" },
     { icon: BarChart2, label: "Analytics", path: "/dashboard/analytics" },
     { icon: Activity, label: "Activity", path: "/dashboard/activity" },

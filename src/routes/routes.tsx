@@ -26,6 +26,7 @@ import Recipe from "../pages/Recipe/Recipe";
 import DonationPrograms from "../pages/DonationPrograms/DonationPrograms";
 import Quiz from "../pages/Quiz/Quiz";
 import Ayurveda from "../pages/Ayurveda/Ayurveda";
+import Shop from "../pages/Shop/Shop";
 
 export const router = createBrowserRouter([
   {
@@ -124,6 +125,10 @@ export const router = createBrowserRouter([
       {
         path: "ayurveda",
         element: <Ayurveda />,
+      },
+      {
+        path: "shop",
+        element: <Shop />,
       },
       {
         path: "*",
