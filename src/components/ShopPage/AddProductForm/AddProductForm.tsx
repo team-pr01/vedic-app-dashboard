@@ -7,11 +7,8 @@ import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
 import Loader from "../../Shared/Loader/Loader";
 import { useGetAllCategoriesQuery } from "../../../redux/Features/Categories/ReelCategory/categoriesApi";
 import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
-import {
-  useAddAyurvedaMutation,
-  useUpdateAyurvedaMutation,
-} from "../../../redux/Features/Ayurveda/ayurvedaApi";
 import Textarea from "../../Reusable/TextArea/TextArea";
+import { useAddProductMutation, useUpdateProductMutation } from "../../../redux/Features/Product/productApi";
 
 type TAddProductFormProps = {
   setShowForm: (show: boolean) => void;
@@ -40,9 +37,9 @@ const AddProductForm = ({
   isSingleDataLoading,
 }: TAddProductFormProps) => {
   const { data: categories } = useGetAllCategoriesQuery({});
-  const [addAyurveda, { isLoading }] = useAddAyurvedaMutation();
-  const [updateAyurveda, { isLoading: isUpdating }] =
-    useUpdateAyurvedaMutation();
+  const [addProduct, { isLoading }] = useAddProductMutation();
+  const [updateProduct, { isLoading: isUpdating }] =
+    useUpdateProductMutation();
 
   const {
     register,
@@ -54,21 +51,28 @@ const AddProductForm = ({
 
   // Set default values when editing
   useEffect(() => {
-    if (mode === "edit" && defaultValues) {
-      const fields = [
-        "expertName",
-        "category",
-        "duration",
-        "content",
-        "videoUrl",
-      ] as (keyof TFormValues)[];
-      fields.forEach((field) => {
-        if (defaultValues[field]) {
-          setValue(field, defaultValues[field]);
-        }
-      });
-    }
-  }, [defaultValues, mode, setValue]);
+  if (mode === "edit" && defaultValues) {
+    const fields: (keyof TFormValues)[] = [
+      "name",
+      "category",
+      "productLink",
+      "description",
+      "price",
+      "currency",
+      "label",
+      "tags",
+      "videoUrl",
+      "file",
+    ];
+
+    fields.forEach((field) => {
+      if (defaultValues[field] !== undefined) {
+        setValue(field, defaultValues[field]);
+      }
+    });
+  }
+}, [defaultValues, mode, setValue]);
+
 
   const onSubmit = async (data: TFormValues) => {
     try {
@@ -83,14 +87,14 @@ const AddProductForm = ({
 
       let response;
       if (mode === "edit" && defaultValues?._id) {
-        response = await updateAyurveda({
+        response = await updateProduct({
           id: defaultValues._id,
           data: formData,
         }).unwrap();
-        toast.success(response?.message || "Ayurveda updated");
+        toast.success(response?.message || "Product updated");
       } else {
-        response = await addAyurveda(formData).unwrap();
-        toast.success(response?.message || "Ayurveda added");
+        response = await addProduct(formData).unwrap();
+        toast.success(response?.message || "Product added");
       }
 
       reset();
