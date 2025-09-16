@@ -1,21 +1,18 @@
 import { icons } from "lucide-react";
 import { useMemo, useState } from "react";
-import toast from "react-hot-toast";
 import AddProductForm from "../../components/ShopPage/AddProductForm/AddProductForm";
+import Categories from "../../components/Categories/Categories";
 
 const Shop = () => {
-const [showForm, setShowForm] = useState(false);
+  const [showCategoryForm, setShowCategoryForm] = useState<boolean>(false);
+  const [productId, setProductId] = useState<string>("");
+  const [showForm, setShowForm] = useState<boolean>(false);
   const [mode, setMode] = useState<"add" | "edit">("add");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [category, setCategory] = useState<string>("");
 
-
-
-  const { Plus, Pencil, Trash2, Search, Package, BarChart, DollarSign } = icons;
+  const { Plus, Pencil, Trash2, Package, BarChart, DollarSign } = icons;
   const [products, setProducts] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [modal, setModal] = useState<{
-    type: "edit" | "delete";
-    data: any | null;
-  }>({ type: null, data: null });
 
   const stats = useMemo(
     () => ({
@@ -25,28 +22,6 @@ const [showForm, setShowForm] = useState(false);
     }),
     [products]
   );
-
-  const handleSaveProduct = (productData: any) => {
-    if (products.some((p) => p.id === productData.id)) {
-      setProducts((prods) =>
-        prods.map((p) => (p.id === productData.id ? productData : p))
-      );
-      toast.success("Product updated!");
-    } else {
-      setProducts((prods) => [productData, ...prods]);
-      toast.success("Product added!");
-    }
-    setModal({ type: null, data: null });
-  };
-
-  const handleDeleteProduct = (id: number) => {
-    setProducts((prods) => prods.filter((p) => p.id !== id));
-    toast.success("Product deleted!");
-    setModal({ type: null, data: null });
-  };
-
-  const getCategoryName = (id: number) =>
-    categories.find((c) => c.id === id)?.name || "N/A";
 
   const LabelBadge: React.FC<{ label: any["label"] }> = ({ label }) => {
     if (!label) return null;
@@ -113,12 +88,23 @@ const [showForm, setShowForm] = useState(false);
       <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-bold">All Products</h3>
-          <button
-            onClick={() => {setShowForm(true); setMode("add");}}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700"
-          >
-            <Plus className="w-5 h-5" /> Add Product
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowCategoryForm(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              <Plus className="w-5 h-5" /> Add category
+            </button>
+            <button
+              onClick={() => {
+                setShowForm(true);
+                setMode("add");
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              <Plus className="w-5 h-5" /> Add Product
+            </button>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -128,7 +114,7 @@ const [showForm, setShowForm] = useState(false);
                 <th className="p-3 font-semibold">PRODUCT</th>
                 <th className="p-3 font-semibold">CATEGORY</th>
                 <th className="p-3 font-semibold">PRICE</th>
-                <th className="p-3 font-semibold">STATUS</th>
+                <th className="p-3 font-semibold">LABEL</th>
                 <th className="p-3 font-semibold text-center">
                   ANALYTICS (C/P)
                 </th>
@@ -154,7 +140,7 @@ const [showForm, setShowForm] = useState(false);
                     </div>
                   </td>
                   <td className="p-3 text-slate-600 dark:text-slate-300">
-                    {getCategoryName(product.categoryId)}
+                    category
                   </td>
                   <td className="p-3 font-mono text-slate-800 dark:text-slate-200">
                     {product.price.toFixed(2)} {product.currency}
@@ -167,20 +153,10 @@ const [showForm, setShowForm] = useState(false);
                   </td>
                   <td className="p-3">
                     <div className="flex justify-center items-center gap-1">
-                      <button
-                        onClick={() =>
-                          setModal({ type: "edit", data: product })
-                        }
-                        className="p-2 text-slate-500 hover:text-green-500"
-                      >
+                      <button className="p-2 text-slate-500 hover:text-green-500">
                         <Pencil className="w-4 h-4" />
                       </button>
-                      <button
-                        onClick={() =>
-                          setModal({ type: "delete", data: product })
-                        }
-                        className="p-2 text-slate-500 hover:text-red-500"
-                      >
+                      <button className="p-2 text-slate-500 hover:text-red-500">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -192,25 +168,21 @@ const [showForm, setShowForm] = useState(false);
         </div>
       </div>
 
-      {/* {modal.type === 'edit' && <ProductModal product={modal.data} categories={categories} onSave={handleSaveProduct} onClose={() => setModal({type: null, data: null})} />}
-            {modal.type === 'delete' && modal.data && (
-                <ModalWrapper title="Confirm Deletion" onClose={() => setModal({ type: null, data: null })} size="max-w-md">
-                    <div className="p-6 text-slate-600 dark:text-slate-300">Are you sure you want to delete <strong className="text-slate-900 dark:text-white">{modal.data.name}</strong>?</div>
-                    <div className="p-4 bg-slate-100 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3">
-                        <button onClick={() => setModal({ type: null, data: null })} className="px-4 py-2 bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-white font-semibold rounded-lg hover:bg-slate-300 dark:hover:bg-slate-500">Cancel</button>
-                        <button onClick={() => handleDeleteProduct(modal.data!.id)} className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700">Delete</button>
-                    </div>
-                </ModalWrapper>
-            )} */}
-
       {showForm && (
         <AddProductForm
           setShowForm={setShowForm}
-        //   defaultValues={singleAyurvedaData?.data}
+          //   defaultValues={singleAyurvedaData?.data}
           mode={mode}
-        //   isSingleDataLoading={isSingleDataLoading || isSingleDataFetching}
+          //   isSingleDataLoading={isSingleDataLoading || isSingleDataFetching}
         />
       )}
+
+      {/* Category management */}
+      <Categories
+        showModal={showCategoryForm}
+        setShowModal={setShowCategoryForm}
+        areaName="product"
+      />
     </div>
   );
 };
