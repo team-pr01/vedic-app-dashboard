@@ -27,6 +27,7 @@ import DonationPrograms from "../pages/DonationPrograms/DonationPrograms";
 import Quiz from "../pages/Quiz/Quiz";
 import Ayurveda from "../pages/Ayurveda/Ayurveda";
 import Shop from "../pages/Shop/Shop";
+import Consultations from "../pages/Consultations/Consultations";
 
 export const router = createBrowserRouter([
   {
@@ -101,6 +102,10 @@ export const router = createBrowserRouter([
       {
         path: "consultancy-service",
         element: <ConsultancyService/>,
+      },
+      {
+        path: "consultation",
+        element: <Consultations/>,
       },
       {
         path: "recipe",

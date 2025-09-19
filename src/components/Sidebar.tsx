@@ -26,6 +26,7 @@ import {
   GraduationCap,
   Leaf,
   ShoppingBag,
+  UserCheck,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
@@ -87,9 +88,9 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
       path: "/dashboard/consultancy-service",
     },
     {
-      icon: FolderDot,
-      label: "Recipe",
-      path: "/dashboard/recipe",
+      icon: UserCheck,
+      label: "Consultations",
+      path: "/dashboard/consultation",
     },
     {
       icon: FolderDot,

@@ -21,6 +21,8 @@ type TConsultancyServiceFormProps = {
 
 type TFormValues = {
   name: string;
+  phoneNumber: string;
+  email?: string;
   specialty: string;
   experience: string;
   category: string;
@@ -155,6 +157,21 @@ const AddConsultancyServiceForm = ({
                 placeholder="Enter name"
                 {...register("name", { required: "Name is required" })}
                 error={errors.name}
+              />
+              <TextInput
+                label="Phone Number"
+                type="number"
+                placeholder="Enter phone number"
+                {...register("phoneNumber", { required: "Phone number is required" })}
+                error={errors.phoneNumber}
+              />
+              <TextInput
+                label="Email Address"
+                type="email"
+                placeholder="Enter email address"
+                {...register("email")}
+                error={errors.email}
+                isRequired={false}
               />
               <TextInput
                 label="Specialty"
