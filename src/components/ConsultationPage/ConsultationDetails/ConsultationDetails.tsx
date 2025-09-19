@@ -14,7 +14,7 @@ type TConsultationDetailsProps = {
     concern?: string;
     fees: string;
     scheduledAt?: Date;
-    status?: "pending" | "completed";
+    status?: "pending" | "completed" | "cancelled";
   };
   onClose: () => void;
 };
@@ -128,9 +128,11 @@ const ConsultationDetails: React.FC<TConsultationDetailsProps> = ({
                   Status:
                 </span>
                 <p
-                  className={`font-semibold ${
+                  className={`font-semibold capitalize ${
                     consultation.status === "completed"
                       ? "text-green-600 dark:text-green-400"
+                      : consultation.status === "cancelled"
+                      ? "text-red-600 dark:text-red-400"
                       : "text-yellow-600 dark:text-yellow-400"
                   }`}
                 >

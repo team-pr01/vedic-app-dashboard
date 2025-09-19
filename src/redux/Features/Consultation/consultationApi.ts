@@ -8,6 +8,7 @@ const consultationApi = baseApi.injectEndpoints({
         if (params) {
           const queryParams = new URLSearchParams();
           if (params.keyword) queryParams.append("keyword", params.keyword);
+          if (params.category) queryParams.append("category", params.category);
           if (params.status) queryParams.append("status", params.status);
           queryStr = `?${queryParams.toString()}`;
         }

@@ -1,4 +1,4 @@
-import { Check, Eye, Trash2 } from "lucide-react";
+import { Check, Eye, Trash2, UserCheck } from "lucide-react";
 import Loader from "../../components/Shared/Loader/Loader";
 import {
   useDeleteConsultationMutation,
@@ -10,19 +10,30 @@ import ScheduleConsultationForm from "./../../components/ConsultationPage/Schedu
 import toast from "react-hot-toast";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal/DeleteConfirmationModal";
 import ConsultationDetails from "../../components/ConsultationPage/ConsultationDetails/ConsultationDetails";
+import Filters from "../../components/Reusable/Filters/Filters";
 
 const Consultations = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [category, setCategory] = useState("");
+  const [status, setStatus] = useState("");
   const {
     data: consultations,
     isLoading,
     isFetching,
-  } = useGetAllConsultationsQuery({});
-  const [updateConsultationStatus] = useUpdateConsultationStatusMutation();
+  } = useGetAllConsultationsQuery({
+    keyword: searchQuery,
+    category,
+    status,
+  });
+  const [updateConsultationStatus, { isLoading: isUpdatingStatus }] =
+    useUpdateConsultationStatusMutation();
   const [isScheduleModalOpen, setIsScheduleModalOpen] =
     useState<boolean>(false);
   const [selectedConsultationId, setSelectedConsultationId] =
     useState<string>("");
-    const [selectedConsultation, setSelectedConsultation] = useState<any | null>(null);
+  const [selectedConsultation, setSelectedConsultation] = useState<any | null>(
+    null
+  );
 
   const handleMarkAsCompleted = async (id: string) => {
     const payload = {
@@ -51,9 +62,51 @@ const Consultations = () => {
     });
     setSelectedConsultationId("");
   };
+
+  const handleCancelConsultation = async (id: string) => {
+    try {
+      const payload = {
+        status: "cancelled",
+      };
+      const response = await updateConsultationStatus({
+        data: payload,
+        id,
+      }).unwrap();
+      toast.success(response?.message || "Consultation cancelled.");
+    } catch (error: any) {
+      const err = error?.data?.message || "Something went wrong";
+      toast.error(err);
+    }
+  };
   return (
     <div>
-      <div className="overflow-x-auto">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+          <UserCheck className="h-6 w-6 mr-2" />
+          Consultations
+        </h2>
+        <div className="flex items-center gap-2">
+          <Filters
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            setCategory={setCategory}
+            category={category}
+            fieldName="consultancyService"
+            placeholder="consultations..."
+          />
+          <select
+            value={status}
+            onChange={(e) => setStatus && setStatus(e.target.value)}
+            className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+          >
+            <option value="">All</option>
+            <option value={"pending"}>Pending</option>
+            <option value={"completed"}>Completed</option>
+            <option value={"cancelled"}>Cancelled</option>
+          </select>
+        </div>
+      </div>
+      <div className="overflow-x-auto mt-5">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-200 dark:bg-gray-900">
             <tr>
@@ -63,9 +116,10 @@ const Consultations = () => {
                 "Consultant Name",
                 "Consultant Phone",
                 "Scheduled At",
+                "Category",
                 "Status",
                 "Created At",
-                "Schedule Consultation", // <-- New column
+                "Manage Consultation",
                 "Actions",
               ].map((header) => (
                 <th
@@ -102,6 +156,7 @@ const Consultations = () => {
                         consultation.scheduledAt
                           ? new Date(consultation.scheduledAt).toLocaleString()
                           : "N/A",
+                        consultation.category,
                         consultation.status || "pending",
                         consultation.createdAt
                           ? new Date(consultation.createdAt).toLocaleString()
@@ -115,10 +170,15 @@ const Consultations = () => {
                         </td>
                       ))}
 
-                      {/* Schedule Consultation Button */}
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {/* Schedule & Cancel Buttons */}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 space-x-2">
                         <button
-                          className="px-3 py-1 text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 rounded-md"
+                          className={`px-3 py-1 text-sm font-medium rounded-md text-white ${
+                            consultation.status === "cancelled"
+                              ? "bg-orange-800 cursor-not-allowed"
+                              : "bg-orange-500 hover:bg-orange-600"
+                          }`}
+                          disabled={consultation.status === "cancelled"}
                           onClick={() => {
                             setIsScheduleModalOpen(true);
                             setSelectedConsultationId(consultation._id);
@@ -126,19 +186,42 @@ const Consultations = () => {
                         >
                           Schedule
                         </button>
+
+                        <button
+                          className={`px-3 py-1 text-sm font-medium rounded-md text-white ${
+                            consultation.status === "cancelled"
+                              ? "bg-red-800 cursor-not-allowed"
+                              : "bg-red-500 hover:bg-red-600"
+                          }`}
+                          disabled={
+                            consultation.status === "cancelled" ||
+                            isUpdatingStatus
+                          }
+                          onClick={() =>
+                            handleCancelConsultation(consultation._id)
+                          }
+                        >
+                          {isUpdatingStatus ? "Cancelling..." : "Cancel"}
+                        </button>
                       </td>
 
                       {/* Actions */}
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center gap-3">
-                          <button onClick={() => setSelectedConsultation(consultation)} className="text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300">
+                          <button
+                            onClick={() =>
+                              setSelectedConsultation(consultation)
+                            }
+                            className="text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300"
+                          >
                             <Eye className="w-5 h-5" />
                           </button>
                           <button
                             onClick={() =>
                               handleMarkAsCompleted(consultation._id)
                             }
-                            className="text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-blue-300"
+                            disabled={consultation.status === "cancelled"}
+                            className="text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-blue-300 disabled:cursor-not-allowed"
                           >
                             <Check className="w-5 h-5" />
                           </button>
@@ -185,11 +268,11 @@ const Consultations = () => {
         )}
 
         {selectedConsultation && (
-  <ConsultationDetails
-    consultation={selectedConsultation}
-    onClose={() => setSelectedConsultation(null)}
-  />
-)}
+          <ConsultationDetails
+            consultation={selectedConsultation}
+            onClose={() => setSelectedConsultation(null)}
+          />
+        )}
       </div>
     </div>
   );

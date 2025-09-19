@@ -8,6 +8,7 @@ type TFiltersProps = {
   setCategory?: (status: string) => void;
   category: string;
   fieldName: string;
+  placeholder?:string;
 };
 const Filters: React.FC<TFiltersProps> = ({
   searchQuery,
@@ -15,6 +16,7 @@ const Filters: React.FC<TFiltersProps> = ({
   setCategory,
   category,
   fieldName,
+  placeholder,
 }) => {
   const { data: categories } = useGetAllCategoriesQuery({});
   const filteredCategories = categories?.data?.filter(
@@ -31,7 +33,7 @@ const Filters: React.FC<TFiltersProps> = ({
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            placeholder={`Search ${fieldName}...`}
+            placeholder={`Search ${placeholder ? placeholder :fieldName}...`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:border-primary-500 transition duration-300"
