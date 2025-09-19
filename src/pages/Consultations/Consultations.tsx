@@ -9,6 +9,7 @@ import { useState } from "react";
 import ScheduleConsultationForm from "./../../components/ConsultationPage/ScheduleConsultationForm/ScheduleConsultationForm";
 import toast from "react-hot-toast";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal/DeleteConfirmationModal";
+import ConsultationDetails from "../../components/ConsultationPage/ConsultationDetails/ConsultationDetails";
 
 const Consultations = () => {
   const {
@@ -21,6 +22,7 @@ const Consultations = () => {
     useState<boolean>(false);
   const [selectedConsultationId, setSelectedConsultationId] =
     useState<string>("");
+    const [selectedConsultation, setSelectedConsultation] = useState<any | null>(null);
 
   const handleMarkAsCompleted = async (id: string) => {
     const payload = {
@@ -129,7 +131,7 @@ const Consultations = () => {
                       {/* Actions */}
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center gap-3">
-                          <button className="text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300">
+                          <button onClick={() => setSelectedConsultation(consultation)} className="text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300">
                             <Eye className="w-5 h-5" />
                           </button>
                           <button
@@ -181,6 +183,13 @@ const Consultations = () => {
             onConfirm={handleConfirmDelete}
           />
         )}
+
+        {selectedConsultation && (
+  <ConsultationDetails
+    consultation={selectedConsultation}
+    onClose={() => setSelectedConsultation(null)}
+  />
+)}
       </div>
     </div>
   );
