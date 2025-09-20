@@ -66,7 +66,7 @@ const DonationCard = ({
           {donation?.description}
         </p>
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 line-clamp-3 capitalize">
-          {donation?.amountNeeded}
+         Amount Raised {donation?.amountRaised} out of {donation?.amountNeeded}
         </p>
       </div>
     </div>

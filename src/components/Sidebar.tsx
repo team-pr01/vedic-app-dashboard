@@ -82,6 +82,7 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
     { icon: MessageSquarePlus, label: "Popups", path: "/dashboard/popups" },
     { icon: FileText, label: "Content Management", path: "/dashboard/content" },
     { icon: CreditCard, label: "Donation Programs", path: "/dashboard/donation-programs" },
+    { icon: CreditCard, label: "Total Donations", path: "/dashboard/donation" },
     {
       icon: Headphones,
       label: "Consultancy Service",

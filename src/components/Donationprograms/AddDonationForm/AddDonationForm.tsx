@@ -125,7 +125,7 @@ const AddDonationForm = ({
               />
               <TextInput
                 label="Amount Needed"
-                placeholder="e.g., 3:00 PM"
+                placeholder="e.g., $1000"
                 {...register("amountNeeded", {
                   required: "Amount Needed is required",
                 })}

@@ -78,6 +78,7 @@ export const baseApi = createApi({
     "recipe",
     'content',
     'donations',
+    'donation',
     'quiz',
     'ayurveda',
     'product',
