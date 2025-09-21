@@ -13,6 +13,7 @@ export type TDonationPrograms = {
   description: string;
   amountNeeded: number;
   amountRaised?: string;
+  currency: string;
   createdAt?: Date;
   updatedAt?: Date;
 };
@@ -30,6 +31,7 @@ const DonationPrograms = () => {
     isLoading: isSingleDataLoading,
     isFetching: isSingleDataFetching,
   } = useGetSingleDonationProgramsQuery(donationId);
+
   return (
     <div className="space-y-6">
       <PageHeader

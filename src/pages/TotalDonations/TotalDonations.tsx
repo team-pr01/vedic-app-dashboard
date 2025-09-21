@@ -53,6 +53,8 @@ const TotalDonations = () => {
                 "User Email",
                 "User Phone",
                 "Amount",
+                "Payment Method",
+                "Sender Account Number",
                 "Donation Date",
                 "Actions",
               ].map((header) => (
@@ -87,6 +89,8 @@ const TotalDonations = () => {
                         donation.userEmail,
                         donation.userPhoneNumber,
                         donation.amount,
+                        donation.paymentMethod,
+                        donation.senderAccountNumber,
                         donation.createdAt
                           ? new Date(donation.createdAt).toLocaleString()
                           : "N/A",

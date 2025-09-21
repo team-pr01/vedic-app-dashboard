@@ -22,6 +22,7 @@ type TFormValues = {
   description: string;
   amountNeeded: number;
   amountRaised?: string;
+  currency?: string;
   file?: FileList;
 };
 
@@ -50,6 +51,7 @@ const AddDonationForm = ({
         "title",
         "description",
         "amountNeeded",
+        "currency",
       ] as (keyof TFormValues)[];
       fields.forEach((field) => setValue(field, defaultValues[field]));
     }
@@ -125,11 +127,19 @@ const AddDonationForm = ({
               />
               <TextInput
                 label="Amount Needed"
-                placeholder="e.g., $1000"
+                placeholder="e.g., 1000"
                 {...register("amountNeeded", {
                   required: "Amount Needed is required",
                 })}
                 error={errors.amountNeeded}
+              />
+              <TextInput
+                label="Currency"
+                placeholder="e.g., $, USD, BDT etc"
+                {...register("currency", {
+                  required: "Currency is required",
+                })}
+                error={errors.currency}
               />
 
               {/* File upload */}

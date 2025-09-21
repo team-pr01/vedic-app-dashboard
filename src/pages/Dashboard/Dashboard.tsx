@@ -17,6 +17,7 @@ import {
 import { useGetAdminStatsQuery } from "../../redux/Features/Yoga/yogaApi";
 import { useGetAllUsersQuery } from "../../redux/Features/Auth/authApi";
 import Loader from "../../components/Shared/Loader/Loader";
+import { DonationStats } from "../../components/DonationStats";
 
 // const donations = [
 //   { id: 1, donor: "Alice", amount: 100, date: "2024-05-01" },
@@ -166,43 +167,53 @@ const Dashboard: React.FC = () => {
               </tbody>
             ) : (
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700 max-w-[1000px]">
-                {recentUsers?.map((user: any) => (
-                  <tr key={user._id}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div>
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">
-                            {user.name}
+                {recentUsers && recentUsers.length > 0 ? (
+                  recentUsers.map((user: any) => (
+                    <tr key={user._id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900 dark:text-white">
+                              {user.name}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {user.email}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 capitalize">
-                        {user.role}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-500 dark:text-gray-400">
-                        {user.phoneNumber}
-                      </span>
-                    </td>
-
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {new Date(user.createdAt).toLocaleString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 capitalize">
-                      {user?.assignedPages?.length > 0
-                        ? user.assignedPages.join(", ").length > 50
-                          ? `${user.assignedPages.join(", ").slice(0, 50)}...`
-                          : user.assignedPages.join(", ")
-                        : "N/A"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {user.email}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 capitalize">
+                          {user.role}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                          {user.phoneNumber}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        {new Date(user.createdAt).toLocaleString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 capitalize">
+                        {user?.assignedPages?.length > 0
+                          ? user.assignedPages.join(", ").length > 50
+                            ? `${user.assignedPages.join(", ").slice(0, 50)}...`
+                            : user.assignedPages.join(", ")
+                          : "N/A"}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="px-6 py-10 text-center text-sm font-medium text-gray-500 dark:text-gray-400"
+                    >
+                      No recent user found
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             )}
           </table>
@@ -212,7 +223,7 @@ const Dashboard: React.FC = () => {
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Donation Overview
           </h3>
-          <DonationStats donations={donations} />
+          <DonationStats donations={[]} />
         </div> */}
     </>
   );
