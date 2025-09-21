@@ -32,6 +32,16 @@ const newsApi = baseApi.injectEndpoints({
       invalidatesTags: ["news"],
     }),
 
+    translateNews: builder.mutation<any, any>({
+      query: (data) => ({
+        url: `/ai/translate-news`,
+        method: "POST",
+        body: data,
+        credentials: "include",
+      }),
+      invalidatesTags: ["news"],
+    }),
+
     deleteNews: builder.mutation<any, string>({
       query: (id) => ({
         url: `/news/${id}`,
@@ -57,6 +67,7 @@ export const {
   useGetAllNewsQuery,
   useGetSingleNewsQuery,
   useAddNewsMutation,
+  useTranslateNewsMutation,
   useDeleteNewsMutation,
   useUpdateNewsMutation
 } = newsApi;
