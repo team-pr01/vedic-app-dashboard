@@ -67,11 +67,13 @@ const News = () => {
   const [showForm, setShowForm] = useState<boolean>(false);
   // const [language, setLanguage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [category, setCategory] = useState("");
   const [id, setId] = useState("");
   const [mode, setMode] = useState<"add" | "edit">("add");
 
   const { data, isLoading, isFetching } = useGetAllNewsQuery({
     keyword: searchQuery,
+    category,
   });
   const { data: singleNewsData } = useGetSingleNewsQuery(id);
   const [deleteNews] = useDeleteNewsMutation();
@@ -110,11 +112,10 @@ const News = () => {
         <Filters
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
-          // selectedOption={language}
-          // setSelectedOption={setLanguage}
-          // options={categories}
           placeholder="Search texts..."
-          // selectLabel="Select Category"
+          setCategory={setCategory}
+          category={category}
+          fieldName="news"
         />
 
         {isLoading || isFetching ? (
