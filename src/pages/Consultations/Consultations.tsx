@@ -78,6 +78,22 @@ const Consultations = () => {
       toast.error(err);
     }
   };
+
+  const getStatusStyles = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
+      case "scheduled":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
+      case "completed":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
+      case "cancelled":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
+    }
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -106,7 +122,7 @@ const Consultations = () => {
           </select>
         </div>
       </div>
-      <div className="overflow-x-auto mt-5">
+      <div className="overflow-x-auto mt-5 max-w-[1600px]">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-200 dark:bg-gray-900">
             <tr>
@@ -118,6 +134,7 @@ const Consultations = () => {
                 "Scheduled At",
                 "Category",
                 "Status",
+                "Meeting Link",
                 "Created At",
                 "Manage Consultation",
                 "Actions",
@@ -150,14 +167,76 @@ const Consultations = () => {
                     <tr key={consultation._id}>
                       {[
                         consultation.userName,
-                        consultation.userPhoneNumber,
+                        consultation.userPhoneNumber ? (
+                          <a
+                            href={`https://wa.me/${
+                              consultation.userPhoneNumber
+                            }?text=${encodeURIComponent(
+                              consultation.meetingLink
+                                ? `Here is your consultation link: ${consultation.meetingLink}`
+                                : "Hello!"
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-green-600 dark:text-green-400 underline hover:text-green-800 dark:hover:text-green-300"
+                          >
+                            {consultation.userPhoneNumber}
+                          </a>
+                        ) : (
+                          "N/A"
+                        ),
                         consultation.consultantName,
-                        consultation.consultantPhoneNumber,
+                        consultation.consultantPhoneNumber ? (
+                          <a
+                            href={`https://wa.me/${
+                              consultation.consultantPhoneNumber
+                            }?text=${encodeURIComponent(
+                              consultation.meetingLink
+                                ? `Here is your consultation link: ${consultation.meetingLink}`
+                                : "Hello!"
+                            )}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-green-600 dark:text-green-400 underline hover:text-green-800 dark:hover:text-green-300"
+                          >
+                            {consultation.consultantPhoneNumber}
+                          </a>
+                        ) : (
+                          "N/A"
+                        ),
                         consultation.scheduledAt
                           ? new Date(consultation.scheduledAt).toLocaleString()
                           : "N/A",
                         consultation.category,
-                        consultation.status || "pending",
+                        consultation.status ? (
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusStyles(
+                              consultation.status
+                            )}`}
+                          >
+                            {consultation.status}
+                          </span>
+                        ) : (
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusStyles(
+                              "pending"
+                            )}`}
+                          >
+                            pending
+                          </span>
+                        ),
+                        consultation.meetingLink ? (
+                          <a
+                            href={consultation.meetingLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 dark:text-blue-400 underline"
+                          >
+                            Link
+                          </a>
+                        ) : (
+                          "N/A"
+                        ),
                         consultation.createdAt
                           ? new Date(consultation.createdAt).toLocaleString()
                           : "N/A",
