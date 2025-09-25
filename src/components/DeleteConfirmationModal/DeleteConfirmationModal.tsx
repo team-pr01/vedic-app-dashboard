@@ -40,7 +40,7 @@ const DeleteConfirmationModal: React.FC<Props> = ({ onClose, onConfirm }) => {
           value={inputText}
           onChange={handleInputChange}
           onCopy={(e) => e.preventDefault()}
-          // onPaste={(e) => e.preventDefault()}
+          onPaste={(e) => e.preventDefault()}
           className="w-full border border-gray-300 dark:border-gray-600 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-900 dark:text-white"
           placeholder="Type the sentence exactly..."
         />
