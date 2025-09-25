@@ -8,7 +8,6 @@ import {
   useDeleteProductMutation,
   useGetAllProductsQuery,
   useGetSingleProductQuery,
-  useUpdateProductMutation,
 } from "../../redux/Features/Product/productApi";
 import Loader from "../../components/Shared/Loader/Loader";
 import { useGetAllCategoriesQuery } from "../../redux/Features/Categories/ReelCategory/categoriesApi";
@@ -20,7 +19,8 @@ export type TProduct = {
   category: string;
   productLink: string;
   description: string;
-  price: string;
+  basePrice: string;
+  discountedPrice: string;
   currency: string;
   label: string;
   tags: string;
@@ -38,7 +38,7 @@ const Shop = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [category, setCategory] = useState<string>("");
 
-  const { Plus, Pencil, Trash2, Package, BarChart, DollarSign } = icons;
+  const { Plus, Pencil, Trash2, Package, BarChart } = icons;
 
   // Get all Ayurveda items
   const { data, isLoading, isFetching } = useGetAllProductsQuery({
@@ -223,7 +223,11 @@ const Shop = () => {
                       {product.category}
                     </td>
                     <td className="p-3 font-mono text-slate-800 dark:text-slate-200">
-                      {Number(product.price).toFixed(2)} {product.currency}
+                      {Number(product.basePrice).toFixed(2)}{" "}
+                      <span className="text-sm line-through text-red-500">
+                        {Number(product.discountedPrice)}
+                      </span>{" "}
+                      {product.currency}
                     </td>
                     <td className="p-3">
                       <LabelBadge label={product.label} />
