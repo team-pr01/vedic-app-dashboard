@@ -8,7 +8,10 @@ import Loader from "../../Shared/Loader/Loader";
 import { useGetAllCategoriesQuery } from "../../../redux/Features/Categories/ReelCategory/categoriesApi";
 import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
 import Textarea from "../../Reusable/TextArea/TextArea";
-import { useAddProductMutation, useUpdateProductMutation } from "../../../redux/Features/Product/productApi";
+import {
+  useAddProductMutation,
+  useUpdateProductMutation,
+} from "../../../redux/Features/Product/productApi";
 
 type TAddProductFormProps = {
   setShowForm: (show: boolean) => void;
@@ -22,7 +25,8 @@ type TFormValues = {
   category: string;
   productLink: string;
   description: string;
-  price: string;
+  basePrice: string;
+  discountedPrice: string;
   currency: string;
   label: string;
   tags: string;
@@ -38,8 +42,7 @@ const AddProductForm = ({
 }: TAddProductFormProps) => {
   const { data: categories } = useGetAllCategoriesQuery({});
   const [addProduct, { isLoading }] = useAddProductMutation();
-  const [updateProduct, { isLoading: isUpdating }] =
-    useUpdateProductMutation();
+  const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
 
   const {
     register,
@@ -51,28 +54,28 @@ const AddProductForm = ({
 
   // Set default values when editing
   useEffect(() => {
-  if (mode === "edit" && defaultValues) {
-    const fields: (keyof TFormValues)[] = [
-      "name",
-      "category",
-      "productLink",
-      "description",
-      "price",
-      "currency",
-      "label",
-      "tags",
-      "videoUrl",
-      "file",
-    ];
+    if (mode === "edit" && defaultValues) {
+      const fields: (keyof TFormValues)[] = [
+        "name",
+        "category",
+        "productLink",
+        "description",
+        "basePrice",
+        "discountedPrice",
+        "currency",
+        "label",
+        "tags",
+        "videoUrl",
+        "file",
+      ];
 
-    fields.forEach((field) => {
-      if (defaultValues[field] !== undefined) {
-        setValue(field, defaultValues[field]);
-      }
-    });
-  }
-}, [defaultValues, mode, setValue]);
-
+      fields.forEach((field) => {
+        if (defaultValues[field] !== undefined) {
+          setValue(field, defaultValues[field]);
+        }
+      });
+    }
+  }, [defaultValues, mode, setValue]);
 
   const onSubmit = async (data: TFormValues) => {
     try {
@@ -115,7 +118,7 @@ const AddProductForm = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {mode === "edit" && isSingleDataLoading ? (
           <div className="flex items-center justify-center h-full min-h-[90vh]">
             <Loader size="size-10" />
@@ -160,10 +163,20 @@ const AddProductForm = ({
 
               <div className="flex items-center gap-3">
                 <TextInput
-                  label="Price"
-                  placeholder="Enter price"
-                  {...register("price", { required: "Price is required" })}
-                  error={errors.price}
+                  label="Base Price"
+                  placeholder="Enter base price"
+                  {...register("basePrice", {
+                    required: "Base Price is required",
+                  })}
+                  error={errors.basePrice}
+                />
+                <TextInput
+                  label="Discounted Price"
+                  placeholder="Enter discounted price"
+                  {...register("discountedPrice", {
+                    required: "Discounted Price is required",
+                  })}
+                  error={errors.discountedPrice}
                 />
                 <TextInput
                   label="Currency"
