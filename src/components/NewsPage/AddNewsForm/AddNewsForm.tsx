@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import TextInput from "../../Reusable/TextInput/TextInput";
-import { Cpu, X } from "lucide-react";
+import { X } from "lucide-react";
 import {
   useAddNewsMutation,
   useTranslateNewsMutation,
@@ -37,154 +37,230 @@ const AddNewsForm: React.FC<TAddNewsFormProps> = ({
   defaultValues,
 }) => {
   const { data: categories } = useGetAllCategoriesQuery({});
-  const [addNews, { isLoading: isAdding }] = useAddNewsMutation();
-  const [updateNews, { isLoading: isUpdating }] = useUpdateNewsMutation();
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm<TFormValues>();
+const [addNews, { isLoading: isAdding }] = useAddNewsMutation();
+const [updateNews, { isLoading: isUpdating }] = useUpdateNewsMutation();
+const [translateNews, { isLoading: isTranslating }] = useTranslateNewsMutation();
 
-  const [currentArticle, setCurrentArticle] = useState<{ content: string }>({
-    content: "",
-  });
+const {
+  register,
+  handleSubmit,
+  setValue,
+  reset,
+  formState: { errors },
+} = useForm<TFormValues>();
 
-  const [tagInput, setTagInput] = useState("");
-  const [tags, setTags] = useState<string[]>([]);
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const trimmed = tagInput.trim();
-      if (trimmed && !tags.includes(trimmed)) {
-        const newTags = [...tags, trimmed];
-        setTags(newTags);
-      }
-      setTagInput("");
-    }
-  };
+const [currentArticle, setCurrentArticle] = useState<{ content: string }>({ content: "" });
+const [tags, setTags] = useState<string[]>([]);
+const [tagInput, setTagInput] = useState("");
+const [selectedLanguages, setSelectedLanguages] = useState<any[]>([]);
+const [activeLanguage, setActiveLanguage] = useState<string | null>(null);
 
-  const removeTag = (tagToRemove: string) => {
-    const filtered = tags.filter((tag) => tag !== tagToRemove);
-    setTags(filtered);
-  };
+// ------------------------ TAG HANDLERS ------------------------
+const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const trimmed = tagInput.trim();
+    if (trimmed && !tags.includes(trimmed)) setTags([...tags, trimmed]);
+    setTagInput("");
+  }
+};
 
-  useEffect(() => {
-    if (mode === "edit" && defaultValues) {
-      setValue("title", defaultValues?.title);
-      setValue("category", defaultValues?.category);
-      setCurrentArticle({ content: defaultValues?.content || "" });
-      setTags(defaultValues?.tags || []);
-    }
-  }, [defaultValues, mode, setValue]);
+const removeTag = (tagToRemove: string) => {
+  setTags(tags.filter((tag) => tag !== tagToRemove));
+};
 
-  //   Function to add or edit vastu
-  const handleSubmitNews = async (data: TFormValues) => {
-    try {
-      const formData = new FormData();
+// ------------------------ CATEGORY FILTER ------------------------
+const filteredCategory = categories?.data?.filter(
+  (category: any) => category.areaName === "news"
+);
+const allCategories = filteredCategory?.map((category: any) => category.category);
 
-      Object.entries(data).forEach(([key, value]) => {
-        if (key === "file" && value instanceof FileList && value.length > 0) {
-          formData.append("file", value[0]);
-        } else {
-          formData.append(key, value as string);
-        }
-      });
+// ------------------------ LOAD DEFAULT / EDIT DATA ------------------------
+useEffect(() => {
+  if (!defaultValues) return;
 
-      // Append tags (as array)
-      tags.forEach((tag: string, index: number) => {
-        formData.append(`tags[${index}]`, tag);
-      });
+  // Default language: first translation key or 'en'
+  const defaultLang = Object.keys(defaultValues.translations || {})[0] || "en";
+  setActiveLanguage(defaultLang);
 
-      // Append content
-      formData.append("content", currentArticle.content);
-
-      let response;
-      if (mode === "edit" && defaultValues?._id) {
-        response = await updateNews({
-          id: defaultValues._id,
-          data: formData,
-        }).unwrap();
-        if (response?.success) {
-          toast.success(response?.message || "News updated successfully");
-        }
-      } else {
-        response = await addNews(formData).unwrap();
-        if (response?.success) {
-          toast.success(response?.message || "News added successfully");
-        }
-      }
-
-      setShowForm(false);
-      reset();
-      setCurrentArticle({ content: "" });
-      setTags([]);
-    } catch (error) {
-      const errMsg =
-        typeof error === "object" &&
-        error !== null &&
-        "data" in error &&
-        typeof (error as any).data?.message === "string"
-          ? (error as any).data.message
-          : "Something went wrong";
-      toast.error(errMsg);
-    }
-  };
-
-  const filteredCategory = categories?.data?.filter(
-    (category: any) => category.areaName === "news"
-  );
-
-  const allCategories = filteredCategory?.map(
-    (category: any) => category.category
-  );
-
-  const languageBatches = [];
-  for (let i = 0; i < LANGUAGES.length; i += 10) {
-    languageBatches.push(LANGUAGES.slice(i, i + 10));
+  const translation = defaultValues.translations?.[defaultLang];
+  if (translation) {
+    loadTranslationToForm(translation);
   }
 
-  const [translateNews] = useTranslateNewsMutation();
-  const [loadingBatch, setLoadingBatch] = useState<number | null>(null);
-  const newsId = defaultValues?._id;
+  setSelectedLanguages([]);
+}, [defaultValues, setValue]);
 
-  const handleTranslateBatch = async (batch: any, idx: number) => {
-    setLoadingBatch(idx);
-    try {
-      const payload = {
-        newsId,
-        title: defaultValues?.title,
-        content: defaultValues?.content,
-        tags: defaultValues?.tags,
-        category: defaultValues?.category,
-        batchLanguages: batch,
-      };
-      await translateNews(payload).unwrap();
-    } catch (error) {
-      console.error("Failed to translate batch:", error);
-      alert(`Failed to translate batch ${idx + 1}`);
-    } finally {
-      setLoadingBatch(null);
+const loadTranslationToForm = (translation: any) => {
+  setValue("title", translation.title || "");
+  setValue("category", translation.category || "");
+  setCurrentArticle({ content: translation.content || "" });
+  setTags(translation.tags || []);
+};
+
+// ------------------------ SUBMIT NEWS ------------------------
+const handleSubmitNews = async (data: TFormValues) => {
+  try {
+    const formData = new FormData();
+
+    if (data.file instanceof FileList && data.file.length > 0) {
+      formData.append("file", data.file[0]);
     }
-  };
 
-  const existingTranslations: string[] = Object.keys(
-    defaultValues.translations || {}
-  );
+    // Create translations payload
+    const translationsPayload = {
+      ...(defaultValues?.translations || {}),
+      [activeLanguage || "en"]: {
+        title: data.title,
+        category: data.category,
+        content: currentArticle.content,
+        tags: tags,
+      },
+    };
+
+    formData.append("translations", JSON.stringify(translationsPayload));
+
+    let response;
+    if (mode === "edit" && defaultValues?._id) {
+      response = await updateNews({ id: defaultValues._id, data: formData }).unwrap();
+      toast.success(response?.message || "News updated successfully");
+    } else {
+      response = await addNews(formData).unwrap();
+      toast.success(response?.message || "News added successfully");
+    }
+
+    resetForm();
+  } catch (error: any) {
+    toast.error(error?.data?.message || "Something went wrong");
+  }
+};
+
+const resetForm = () => {
+  setShowForm(false);
+  reset();
+  setCurrentArticle({ content: "" });
+  setTags([]);
+};
+
+// ------------------------ TRANSLATION ------------------------
+const handleTranslateLanguage = async () => {
+  try {
+    console.log(defaultValues?.translations);
+    const missingLanguages = selectedLanguages.filter(
+      (lang) => !defaultValues?.translations?.[lang.code]
+    );
+
+    if (!missingLanguages.length) return alert("Select at least one new language.");
+
+    const payload = {
+      newsId: defaultValues?._id,
+      title: defaultValues?.translations?.en?.title,
+      content: defaultValues?.translations?.en?.content,
+      tags: defaultValues?.translations?.en?.tags,
+      category: defaultValues?.translations?.en?.category,
+      batchLanguages: missingLanguages.map((lang) => ({ code: lang.code, name: lang.name })),
+    };
+
+    console.log(payload);
+
+    const res = await translateNews(payload).unwrap();
+
+    if (res?.translations) {
+      defaultValues.translations = { ...defaultValues.translations, ...res.translations };
+
+      // Load first generated language
+      const generatedLang = missingLanguages[0].code;
+      setActiveLanguage(generatedLang);
+      loadTranslationToForm(res.translations[generatedLang]);
+    }
+  } catch (error) {
+    console.error("Translation failed:", error);
+    alert("Failed to translate batch");
+  }
+};
+
+// ------------------------ LANGUAGE HANDLERS ------------------------
+const toggleLanguage = (language: any, checked: boolean) => {
+  if (checked) setSelectedLanguages((prev) => [...prev, language]);
+  else setSelectedLanguages((prev) => prev.filter((lang) => lang.code !== language.code));
+};
+
+const handleLanguageClick = (language: any) => {
+  setActiveLanguage(language.code);
+
+  const translation = defaultValues?.translations?.[language.code];
+  if (translation) loadTranslationToForm(translation);
+  else loadTranslationToForm({ title: "", category: "", content: "", tags: [] });
+};
+
 
   return (
     showForm && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto flex gap-3 p-6">
-          <form
-            onSubmit={handleSubmit(handleSubmitNews)}
-            className="space-y-6 w-[50%] border-r border-gray-300 pr-3"
-          >
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6">
+          <div className="flex items-center justify-between">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
               Add New Article
             </h3>
 
+            <button
+              type="button"
+              onClick={() => {
+                setShowForm(false);
+                reset();
+              }}
+              className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 text-2xl"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="flex items-center w-full overflow-x-auto gap-4 mt-3">
+            {LANGUAGES.map((language) => {
+              const isChecked = selectedLanguages.some(
+                (lang) => lang.code === language.code
+              );
+
+              return (
+                <div key={language.code} className="flex items-center gap-2">
+                  {/* Checkbox */}
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={(e) => toggleLanguage(language, e.target.checked)}
+                    className="form-checkbox h-4 w-4 text-purple-500 rounded border-gray-300 focus:ring-purple-500"
+                  />
+
+                  {/* Button */}
+                  <button
+                    type="button"
+                    onClick={() => handleLanguageClick(language)}
+                    className={`flex items-center justify-center px-2 py-1 rounded shadow-sm text-xs font-medium whitespace-nowrap
+            ${
+              activeLanguage === language.code
+                ? "bg-blue-600 text-white"
+                : "bg-gray-400 text-white hover:bg-gray-700"
+            }`}
+                  >
+                    {language.name}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+          {/* Generate by AI button */}
+          <button
+            type="button"
+            onClick={handleTranslateLanguage}
+            className="ml-auto flex items-center px-3 py-1.5 rounded bg-green-600 hover:bg-green-700 text-white text-xs font-medium shadow-sm"
+          >
+            {isTranslating ? "Translating..." : "Generate by AI"}
+          </button>
+
+          <form
+            onSubmit={handleSubmit(handleSubmitNews)}
+            className="space-y-6 mt-3"
+          >
             <TextInput
               label="Title"
               placeholder="Enter Title"
@@ -199,15 +275,6 @@ const AddNewsForm: React.FC<TAddNewsFormProps> = ({
               {...register("category")}
               error={errors?.category}
               options={allCategories}
-            />
-
-            {/* File upload */}
-            <TextInput
-              label="Image"
-              type="file"
-              {...register("file")}
-              error={errors.file as any}
-              isRequired={mode === "add"}
             />
 
             <div>
@@ -258,6 +325,15 @@ const AddNewsForm: React.FC<TAddNewsFormProps> = ({
               </div>
             </div>
 
+            {/* File upload */}
+            <TextInput
+              label="Image"
+              type="file"
+              {...register("file")}
+              error={errors.file as any}
+              isRequired={mode === "add"}
+            />
+
             <div className="flex justify-end space-x-3">
               <button
                 type="button"
@@ -274,104 +350,6 @@ const AddNewsForm: React.FC<TAddNewsFormProps> = ({
               </button>
             </div>
           </form>
-
-          <div className="w-[50%] h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Translate with AI
-              </h3>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowForm(false);
-                  reset();
-                }}
-                className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 text-2xl"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="flex flex-wrap gap-2 mt-3">
-              {languageBatches.map((batch, idx) => {
-                // Check if ALL languages in this batch exist in existingTranslations
-                const isBatchCompleted = batch.every((langCode) =>
-                  existingTranslations.includes(langCode.code)
-                );
-
-                return (
-                  <button
-                    key={idx}
-                    type="button"
-                    className="flex items-center justify-center px-4 py-2 rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 space-x-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                    onClick={() => handleTranslateBatch(batch, idx)}
-                    disabled={isBatchCompleted || loadingBatch === idx}
-                  >
-                    {loadingBatch === idx ? (
-                      <Loader size="size-4" />
-                    ) : (
-                      <>
-                        <Cpu className="w-4 h-4 text-yellow-300" />
-                        <span>
-                          {isBatchCompleted
-                            ? `Batch ${idx + 1} Completed`
-                            : `Translate Batch ${idx + 1}`}
-                        </span>
-                      </>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Show translations if available */}
-            {defaultValues?.translations &&
-              Object.keys(defaultValues.translations).length > 0 && (
-                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {Object.entries(defaultValues.translations).map(
-                    ([langCode, data]: [string, any], idx: number) => (
-                      <div
-                        key={idx}
-                        className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-200 bg-white dark:bg-gray-800"
-                      >
-                        {/* Language Label */}
-                        <div className="mb-2">
-                          <span className="px-2 py-1 text-xs font-medium text-white bg-purple-600 rounded">
-                            {langCode.toUpperCase()} -{" "}
-                            {LANGUAGES.find((l) => l.code === langCode)?.name ||
-                              ""}
-                          </span>
-                        </div>
-
-                        {/* Title */}
-                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                          {data.title || "No Title"}
-                        </h4>
-
-                        {/* Content */}
-                        <p className="text-gray-700 dark:text-gray-300 mb-2">
-                          {data.content || "No Content"}
-                        </p>
-
-                        {/* Tags */}
-                        {data.tags?.length > 0 && (
-                          <div className="mt-2 flex flex-wrap gap-1">
-                            {data.tags.map((tag: string, idx: number) => (
-                              <span
-                                key={idx}
-                                className="inline-block px-2 py-1 text-xs font-medium text-gray-800 dark:text-gray-200 bg-gray-200 dark:bg-gray-700 rounded"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )
-                  )}
-                </div>
-              )}
-          </div>
         </div>
       </div>
     )
