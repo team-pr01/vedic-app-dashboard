@@ -161,8 +161,6 @@ const handleTranslateLanguage = async () => {
       batchLanguages: missingLanguages.map((lang) => ({ code: lang.code, name: lang.name })),
     };
 
-    console.log(payload);
-
     const res = await translateNews(payload).unwrap();
 
     if (res?.translations) {

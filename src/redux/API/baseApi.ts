@@ -64,6 +64,7 @@ export const baseApi = createApi({
     "reels",
     "yoga",
     "vastu",
+    "vastuTips",
     "temple",
     "organization",
     "news",

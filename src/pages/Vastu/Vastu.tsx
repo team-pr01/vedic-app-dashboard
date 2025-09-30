@@ -9,6 +9,7 @@ import {
 } from "../../redux/Features/Vastu/vastuApi";
 import Loader from "../../components/Shared/Loader/Loader";
 import Categories from "../../components/Categories/Categories";
+import VastuTips from "../../components/VastuPage/VastuTips/VastuTips";
 
 export type TVastu = {
   _id: string;
@@ -70,6 +71,8 @@ const Vastu = () => {
         setShowModal={setShowCategoryForm}
         areaName="vastu"
       />
+
+      <VastuTips/>
     </div>
   );
 };
