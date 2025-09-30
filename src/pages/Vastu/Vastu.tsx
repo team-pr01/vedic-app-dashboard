@@ -10,6 +10,7 @@ import {
 import Loader from "../../components/Shared/Loader/Loader";
 import Categories from "../../components/Categories/Categories";
 import VastuTips from "../../components/VastuPage/VastuTips/VastuTips";
+import { useGetAllVastuTipsQuery } from "../../redux/Features/Vastu/vastuTipsApi";
 
 export type TVastu = {
   _id: string;
@@ -27,7 +28,9 @@ const Vastu = () => {
   const [vastuId, setVastuId] = useState("");
   const [mode, setMode] = useState<"add" | "edit">("add");
 
-  const { data: singleVastuData } = useGetSingleVastuQuery(vastuId);
+  const { data: singleVastuData, isFetching } = useGetSingleVastuQuery(vastuId);
+  const { data: vastuTips, isLoading: isVastuTipsloading } =
+    useGetAllVastuTipsQuery({});
   return (
     <div className="space-y-6">
       <PageHeader
@@ -40,7 +43,7 @@ const Vastu = () => {
         setShowCategoryForm={setShowCategoryForm}
       />
 
-      {isLoading ? (
+      {isLoading || isVastuTipsloading ? (
         <Loader size="size-10" />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -62,6 +65,7 @@ const Vastu = () => {
           setShowForm={setShowForm}
           defaultValues={singleVastuData?.data}
           mode={mode}
+          isLoading={isFetching}
         />
       )}
 
@@ -72,7 +76,9 @@ const Vastu = () => {
         areaName="vastu"
       />
 
-      <VastuTips/>
+      {!isVastuTipsloading && (
+        <VastuTips data={vastuTips} isLoading={isVastuTipsloading} />
+      )}
     </div>
   );
 };

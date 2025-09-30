@@ -32,11 +32,11 @@ const vastuTipsApi = baseApi.injectEndpoints({
 
     deleteVastuTips: builder.mutation<any, string>({
       query: (id) => ({
-        url: `/vastuTips/update/${id}`,
+        url: `/vastuTips/delete/${id}`,
         method: "DELETE",
         credentials: "include",
       }),
-      invalidatesTags: ["vastu"],
+      invalidatesTags: ["vastuTips"],
     }),
 
     updateVastuTips: builder.mutation<any, any>({

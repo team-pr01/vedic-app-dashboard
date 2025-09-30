@@ -11,6 +11,7 @@ import {
 } from "../../../redux/Features/Vastu/vastuApi";
 import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
 import { useGetAllCategoriesQuery } from "../../../redux/Features/Categories/ReelCategory/categoriesApi";
+import Loader from "../../Shared/Loader/Loader";
 
 type TFormValues = {
   title: string;
@@ -22,12 +23,14 @@ type TAddAddYogaFormProps = {
   setShowForm: React.Dispatch<React.SetStateAction<boolean>>;
   mode?: "add" | "edit";
   defaultValues?: TVastu;
+  isLoading: boolean;
 };
 
 const AddVastuForm: React.FC<TAddAddYogaFormProps> = ({
   setShowForm,
   mode,
   defaultValues,
+  isLoading: isLoadingData,
 }) => {
   const { data: categories } = useGetAllCategoriesQuery({});
   const [addVastu, { isLoading }] = useAddVastuMutation();
@@ -121,28 +124,34 @@ const AddVastuForm: React.FC<TAddAddYogaFormProps> = ({
             </button>
           </div>
 
-          <div className="space-y-4">
-            <TextInput
-              label="Title"
-              placeholder="Enter title"
-              {...register("title", { required: "Title is required" })}
-              error={errors.title}
-            />
+          {isLoadingData ? (
+            <div className="py-10">
+              <Loader size="size-10" />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <TextInput
+                label="Title"
+                placeholder="Enter title"
+                {...register("title", { required: "Title is required" })}
+                error={errors.title}
+              />
 
-            <SelectDropdown
-              label="Category"
-              {...register("category")}
-              error={errors?.category}
-              options={allCategories}
-            />
+              <SelectDropdown
+                label="Category"
+                {...register("category")}
+                error={errors?.category}
+                options={allCategories}
+              />
 
-            <TextInput
-              label="Video Url"
-              placeholder="Enter Video URL"
-              {...register("videoUrl", { required: "Video Url is required" })}
-              error={errors.videoUrl}
-            />
-          </div>
+              <TextInput
+                label="Video Url"
+                placeholder="Enter Video URL"
+                {...register("videoUrl", { required: "Video Url is required" })}
+                error={errors.videoUrl}
+              />
+            </div>
+          )}
 
           <div className="flex justify-end space-x-3">
             <button

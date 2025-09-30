@@ -28,6 +28,8 @@ const VastuTipsCard: React.FC<VastuTipsCardProps> = ({
       error: "Failed to delete.",
     });
   };
+
+  console.log(data);
   return (
     <div className="flex items-start gap-3 p-4 bg-white rounded-xl shadow-sm border border-gray-200">
       {/* Left icon/image */}
@@ -64,7 +66,7 @@ const VastuTipsCard: React.FC<VastuTipsCardProps> = ({
 
         {/* Tips */}
         <ul className="list-disc list-inside mt-2 space-y-1 text-gray-600 text-sm">
-          {data?.tips.map((tip: string, index: number) => (
+          {data?.tips?.map((tip: string, index: number) => (
             <li key={index}>{tip}</li>
           ))}
         </ul>
