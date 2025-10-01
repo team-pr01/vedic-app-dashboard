@@ -29,6 +29,7 @@ import Ayurveda from "../pages/Ayurveda/Ayurveda";
 import Shop from "../pages/Shop/Shop";
 import Consultations from "../pages/Consultations/Consultations";
 import TotalDonations from "../pages/TotalDonations/TotalDonations";
+import BulkSms from "../pages/BulkSms/BulkSms";
 
 export const router = createBrowserRouter([
   {
@@ -139,6 +140,10 @@ export const router = createBrowserRouter([
       {
         path: "shop",
         element: <Shop />,
+      },
+      {
+        path: "bulk-sms",
+        element: <BulkSms />,
       },
       {
         path: "*",

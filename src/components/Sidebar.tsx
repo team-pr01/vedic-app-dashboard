@@ -109,6 +109,11 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
       label: "Shop",
       path: "/dashboard/shop",
     },
+    {
+      icon: ShoppingBag,
+      label: "Bulk SMS",
+      path: "/dashboard/bulk-sms",
+    },
     
     { icon: Key, label: "API Keys", path: "/dashboard/api-keys" },
     { icon: BarChart2, label: "Analytics", path: "/dashboard/analytics" },
