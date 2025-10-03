@@ -89,6 +89,11 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
       path: "/dashboard/consultancy-service",
     },
     {
+      icon: Sun,
+      label: "Daily Horoscope",
+      path: "/dashboard/daily-horoscope",
+    },
+    {
       icon: UserCheck,
       label: "Consultations",
       path: "/dashboard/consultation",

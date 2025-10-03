@@ -30,6 +30,7 @@ import Shop from "../pages/Shop/Shop";
 import Consultations from "../pages/Consultations/Consultations";
 import TotalDonations from "../pages/TotalDonations/TotalDonations";
 import BulkSms from "../pages/BulkSms/BulkSms";
+import DailyHoroscope from "../pages/DailyHoroscope/DailyHoroscope";
 
 export const router = createBrowserRouter([
   {
@@ -104,6 +105,10 @@ export const router = createBrowserRouter([
       {
         path: "consultancy-service",
         element: <ConsultancyService/>,
+      },
+      {
+        path: "daily-horoscope",
+        element: <DailyHoroscope/>,
       },
       {
         path: "consultation",
