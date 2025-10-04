@@ -73,23 +73,40 @@ const removeTag = (tagToRemove: string) => {
 const filteredCategory = categories?.data?.filter(
   (category: any) => category.areaName === "news"
 );
-const allCategories = filteredCategory?.map((category: any) => category.category);
+const [allCategories, setAllCategories] = useState<string[]>(
+  filteredCategory?.map((category: any) => category.category) || []
+);
 
 // ------------------------ LOAD DEFAULT / EDIT DATA ------------------------
+// ------------------------ INITIALIZE DEFAULT LANGUAGE ------------------------
 useEffect(() => {
   if (!defaultValues) return;
 
-  // Default language: first translation key or 'en'
+  // Set default language (first available or 'en')
   const defaultLang = Object.keys(defaultValues.translations || {})[0] || "en";
   setActiveLanguage(defaultLang);
+  setSelectedLanguages([]);
+}, [defaultValues]);
 
-  const translation = defaultValues.translations?.[defaultLang];
+// ------------------------ LOAD TRANSLATION WHEN LANGUAGE CHANGES ------------------------
+useEffect(() => {
+  if (!defaultValues || !activeLanguage) return;
+
+  const translation = defaultValues.translations?.[activeLanguage];
+
   if (translation) {
+    // ✅ If translated category doesn't exist, add it to dropdown options
+    if (
+      translation.category &&
+      !allCategories.includes(translation.category)
+    ) {
+      setAllCategories((prev) => [...prev, translation.category]);
+    }
+
     loadTranslationToForm(translation);
   }
+}, [activeLanguage, defaultValues, allCategories, setValue]);
 
-  setSelectedLanguages([]);
-}, [defaultValues, setValue]);
 
 const loadTranslationToForm = (translation: any) => {
   setValue("title", translation.title || "");
@@ -97,6 +114,7 @@ const loadTranslationToForm = (translation: any) => {
   setCurrentArticle({ content: translation.content || "" });
   setTags(translation.tags || []);
 };
+
 
 // ------------------------ SUBMIT NEWS ------------------------
 const handleSubmitNews = async (data: TFormValues) => {

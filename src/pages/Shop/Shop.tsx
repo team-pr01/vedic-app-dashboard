@@ -223,9 +223,9 @@ const Shop = () => {
                       {product.category}
                     </td>
                     <td className="p-3 font-mono text-slate-800 dark:text-slate-200">
-                      {Number(product.basePrice).toFixed(2)}{" "}
+                      {Number(product.discountedPrice)} {" "}
                       <span className="text-sm line-through text-red-500">
-                        {Number(product.discountedPrice)}
+                          {Number(product.basePrice).toFixed(2)}
                       </span>{" "}
                       {product.currency}
                     </td>

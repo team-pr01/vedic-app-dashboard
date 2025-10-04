@@ -1,4 +1,4 @@
-import { Eye, Trash2, Calendar } from "lucide-react";
+import {Trash2, Calendar, Edit2 } from "lucide-react";
 import { format } from "date-fns";
 
 export type TNews = {
@@ -38,7 +38,7 @@ const NewsCard: React.FC<TNewsCardProps> = ({
     setShowForm(true);
   };
 
-  if (!translation) return null; // no translation available
+  if (!translation) return null;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow">
@@ -66,7 +66,7 @@ const NewsCard: React.FC<TNewsCardProps> = ({
               onClick={handleEdit}
               className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
             >
-              <Eye className="h-5 w-5" />
+            <Edit2 className="h-5 w-5" />
             </button>
             <button
               onClick={() => handleDeleteNews(article._id)}
