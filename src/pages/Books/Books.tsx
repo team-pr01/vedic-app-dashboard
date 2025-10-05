@@ -90,14 +90,23 @@ const Books = () => {
         </button>
       </div>
 
-      <AllBooksTable books={books?.data} isLoading={isLoading || isFetching} onEdit={setSelectedBookId} />
+      <AllBooksTable
+        books={books?.data}
+        isLoading={isLoading || isFetching}
+        onEdit={(bookId) => {
+          setSelectedBookId(bookId);
+          setMode("edit");
+          setShowForm(true);
+        }}
+      />
 
       {/* Add Form Modal */}
       {showForm && (
         <AddBookForm
           setShowForm={setShowForm}
-          defaultValues={singleBook}
+          defaultValues={singleBook?.data}
           mode={mode}
+          setMode={setMode}
           isSingleDataLoading={isSingleBookLoading}
         />
       )}

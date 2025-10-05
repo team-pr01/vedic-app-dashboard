@@ -1,16 +1,20 @@
 import { X } from "lucide-react";
 import { useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import TextInput from "../../Reusable/TextInput/TextInput";
 import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
 import Loader from "../../Shared/Loader/Loader";
 import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
-import { useCreateBookMutation, useUpdateBookMutation } from "../../../redux/Features/Book/bookApi";
+import {
+  useCreateBookMutation,
+  useUpdateBookMutation,
+} from "../../../redux/Features/Book/bookApi";
 
 export type TAddBookFormProps = {
   setShowForm: (show: boolean) => void;
   mode?: "add" | "edit";
+  setMode: (mode: "add" | "edit") => void;
   defaultValues?: any;
   isSingleDataLoading?: boolean;
 };
@@ -32,6 +36,7 @@ type TFormValues = {
 const AddBookForm: React.FC<TAddBookFormProps> = ({
   setShowForm,
   mode = "add",
+  setMode,
   defaultValues,
   isSingleDataLoading,
 }) => {
@@ -65,9 +70,23 @@ const AddBookForm: React.FC<TAddBookFormProps> = ({
         "level2Name",
         "level3Name",
       ];
-      fields.forEach((field) => setValue(field, defaultValues[field]));
+      const newValues: Partial<TFormValues> = {};
+      fields.forEach((field) => {
+        newValues[field] = defaultValues[field] ?? "";
+      });
+      reset(newValues);
+    } else if (mode === "add") {
+      reset({
+        name: "",
+        type: "veda",
+        structure: "Chapter-Verse",
+        level1Name: "",
+        level2Name: "",
+        level3Name: "",
+        image: undefined,
+      });
     }
-  }, [defaultValues, mode, setValue]);
+  }, [defaultValues, mode, reset]);
 
   const onSubmit = async (data: TFormValues) => {
     try {
@@ -82,7 +101,10 @@ const AddBookForm: React.FC<TAddBookFormProps> = ({
 
       let response;
       if (mode === "edit" && defaultValues?._id) {
-        response = await updateBook({ id: defaultValues._id, data: formData }).unwrap();
+        response = await updateBook({
+          id: defaultValues._id,
+          data: formData,
+        }).unwrap();
         toast.success(response?.message || "Book updated successfully");
       } else {
         response = await createBook(formData).unwrap();
@@ -115,7 +137,11 @@ const AddBookForm: React.FC<TAddBookFormProps> = ({
             </h3>
             <button
               type="button"
-              onClick={() => setShowForm(false)}
+              onClick={() => {
+                reset();
+                setShowForm(false);
+                setMode("add");
+              }}
               className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             >
               <X className="h-6 w-6" />
@@ -139,7 +165,12 @@ const AddBookForm: React.FC<TAddBookFormProps> = ({
 
             <SelectDropdown
               label="Structure"
-              options={["Chapter-Verse", "Mandala-Sukta-Rik", "Kanda-Sarga-Shloka", "Custom"]}
+              options={[
+                "Chapter-Verse",
+                "Mandala-Sukta-Rik",
+                "Kanda-Sarga-Shloka",
+                "Custom",
+              ]}
               {...register("structure", { required: "Structure is required" })}
               error={errors.structure}
             />
@@ -149,19 +180,25 @@ const AddBookForm: React.FC<TAddBookFormProps> = ({
                 <TextInput
                   label="Level 1 Name (e.g., Adhyaya)"
                   placeholder="Enter level 1 name"
-                  {...register("level1Name", { required: "Level 1 Name is required" })}
+                  {...register("level1Name", {
+                    required: "Level 1 Name is required",
+                  })}
                   error={errors.level1Name}
                 />
                 <TextInput
                   label="Level 2 Name (e.g., Brahmana)"
                   placeholder="Enter level 2 name"
-                  {...register("level2Name", { required: "Level 2 Name is required" })}
+                  {...register("level2Name", {
+                    required: "Level 2 Name is required",
+                  })}
                   error={errors.level2Name}
                 />
                 <TextInput
                   label="Level 3 Name"
                   placeholder="Enter level 3 name"
-                  {...register("level3Name", { required: "Level 3 Name is required" })}
+                  {...register("level3Name", {
+                    required: "Level 3 Name is required",
+                  })}
                   error={errors.level3Name}
                 />
               </div>
