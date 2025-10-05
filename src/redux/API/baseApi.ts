@@ -72,6 +72,7 @@ export const baseApi = createApi({
     "popup",
     "religiousTexts",
     "books",
+    "texts",
     "category",
     "consultancyService",
     "apiKeys",

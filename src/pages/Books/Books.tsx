@@ -6,6 +6,12 @@ import {
   useGetSingleBookQuery,
 } from "../../redux/Features/Book/bookApi";
 import AllBooksTable from "../../components/BookPage/AllBooksTable/AllBooksTable";
+import AllTextsTable from "../../components/BookPage/AllTextsTable/AllTextsTable";
+import {
+  useGetAllTextsQuery,
+  useGetSingleTextQuery,
+} from "../../redux/Features/Book/textsApi";
+import AddorEditBookTextForm from "../../components/BookPage/AddorEditBookTextForm/AddorEditBookTextForm";
 
 export type TBook = {
   _id: string;
@@ -21,8 +27,12 @@ export type TBook = {
 const Books = () => {
   const [mode, setMode] = useState<"add" | "edit">("add");
   const [showForm, setShowForm] = useState<boolean>(false);
+  const [showBookTextForm, setShowBookTextForm] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBookId, setSelectedBookId] = useState<null | string>("");
+  const [selectedBookTextId, setSelectedBookTextId] = useState<null | string>(
+    ""
+  );
   const { data: singleBook, isLoading: isSingleBookLoading } =
     useGetSingleBookQuery(selectedBookId);
 
@@ -32,6 +42,15 @@ const Books = () => {
     isFetching,
   } = useGetAllBooksQuery({ keyword: searchQuery });
 
+  const {
+    data: bookTexts,
+    isLoading: isBookTextsLoading,
+    isFetching: isBookTextsFetching,
+  } = useGetAllTextsQuery({ keyword: searchQuery });
+
+  const { data: singleBookText, isLoading: isSingleBookTextLoading } =
+    useGetSingleTextQuery(selectedBookTextId);
+
   const [activeTab, setActiveTab] = useState("Manage Books");
 
   const tabButtons: string[] = [
@@ -40,6 +59,19 @@ const Books = () => {
     "Translations",
     "Mantra Reports",
   ];
+
+  const buttonOnclick = () => {
+    if (activeTab === "Manage Books") {
+      setShowForm(true);
+      setMode("add");
+    }
+    if (activeTab === "Manage Texts") {
+      setShowBookTextForm(true);
+      setMode("add");
+    }
+  };
+
+  const buttonText = activeTab === "Manage Books" ? "Add Book" : "Add Text";
 
   return (
     <div className="flex flex-col bg-white rounded-2xl p-5">
@@ -79,26 +111,38 @@ const Books = () => {
         </div>
 
         <button
-          onClick={() => {
-            setShowForm(true);
-            setMode("add");
-          }}
+          onClick={buttonOnclick}
           className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
         >
           <Book className="w-5 h-5 mr-2 text-white" />
-          Add Book
+
+          {buttonText}
         </button>
       </div>
 
-      <AllBooksTable
-        books={books?.data}
-        isLoading={isLoading || isFetching}
-        onEdit={(bookId) => {
-          setSelectedBookId(bookId);
-          setMode("edit");
-          setShowForm(true);
-        }}
-      />
+      {activeTab === "Manage Books" && (
+        <AllBooksTable
+          books={books?.data}
+          isLoading={isLoading || isFetching}
+          onEdit={(bookId) => {
+            setSelectedBookId(bookId);
+            setMode("edit");
+            setShowForm(true);
+          }}
+        />
+      )}
+
+      {activeTab === "Manage Texts" && (
+        <AllTextsTable
+          texts={bookTexts?.data}
+          isLoading={isBookTextsLoading || isBookTextsFetching}
+          onEdit={(bookTextId) => {
+            setSelectedBookTextId(bookTextId);
+            setMode("edit");
+            setShowBookTextForm(true);
+          }}
+        />
+      )}
 
       {/* Add Form Modal */}
       {showForm && (
@@ -108,6 +152,18 @@ const Books = () => {
           mode={mode}
           setMode={setMode}
           isSingleDataLoading={isSingleBookLoading}
+        />
+      )}
+
+      {/* Add Form Modal */}
+      {showBookTextForm && (
+        <AddorEditBookTextForm
+          setShowForm={setShowBookTextForm}
+          defaultValues={singleBookText?.data}
+          mode={mode}
+          setMode={setMode}
+          isSingleDataLoading={isSingleBookTextLoading}
+          bookNames={books?.data}
         />
       )}
     </div>
