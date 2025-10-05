@@ -5,12 +5,12 @@ const bookApi = baseApi.injectEndpoints({
     getAllBooks: builder.query<any, { keyword?: string }>({
       query: ({ keyword = "" }) => {
         return {
-          url: `/book?keyword=${encodeURIComponent(keyword)}`,
+          url: `/books?keyword=${encodeURIComponent(keyword)}`,
           method: "GET",
           credentials: "include",
         };
       },
-      providesTags: ["book"],
+      providesTags: ["books"],
     }),
 
     getSingleBook: builder.query({

@@ -1,17 +1,16 @@
 import { useState } from "react";
-import PageHeader from "../../components/Reusable/PageHeader/PageHeader";
 import { Book, Search } from "lucide-react";
 import AddBookForm from "../../components/BookPage/AddBookForm/AddBookForm";
 import {
   useGetAllBooksQuery,
   useGetSingleBookQuery,
 } from "../../redux/Features/Book/bookApi";
-import BookCard from "../../components/BookPage/BookCard/BookCard";
 import AddChapterForm from "../../components/BookPage/AddChapterForm/AddChapterForm";
 import Loader from "../../components/Shared/Loader/Loader";
 import AddSlokOrMantraForm from "../../components/BookPage/AddSlokOrMantraForm/AddSlokOrMantraForm";
 import ViewBookModal from "../../components/BookPage/ViewBookModal/ViewBookModal";
 import EditBookModal from "../../components/BookPage/EditBookModal/EditBookModal";
+import AllBooksTable from "../../components/BookPage/AllBooksTable/AllBooksTable";
 
 export type TBook = {
   _id: string;
@@ -45,56 +44,64 @@ const Books = () => {
     isFetching,
   } = useGetAllBooksQuery({ keyword: searchQuery });
 
+  const [activeTab, setActiveTab] = useState("Manage Books");
+
+  const tabButtons: string[] = [
+    "Manage Books",
+    "Manage Texts",
+    "Translations",
+    "Mantra Reports",
+  ];
+
   return (
-    <div className="flex flex-col">
-      <PageHeader
-        title="Manage Books"
-        buttonText="Add New Book"
-        icon={<Book className="w-6 h-6 mr-2 text-blue-500" />}
-        onClick={() => {
-          setShowForm(true);
-        }}
-        setShowCategoryForm={() => {}}
-        isCategoryButtonVisible={false}
-      />
+    <div className="flex flex-col bg-white rounded-2xl p-5">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+        Book & Text Management
+      </h1>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-        <input
-          type="text"
-          placeholder="Search messages..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
-        />
+      {/* Tabs */}
+      <div className="flex border-b border-gray-200 mt-5">
+        {tabButtons.map((tab, index) => (
+          <button
+            key={index}
+            className={`py-2 px-4 font-medium transition-colors 
+              ${
+                activeTab === tab
+                  ? "border-b-2 border-blue-500 text-blue-500"
+                  : "text-gray-500 hover:text-blue-500"
+              }`}
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab}
+          </button>
+        ))}
       </div>
 
-      <div className="mt-10">
-        {isLoading || isFetching ? (
-          <Loader size="size-10" />
-        ) : books?.data?.length < 1 ? (
-          <p className="text-center text-gray-500 dark:text-gray-100">
-            No data found
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {books?.data?.map((book: TBook) => (
-              <BookCard
-                key={book._id}
-                book={book}
-                setId={setId}
-                setShowAddChapterForm={setShowAddChapterForm}
-                setShowAddSlokOrMantraForm={setShowAddSlokOrMantraForm}
-                // selectedChapters={selectedChapters}
-                setSelectedChapters={setSelectedChapters}
-                setShowBookDetailsModal={setShowBookDetailsModal}
-                setFormType={setFormType}
-                setShowForm={setShowForm}
-              />
-            ))}
-          </div>
-        )}
+      {/* Search & Add book button */}
+      <div className="flex items-center justify-between mt-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search messages..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-slate-100 dark:bg-slate-700 dark:bg-gray-800"
+          />
+        </div>
+
+        <button
+          onClick={() => {
+            setShowForm(true);
+          }}
+          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+        >
+          <Book className="w-5 h-5 mr-2 text-white" />
+          Add Book
+        </button>
       </div>
+
+      <AllBooksTable books={books?.data} isLoading={isLoading || isFetching} />
 
       {/* Add Form Modal */}
       {showForm && (

@@ -71,7 +71,7 @@ export const baseApi = createApi({
     "notification",
     "popup",
     "religiousTexts",
-    "book",
+    "books",
     "category",
     "consultancyService",
     "apiKeys",
