@@ -5,11 +5,6 @@ import {
   useGetAllBooksQuery,
   useGetSingleBookQuery,
 } from "../../redux/Features/Book/bookApi";
-import AddChapterForm from "../../components/BookPage/AddChapterForm/AddChapterForm";
-import Loader from "../../components/Shared/Loader/Loader";
-import AddSlokOrMantraForm from "../../components/BookPage/AddSlokOrMantraForm/AddSlokOrMantraForm";
-import ViewBookModal from "../../components/BookPage/ViewBookModal/ViewBookModal";
-import EditBookModal from "../../components/BookPage/EditBookModal/EditBookModal";
 import AllBooksTable from "../../components/BookPage/AllBooksTable/AllBooksTable";
 
 export type TBook = {
@@ -24,19 +19,12 @@ export type TBook = {
 };
 
 const Books = () => {
-  const [formType, setFormType] = useState<"add" | "edit">("add");
+  const [mode, setMode] = useState<"add" | "edit">("add");
   const [showForm, setShowForm] = useState<boolean>(false);
-  const [showAddChapterForm, setShowAddChapterForm] = useState<boolean>(false);
-  const [showAddSlokOrMantraForm, setShowAddSlokOrMantraForm] =
-    useState<boolean>(false);
-  const [showBookDetailsModal, setShowBookDetailsModal] =
-    useState<boolean>(false);
-  const [showEditBookModalOpen, setShowEditBookModalOpen] = useState(false);
-  const [selectedChapters, setSelectedChapters] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [id, setId] = useState("");
+  const [selectedBookId, setSelectedBookId] = useState<null | string>("");
   const { data: singleBook, isLoading: isSingleBookLoading } =
-    useGetSingleBookQuery(id);
+    useGetSingleBookQuery(selectedBookId);
 
   const {
     data: books,
@@ -86,13 +74,14 @@ const Books = () => {
             placeholder="Search messages..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-slate-100 dark:bg-slate-700 dark:bg-gray-800"
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-slate-100 dark:bg-slate-700"
           />
         </div>
 
         <button
           onClick={() => {
             setShowForm(true);
+            setMode("add");
           }}
           className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
         >
@@ -101,49 +90,15 @@ const Books = () => {
         </button>
       </div>
 
-      <AllBooksTable books={books?.data} isLoading={isLoading || isFetching} />
+      <AllBooksTable books={books?.data} isLoading={isLoading || isFetching} onEdit={setSelectedBookId} />
 
       {/* Add Form Modal */}
       {showForm && (
         <AddBookForm
-          showForm={showForm}
           setShowForm={setShowForm}
           defaultValues={singleBook}
-          id={id}
-          formType={formType}
-        />
-      )}
-
-      {showAddChapterForm && (
-        <AddChapterForm
-          showForm={showAddChapterForm}
-          setShowForm={setShowAddChapterForm}
-          bookId={id}
-        />
-      )}
-      {showAddSlokOrMantraForm && (
-        <AddSlokOrMantraForm
-          showForm={showAddSlokOrMantraForm}
-          setShowForm={setShowAddSlokOrMantraForm}
-          bookId={id}
-          selectedChapters={selectedChapters}
-        />
-      )}
-      {showBookDetailsModal && (
-        <ViewBookModal
-          book={singleBook}
-          showForm={showBookDetailsModal}
-          setShowForm={setShowBookDetailsModal}
-          setShowEditBookModalOpen={setShowEditBookModalOpen}
-          isLoading={isSingleBookLoading}
-        />
-      )}
-      {showEditBookModalOpen && (
-        <EditBookModal
-          book={singleBook}
-          showForm={showEditBookModalOpen}
-          setShowForm={setShowEditBookModalOpen}
-          isLoading={isSingleBookLoading}
+          mode={mode}
+          isSingleDataLoading={isSingleBookLoading}
         />
       )}
     </div>

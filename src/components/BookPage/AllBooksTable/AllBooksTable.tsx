@@ -21,14 +21,12 @@ type AllBooksTableProps = {
   books?: TBooks[];
   isLoading?: boolean;
   onEdit: (bookId: string) => void;
-  onDelete: (bookId: string) => void;
 };
 
 const AllBooksTable: React.FC<AllBooksTableProps> = ({
   books,
   isLoading,
   onEdit,
-  onDelete,
 }) => {
   if (isLoading) {
     return (
@@ -67,29 +65,29 @@ const AllBooksTable: React.FC<AllBooksTableProps> = ({
           </tr>
 
           {books.map((book) => (
-            <React.Fragment key={book._id}>
-              <tr className="hover:bg-gray-50 dark:hover:bg-gray-700 align-middle">
+            <React.Fragment key={book?._id}>
+              <tr className="hover:bg-gray-50 dark:hover:bg-gray-700 align-middle capitalize">
                 <td className="py-2 align-middle">
                   <img
-                    src={book.imageUrl}
-                    alt={book.name}
+                    src={book?.imageUrl}
+                    alt={book?.name}
                     className="size-16 object-cover rounded"
                   />
                 </td>
                 <td className="py-2 align-middle text-gray-700 dark:text-gray-200">
-                  {book.name}
+                  {book?.name}
                 </td>
                 <td className="py-2 align-middle text-gray-700 dark:text-gray-200">
-                  {book.type}
+                  {book?.type}
                 </td>
                 <td className="py-2 align-middle text-gray-700 dark:text-gray-200">
-                  {book.structure}
+                  {book?.structure}
                 </td>
                 <td className="py-2 align-middle flex gap-3 items-center mt-5">
-                  <button onClick={() => onEdit(book._id)}>
+                  <button onClick={() => onEdit(book?._id)}>
                     <Pen className="w-5 h-5 text-blue-500" />
                   </button>
-                  <button onClick={() => onDelete(book._id)}>
+                  <button>
                     <Trash2 className="w-5 h-5 text-red-500" />
                   </button>
                 </td>

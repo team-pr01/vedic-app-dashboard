@@ -15,21 +15,21 @@ const bookApi = baseApi.injectEndpoints({
 
     getSingleBook: builder.query({
       query: (id) => ({
-        url: `/book/${id}`,
+        url: `/books/${id}`,
         method: "GET",
         credentials: "include",
       }),
-      providesTags: ["book"],
+      providesTags: ["books"],
     }),
 
     createBook: builder.mutation<any, any>({
       query: (data) => ({
-        url: `/book/create-book`,
+        url: `/books/create-book`,
         method: "POST",
         body: data,
         credentials: "include",
       }),
-      invalidatesTags: ["book"],
+      invalidatesTags: ["books"],
     }),
 
     deleteBook: builder.mutation<
