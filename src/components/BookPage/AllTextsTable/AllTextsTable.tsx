@@ -91,7 +91,7 @@ const AllTextsTable: React.FC<AllTextsTableProps> = ({
                 <td className="py-2 align-middle text-gray-700 dark:text-gray-200">
                   {text.originalText}
                 </td>
-                <td className="py-2 align-middle text-gray-700 dark:text-gray-200">
+                <td className="py-2 align-middle text-gray-700 dark:text-gray-200 capitalize">
                   {text.tags.join(", ")}
                 </td>
                 <td className="py-2 align-middle">
@@ -105,8 +105,7 @@ const AllTextsTable: React.FC<AllTextsTableProps> = ({
                     onClick={() => {
                       setSelectedTextId(text._id);
                       setShowDeleteModal(true);
-                    }}
-                  >
+                    }}>
                     <Trash2 className="w-5 h-5 text-red-500" />
                   </button>
                 </td>
