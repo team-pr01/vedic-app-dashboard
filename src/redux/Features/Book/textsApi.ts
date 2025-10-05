@@ -22,6 +22,15 @@ const bookTextApi = baseApi.injectEndpoints({
       providesTags: ["texts"],
     }),
 
+    getTextByDetails: builder.query({
+      query: ({ bookId, chapterNo, verseNo }) => ({
+        url: `/book-text/find-by-details?bookId=${bookId}&chapter=${chapterNo}&verseNumber=${verseNo}`,
+        method: "GET",
+        credentials: "include",
+      }),
+      providesTags: ["texts"],
+    }),
+
     addText: builder.mutation<any, any>({
       query: (data) => ({
         url: `/book-text/add`,
@@ -56,6 +65,7 @@ const bookTextApi = baseApi.injectEndpoints({
 export const {
   useGetAllTextsQuery,
   useGetSingleTextQuery,
+  useGetTextByDetailsQuery,
   useAddTextMutation,
   useDeleteTextMutation,
   useUpdateTextMutation,

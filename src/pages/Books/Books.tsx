@@ -99,30 +99,29 @@ const Books = () => {
       </div>
 
       {/* Search & Add book button */}
-      {activeTab === "Manage Books" ||
-        (activeTab === "Manage Texts" && (
-          <div className="flex items-center justify-between mt-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search books..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-slate-100 dark:bg-slate-700"
-              />
-            </div>
-
-            <button
-              onClick={buttonOnclick}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
-            >
-              <Book className="w-5 h-5 mr-2 text-white" />
-
-              {buttonText}
-            </button>
+      {(activeTab === "Manage Books" || activeTab === "Manage Texts") && (
+        <div className="flex items-center justify-between mt-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search books..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-slate-100 dark:bg-slate-700"
+            />
           </div>
-        ))}
+
+          <button
+            onClick={buttonOnclick}
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+          >
+            <Book className="w-5 h-5 mr-2 text-white" />
+
+            {buttonText}
+          </button>
+        </div>
+      )}
 
       {activeTab === "Manage Books" && (
         <AllBooksTable

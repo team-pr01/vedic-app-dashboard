@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useGetAllBooksQuery } from "../../../redux/Features/Book/bookApi";
 import Loader from "../../Shared/Loader/Loader";
 import { Book } from "lucide-react";
+import TranslateBookModal from "./TranslateBookModal";
+import { useGetTextByDetailsQuery } from "../../../redux/Features/Book/textsApi";
 
 type TSelectedBook = {
   _id: string;
@@ -10,9 +12,29 @@ type TSelectedBook = {
 
 const Translations = () => {
   const { data: books } = useGetAllBooksQuery({});
+  const [isTranslateModalOpen, setIsTranslateModalOpen] =
+    useState<boolean>(false);
   const [selectedBook, setSelectedBook] = useState<TSelectedBook>(null);
   const [chapter, setChapter] = useState<string>("");
   const [verse, setVerse] = useState<string>("");
+
+  const shouldFetch =
+    !!selectedBook?._id && chapter.trim() !== "" && verse.trim() !== "";
+
+  const {
+    data: singleText,
+    isLoading: isSingleTextLoading,
+    isFetching: isSingleTextFetching,
+  } = useGetTextByDetailsQuery(
+    {
+      bookId: selectedBook?._id,
+      chapterNo: chapter,
+      verseNo: verse,
+    },
+    {
+      skip: !shouldFetch, // ✅ Skip until all values are present
+    }
+  );
 
   const allBookNames = books?.data?.map((item: any) => ({
     _id: item?._id,
@@ -82,13 +104,35 @@ const Translations = () => {
         </div>
 
         <button
-          disabled={!chapter && !verse}
+          onClick={() => setIsTranslateModalOpen(true)}
+          disabled={
+            !chapter || (!verse && !singleText?.data) || isSingleTextFetching
+          }
           className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed mt-8"
         >
-          <Book className="w-5 h-5 mr-2 text-white" />
-          Find Text
+          {isSingleTextFetching || isSingleTextLoading ? (
+            "Finding Text..."
+          ) : (
+            <p className="flex">
+              <Book className="w-5 h-5 mr-2 text-white" />
+              Translate
+            </p>
+          )}
         </button>
       </div>
+
+      {isTranslateModalOpen && (
+        <TranslateBookModal
+          data={singleText?.data}
+          setIsTranslateModalOpen={setIsTranslateModalOpen}
+        />
+      )}
+
+      {verse && !singleText?.data && (
+        <p className="mt-3 text-red-500">
+          No text found. Try to search bg another location
+        </p>
+      )}
     </div>
   );
 };
