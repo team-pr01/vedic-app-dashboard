@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Pen, Trash2 } from "lucide-react";
 import Loader from "../../Shared/Loader/Loader";
+import { useDeleteBookMutation } from "../../../redux/Features/Book/bookApi";
+import toast from "react-hot-toast";
+import DeleteConfirmationModal from "../../DeleteConfirmationModal/DeleteConfirmationModal";
 
 export type TBooks = {
   _id: string;
@@ -28,6 +31,17 @@ const AllBooksTable: React.FC<AllBooksTableProps> = ({
   isLoading,
   onEdit,
 }) => {
+  const [selectedBookId, setSelectedBookId] = useState<any>(null);
+  const [deleteBook] = useDeleteBookMutation();
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const handleConfirmDelete = async () => {
+    toast.promise(deleteBook({ id: selectedBookId }).unwrap(), {
+      loading: "Deleting book...",
+      success: "Book deleted successfully!",
+      error: "Failed to delete book.",
+    });
+  };
+
   if (isLoading) {
     return (
       <div className="w-full flex justify-center items-center py-20">
@@ -81,13 +95,23 @@ const AllBooksTable: React.FC<AllBooksTableProps> = ({
                   {book?.type}
                 </td>
                 <td className="py-2 align-middle text-gray-700 dark:text-gray-200">
-                  {book?.structure}
+                  {book?.structure === "Custom"
+                    ? `Custom (${book?.level1Name || "-"}, ${
+                        book?.level2Name || "-"
+                      }, ${book?.level3Name || "-"})`
+                    : book?.structure}
                 </td>
+
                 <td className="py-2 align-middle flex gap-3 items-center mt-5">
                   <button onClick={() => onEdit(book?._id)}>
                     <Pen className="w-5 h-5 text-blue-500" />
                   </button>
-                  <button>
+                  <button
+                    onClick={() => {
+                      setShowDeleteModal(true);
+                      setSelectedBookId(book?._id);
+                    }}
+                  >
                     <Trash2 className="w-5 h-5 text-red-500" />
                   </button>
                 </td>
@@ -102,6 +126,13 @@ const AllBooksTable: React.FC<AllBooksTableProps> = ({
           ))}
         </tbody>
       </table>
+
+      {showDeleteModal && (
+        <DeleteConfirmationModal
+          onClose={() => setShowDeleteModal(false)}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
     </div>
   );
 };

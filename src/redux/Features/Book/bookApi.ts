@@ -37,43 +37,21 @@ const bookApi = baseApi.injectEndpoints({
       { id: string }
     >({
       query: ({id}) => ({
-        url: `/book/delete-book/${id}`,
+        url: `/books/delete/${id}`,
         method: "DELETE",
         credentials: "include",
       }),
-      invalidatesTags: ["book"],
+      invalidatesTags: ["books"],
     }),
 
     updateBook: builder.mutation<any, any>({
       query: ({ id, data }) => ({
-        url: `/book/update-book/${id}`,
+        url: `/books/update/${id}`,
         method: "PUT",
         body: data,
         credentials: "include",
       }),
-      invalidatesTags: ["book"],
-    }),
-
-    // Chapter apis
-    addChapter: builder.mutation<any, any>({
-      query: ({data, id}) => ({
-        url: `/book/add-chapters/${id}`,
-        method: "PUT",
-        body: data,
-        credentials: "include",
-      }),
-      invalidatesTags: ["book"],
-    }),
-
-    // Chapter apis
-    addSlokOrMantra: builder.mutation<any, any>({
-      query: ({data, id, chapterIndex}) => ({
-        url: `/book/${id}/chapters/${chapterIndex}/slokOrMantra`,
-        method: "PUT",
-        body: data,
-        credentials: "include",
-      }),
-      invalidatesTags: ["book"],
+      invalidatesTags: ["books"],
     }),
   }),
 });
@@ -84,6 +62,4 @@ export const {
   useCreateBookMutation,
   useDeleteBookMutation,
   useUpdateBookMutation,
-  useAddChapterMutation,
-  useAddSlokOrMantraMutation,
 } = bookApi;
