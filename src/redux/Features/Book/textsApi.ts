@@ -76,6 +76,16 @@ const bookTextApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["texts"],
     }),
+
+    translateText: builder.mutation<any, any>({
+      query: (data) => ({
+        url: `/ai/translate-shloka`,
+        method: "POST",
+        body: data,
+        credentials: "include",
+      }),
+      invalidatesTags: ["texts"],
+    }),
   }),
 });
 
@@ -86,4 +96,5 @@ export const {
   useAddTextMutation,
   useDeleteTextMutation,
   useUpdateTextMutation,
+  useTranslateTextMutation,
 } = bookTextApi;
