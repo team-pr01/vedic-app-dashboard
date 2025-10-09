@@ -28,8 +28,6 @@ const VastuTipsCard: React.FC<VastuTipsCardProps> = ({
       error: "Failed to delete.",
     });
   };
-
-  console.log(data);
   return (
     <div className="flex items-start gap-3 p-4 bg-white rounded-xl shadow-sm border border-gray-200">
       {/* Left icon/image */}
@@ -43,7 +41,12 @@ const VastuTipsCard: React.FC<VastuTipsCardProps> = ({
       <div className="flex-1">
         {/* Title + Icons */}
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-800">{data?.title}</h3>
+          <h3 className="text-lg font-semibold text-gray-800">
+            {data?.title}{" "}
+            <span className="bg-orange-500 p-1 rounded text-white text-xs">
+              {data?.category}
+            </span>
+          </h3>
           <div className="flex items-center gap-2">
             <button
               onClick={() => {

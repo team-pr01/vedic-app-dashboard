@@ -9,6 +9,8 @@ import {
 import Loader from "../../../Shared/Loader/Loader";
 import TextInput from "../../../Reusable/TextInput/TextInput";
 import SubmitButton from "../../../Reusable/SubmitButton/SubmitButton";
+import SelectDropdown from "../../../Reusable/SelectDropdown/SelectDropdown";
+import { useGetAllCategoriesQuery } from "../../../../redux/Features/Categories/ReelCategory/categoriesApi";
 
 type TManageVastuTipsFormProps = {
   setShowForm: (show: boolean) => void;
@@ -22,6 +24,7 @@ type TManageVastuTipsFormProps = {
 type TFormValues = {
   title: string;
   tips: string[];
+  category: string;
   file: FileList;
 };
 
@@ -33,9 +36,9 @@ const ManageVastuTipsForm = ({
   isSingleDataLoading,
   isLoading: isLoadingData,
 }: TManageVastuTipsFormProps) => {
-  console.log(isLoadingData);
   const [tips, setTips] = useState<string[]>([]);
   const [tipInput, setTipInput] = useState("");
+   const { data: categories } = useGetAllCategoriesQuery({});
   const [addVastuTips, { isLoading }] = useAddVastuTipsMutation();
   const [updateVastuTips, { isLoading: isUpdating }] =
     useUpdateVastuTipsMutation();
@@ -63,7 +66,7 @@ const ManageVastuTipsForm = ({
 
   useEffect(() => {
     if (mode === "edit" && defaultValues) {
-      const fields = ["title", "tips"] as (keyof TFormValues)[];
+      const fields = ["title", "tips", "category"] as (keyof TFormValues)[];
       fields.forEach((field) => setValue(field, defaultValues[field]));
       setTips(defaultValues?.tips || []);
     }
@@ -103,6 +106,14 @@ const ManageVastuTipsForm = ({
     }
   };
 
+  const filteredCategory = categories?.data?.filter(
+    (category: any) => category.areaName === "vastu"
+  );
+
+  const allCategories = filteredCategory?.map(
+    (category: any) => category.category
+  );
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -135,6 +146,12 @@ const ManageVastuTipsForm = ({
               </div>
             ) : (
               <div className="flex flex-col gap-6">
+                 <SelectDropdown
+                label="Category"
+                {...register("category")}
+                error={errors?.category}
+                options={allCategories}
+              />
                 <TextInput
                   label="Title"
                   placeholder="Enter title"
