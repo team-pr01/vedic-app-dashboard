@@ -1,4 +1,4 @@
-import {Trash2, Calendar, Edit2 } from "lucide-react";
+import { Trash2, Calendar, Edit2, Eye, Heart } from "lucide-react";
 import { format } from "date-fns";
 
 export type TNews = {
@@ -13,6 +13,8 @@ export type TNews = {
   };
   imageUrl?: string;
   createdAt: string;
+  views?: number;
+  likes?: number;
 };
 
 type TNewsCardProps = {
@@ -66,7 +68,7 @@ const NewsCard: React.FC<TNewsCardProps> = ({
               onClick={handleEdit}
               className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
             >
-            <Edit2 className="h-5 w-5" />
+              <Edit2 className="h-5 w-5" />
             </button>
             <button
               onClick={() => handleDeleteNews(article._id)}
@@ -88,9 +90,23 @@ const NewsCard: React.FC<TNewsCardProps> = ({
           ))}
         </div>
 
-        <div className="mt-4 text-sm text-gray-500 dark:text-gray-400 flex items-center">
-          <Calendar className="h-4 w-4 mr-1" />
-          {format(new Date(article.createdAt), "MMM d, yyyy")}
+        {/* Date, Views, Likes */}
+        <div className="mt-4 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+          <div className="flex items-center gap-1">
+            <Calendar className="h-4 w-4" />
+            {format(new Date(article.createdAt), "MMM d, yyyy")}
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1">
+              <Eye className="h-4 w-4" />
+              <span>{article.views || 0}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Heart className="h-4 w-4" />
+              <span>{article.likes || 0}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
