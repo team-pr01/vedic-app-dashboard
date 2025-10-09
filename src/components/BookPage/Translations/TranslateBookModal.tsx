@@ -3,7 +3,10 @@ import { LANGUAGES } from "../../../lib/allLanguages";
 import Textarea from "../../Reusable/TextArea/TextArea";
 import { SparklesIcon } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useTranslateTextMutation } from "../../../redux/Features/Book/textsApi";
+import {
+  useTranslateTextMutation,
+  useUpdateTextMutation,
+} from "../../../redux/Features/Book/textsApi";
 import toast from "react-hot-toast";
 
 interface TranslationFormData {
@@ -54,13 +57,12 @@ const TranslateBookModal = ({
   data: BookTextData;
   setIsTranslateModalOpen: (isOpen: boolean) => void;
 }) => {
+  const [updateText, { isLoading: isUpdating }] = useUpdateTextMutation();
   const [translateText, { isLoading: isTranslating }] =
     useTranslateTextMutation();
   const [selectedLanguages, setSelectedLanguages] = useState<any[]>([]);
-  const [activeLanguage, setActiveLanguage] = useState<string | null>(null);
 
   const {
-    register,
     handleSubmit,
     reset,
     setValue,
@@ -72,7 +74,7 @@ const TranslateBookModal = ({
     },
   });
 
-  // Initialize form with existing data
+  // Setting default values
   useEffect(() => {
     if (data?.translations) {
       const initialTranslations: TranslationFormData["translations"] = {};
@@ -111,10 +113,6 @@ const TranslateBookModal = ({
     }
   };
 
-  const handleLanguageClick = (language: any) => {
-    setActiveLanguage(language.code);
-  };
-
   const handleTranslateLanguage = async () => {
     if (!data?._id || selectedLanguages.length === 0) {
       toast.error("Please select at least one language");
@@ -131,6 +129,7 @@ const TranslateBookModal = ({
       const response = await translateText(payload).unwrap();
 
       toast.success("Shloka translated successfully!");
+      setSelectedLanguages([]);
 
       // Update form with new translations
       if (response.translations) {
@@ -163,37 +162,27 @@ const TranslateBookModal = ({
       const errMsg =
         error?.data?.message || "Something went wrong during translation";
       toast.error(errMsg);
-      console.error(error);
     }
   };
 
-  const onSubmit = (formData: TranslationFormData) => {
-    console.log("Form data to save:", formData);
+  const onSubmit = async (formData: TranslationFormData) => {
+    try {
+      // Convert translations object to array
+      const translationsArray: Translation[] = Object.entries(
+        formData.translations
+      ).map(([langCode, trans]) => {
+        const sanskritWordBreakdown: SanskritWord[] = [];
 
-    // Transform form data back to the expected API format
-    const translationsToSave: Translation[] = Object.entries(
-      formData.translations || {}
-    ).map(([langCode, transData]) => {
-      // Parse word-by-word and word meanings back to SanskritWord format
-      const sanskritWordBreakdown: SanskritWord[] = [];
+        // Split wordByWord and wordMeanings into arrays
+        const wordByWordLines = trans.wordByWord.split("\n");
+        const wordMeaningLines = trans.wordMeanings.split("\n");
 
-      if (transData.wordByWord && transData.wordMeanings) {
-        const wordByWordLines = transData.wordByWord
-          .split("\n")
-          .filter((line) => line.trim());
-        const wordMeaningsLines = transData.wordMeanings
-          .split("\n")
-          .filter((line) => line.trim());
-
-        // Match corresponding lines
+        // Match each Sanskrit word with its shortMeaning and descriptiveMeaning
         wordByWordLines.forEach((line, index) => {
           const [sanskritWord, shortMeaning] = line.split(" - ");
-          const meaningLine = wordMeaningsLines[index];
-          const descriptiveMeaning = meaningLine
-            ? meaningLine.split(" - ")[1] || ""
-            : "";
-
-          if (sanskritWord && shortMeaning) {
+          const [_, descriptiveMeaning] =
+            wordMeaningLines[index]?.split(" - ") || [];
+          if (sanskritWord && shortMeaning && descriptiveMeaning) {
             sanskritWordBreakdown.push({
               sanskritWord: sanskritWord.trim(),
               shortMeaning: shortMeaning.trim(),
@@ -201,20 +190,30 @@ const TranslateBookModal = ({
             });
           }
         });
+
+        return {
+          langCode,
+          translation: trans.translation,
+          sanskritWordBreakdown,
+        };
+      });
+
+      // Call API
+      const response = await updateText({
+        id: data._id,
+        data: {
+          translations: translationsArray,
+        },
+      }).unwrap();
+
+      if (response?.success) {
+        toast.success("Book text updated successfully");
+        setIsTranslateModalOpen(false);
       }
-
-      return {
-        langCode,
-        translation: transData.translation,
-        sanskritWordBreakdown:
-          sanskritWordBreakdown.length > 0 ? sanskritWordBreakdown : undefined,
-      };
-    });
-
-    console.log("Processed translations:", translationsToSave);
-    toast.success("Translations saved successfully!");
-    // Here you would typically make an API call to save the data
-    // await saveTranslationsAPI(data._id, translationsToSave);
+    } catch (error: any) {
+      const errMsg = error?.data?.message || "Something went wrong";
+      toast.error(errMsg);
+    }
   };
 
   const currentTranslations = watch("translations") || {};
@@ -227,9 +226,6 @@ const TranslateBookModal = ({
             <div className="mb-4 flex flex-col justify-end">
               <div className="flex items-center w-full overflow-x-auto gap-4 mt-3">
                 {LANGUAGES.map((language) => {
-                  const isChecked = selectedLanguages.some(
-                    (lang) => lang.code === language.code
-                  );
                   return (
                     <div
                       key={language.code}
@@ -238,23 +234,30 @@ const TranslateBookModal = ({
                       {/* Checkbox */}
                       <input
                         type="checkbox"
-                        checked={isChecked}
+                        checked={selectedLanguages.some(
+                          (lang) => lang.code === language.code
+                        )}
                         onChange={(e) =>
                           toggleLanguage(language, e.target.checked)
                         }
                         className="form-checkbox h-4 w-4 text-purple-500 rounded border-gray-300 focus:ring-purple-500"
                       />
 
-                      {/* Button */}
+                      {/* Button toggles checkbox */}
                       <button
                         type="button"
-                        onClick={() => handleLanguageClick(language)}
+                        onClick={() => {
+                          const isChecked = selectedLanguages.some(
+                            (lang) => lang.code === language.code
+                          );
+                          toggleLanguage(language, !isChecked);
+                        }}
                         className={`flex items-center justify-center px-2 py-1 rounded shadow-sm text-xs font-medium whitespace-nowrap
-                          ${
-                            activeLanguage === language.code
-                              ? "bg-blue-600 text-white"
-                              : "bg-gray-400 text-white hover:bg-gray-700"
-                          }`}
+      ${
+        selectedLanguages.some((lang) => lang.code === language.code)
+          ? "bg-blue-600 text-white"
+          : "bg-gray-400 text-white hover:bg-gray-700"
+      }`}
                       >
                         {language.name}
                       </button>
@@ -309,6 +312,7 @@ const TranslateBookModal = ({
                       <div className="space-y-4">
                         <Textarea
                           label="Translation (ভাবার্থ)"
+                          name=""
                           value={langData.translation}
                           onChange={(e) =>
                             setValue(
@@ -321,9 +325,11 @@ const TranslateBookModal = ({
                               | import("react-hook-form").FieldError
                               | undefined
                           }
+                          isRequired={false}
                         />
                         <Textarea
                           label="Word-by-Word (পদ)"
+                          name=""
                           value={langData.wordByWord}
                           onChange={(e) =>
                             setValue(
@@ -337,9 +343,11 @@ const TranslateBookModal = ({
                               | undefined
                           }
                           placeholder="Format: SanskritWord - ShortMeaning&#10;e.g., ॐ - 45"
+                          isRequired={false}
                         />
                         <Textarea
                           label="Word Meanings (পদার্থ)"
+                          name=""
                           value={langData.wordMeanings}
                           onChange={(e) =>
                             setValue(
@@ -353,6 +361,7 @@ const TranslateBookModal = ({
                               | undefined
                           }
                           placeholder="Format: SanskritWord - DescriptiveMeaning&#10;e.g., ॐ - the periodical sound, the existence"
+                          isRequired={false}
                         />
                       </div>
                     </div>
@@ -374,7 +383,7 @@ const TranslateBookModal = ({
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50"
             >
-              Save All Changes
+              {isUpdating ? "Please wait..." : "Save All Changes"}
             </button>
           </div>
         </form>

@@ -47,10 +47,8 @@ const AddBookForm: React.FC<TAddBookFormProps> = ({
     watch,
     reset,
     control,
-    resetField,
     getValues,
     formState: { errors },
-    setValue,
   } = useForm<TFormValues>({
     defaultValues: defaultValues || {
       type: "veda",
@@ -88,52 +86,53 @@ const AddBookForm: React.FC<TAddBookFormProps> = ({
   }, [defaultValues, mode, reset]);
 
   // 🧠 Store previously used levels for each structure
-  const previousLevelsRef = useRef<Record<string, { name: string }[]>>({});
+  const previousLevelsRef = useRef<{
+    lastSelected?: string;
+    byStructure: Record<string, { name: string }[]>;
+  }>({ byStructure: {} });
 
-useEffect(() => {
-  const structure = watchStructure;
-  const currentLevels = getValues("levels");
+  useEffect(() => {
+    const structure = watchStructure;
+    const currentLevels = getValues("levels");
 
-  // Save current levels for the previous structure
-  const previousStructure = previousLevelsRef.current.lastSelected;
-  if (previousStructure) {
-    previousLevelsRef.current[previousStructure] = currentLevels;
-  }
-
-  // Remember current structure
-  previousLevelsRef.current.lastSelected = structure;
-
-  const defaultStructures: Record<string, string[]> = {
-    "Chapter-Verse": ["Chapter", "Verse"],
-    "Mandala-Sukta-Rik": ["Mandala", "Sukta", "Rik"],
-    "Kanda-Sarga-Shloka": ["Kanda", "Sarga", "Shloka"],
-  };
-
-  // ✅ Clear existing levels before replacing
-  replace([]);
-
-  // ✅ Use setTimeout to ensure rerender (React Hook Form quirk)
-  setTimeout(() => {
-    if (structure === "Custom") {
-      const savedCustomLevels = previousLevelsRef.current["Custom"];
-      if (savedCustomLevels && savedCustomLevels.length > 0) {
-        replace(savedCustomLevels);
-      } else {
-        // Always show 3 empty fields
-        replace([{ name: "" }, { name: "" }, { name: "" }]);
-      }
-    } else {
-      const savedLevels = previousLevelsRef.current[structure];
-      if (savedLevels && savedLevels.length > 0) {
-        replace(savedLevels);
-      } else if (defaultStructures[structure]) {
-        replace(defaultStructures[structure].map((name) => ({ name })));
-      }
+    // Save current levels for the previous structure
+    const previousStructure = previousLevelsRef.current.lastSelected;
+    if (previousStructure) {
+      previousLevelsRef.current.byStructure[previousStructure] = currentLevels;
     }
-  }, 0);
-}, [watchStructure, replace, getValues]);
 
+    // Remember current structure
+    previousLevelsRef.current.lastSelected = structure;
 
+    const defaultStructures: Record<string, string[]> = {
+      "Chapter-Verse": ["Chapter", "Verse"],
+      "Mandala-Sukta-Rik": ["Mandala", "Sukta", "Rik"],
+      "Kanda-Sarga-Shloka": ["Kanda", "Sarga", "Shloka"],
+    };
+
+    // ✅ Clear existing levels before replacing
+    replace([]);
+
+    // ✅ Use setTimeout to ensure rerender (React Hook Form quirk)
+    setTimeout(() => {
+      if (structure === "Custom") {
+        const savedCustomLevels = previousLevelsRef.current.byStructure["Custom"];
+        if (savedCustomLevels && savedCustomLevels.length > 0) {
+          replace(savedCustomLevels);
+        } else {
+          // Always show 3 empty fields
+          replace([{ name: "" }, { name: "" }, { name: "" }]);
+        }
+      } else {
+        const savedLevels = previousLevelsRef.current.byStructure[structure];
+        if (savedLevels && savedLevels.length > 0) {
+          replace(savedLevels);
+        } else if (defaultStructures[structure]) {
+          replace(defaultStructures[structure].map((name) => ({ name })));
+        }
+      }
+    }, 0);
+  }, [watchStructure, replace, getValues]);
 
   const onSubmit = async (data: TFormValues) => {
     try {
@@ -142,9 +141,8 @@ useEffect(() => {
       formData.append("type", data.type);
       formData.append("structure", data.structure);
       data.levels.forEach((level, index) => {
-  formData.append(`levels[${index}][name]`, level.name);
-});
-
+        formData.append(`levels[${index}][name]`, level.name);
+      });
 
       if (data.image && data.image.length > 0) {
         formData.append("file", data.image[0]);
@@ -227,9 +225,12 @@ useEffect(() => {
             />
 
             {/* Only show inputs if Custom */}
-             {/* Only show inputs if Custom */}
-              {watchStructure === "Custom" && (
+            {/* Only show inputs if Custom */}
+            {watchStructure === "Custom" && (
               <div className="flex flex-col gap-4 bg-gray-100 p-3 rounded-xl">
+                <h3 className=" font-semibold text-gray-900 dark:text-gray-200">
+                  Add custom structures
+                </h3>
                 {fields.map((field, index) => (
                   <TextInput
                     key={index}
