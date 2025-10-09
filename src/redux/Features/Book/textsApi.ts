@@ -23,11 +23,28 @@ const bookTextApi = baseApi.injectEndpoints({
     }),
 
     getTextByDetails: builder.query({
-      query: ({ bookId, chapterNo, verseNo }) => ({
-        url: `/book-text/find-by-details?bookId=${bookId}&chapter=${chapterNo}&verseNumber=${verseNo}`,
-        method: "GET",
-        credentials: "include",
-      }),
+      query: ({
+        bookId,
+        levels,
+      }: {
+        bookId: string;
+        levels?: Record<string, string>;
+      }) => {
+        if (!bookId) return { url: "", method: "GET" };
+
+        const safeLevels = levels || {};
+        const params = new URLSearchParams({ bookId });
+
+        Object.entries(safeLevels).forEach(([key, value]) => {
+          if (value) params.append(key, value);
+        });
+
+        return {
+          url: `/book-text/find-by-details?${params.toString()}`,
+          method: "GET",
+          credentials: "include",
+        };
+      },
       providesTags: ["texts"],
     }),
 

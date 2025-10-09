@@ -8,37 +8,35 @@ import { useGetTextByDetailsQuery } from "../../../redux/Features/Book/textsApi"
 type TSelectedBook = {
   _id: string;
   name: string;
+  levels: { _id: string; name: string }[];
 } | null;
 
 const Translations = () => {
   const { data: books } = useGetAllBooksQuery({});
-  const [isTranslateModalOpen, setIsTranslateModalOpen] =
-    useState<boolean>(false);
+  const [isTranslateModalOpen, setIsTranslateModalOpen] = useState<boolean>(false);
   const [selectedBook, setSelectedBook] = useState<TSelectedBook>(null);
-  const [chapter, setChapter] = useState<string>("");
-  const [verse, setVerse] = useState<string>("");
+  const [locationValues, setLocationValues] = useState<Record<string, string>>({});
 
   const shouldFetch =
-    !!selectedBook?._id && chapter.trim() !== "" && verse.trim() !== "";
+    !!selectedBook?._id &&
+    Object.values(locationValues).every((v) => v.trim() !== "");
 
-  const {
-    data: singleText,
-    isLoading: isSingleTextLoading,
-    isFetching: isSingleTextFetching,
-  } = useGetTextByDetailsQuery(
+  const { data: singleText, isLoading: isSingleTextLoading, isFetching: isSingleTextFetching } =
+  useGetTextByDetailsQuery(
     {
-      bookId: selectedBook?._id,
-      chapterNo: chapter,
-      verseNo: verse,
+      bookId: selectedBook?._id!,
+      levels: locationValues, // <-- pass it here
     },
     {
-      skip: !shouldFetch, // ✅ Skip until all values are present
+      skip: !shouldFetch,
     }
   );
+
 
   const allBookNames = books?.data?.map((item: any) => ({
     _id: item?._id,
     name: item?.name,
+    levels: item.levels || [],
   }));
 
   if (!allBookNames) return <Loader size="size-10" />;
@@ -46,7 +44,19 @@ const Translations = () => {
   const handleBookChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedId = e.target.value;
     const selected = allBookNames.find((b: any) => b._id === selectedId);
-    if (selected) setSelectedBook(selected);
+    if (selected) {
+      setSelectedBook(selected);
+      // Reset location values for the new book
+      const initialLocation: Record<string, string> = {};
+      selected.levels.forEach((lvl: any) => {
+        initialLocation[lvl.name] = "";
+      });
+      setLocationValues(initialLocation);
+    }
+  };
+
+  const handleLocationChange = (levelName: string, value: string) => {
+    setLocationValues((prev) => ({ ...prev, [levelName]: value }));
   };
 
   return (
@@ -66,7 +76,7 @@ const Translations = () => {
             <select
               value={selectedBook?._id || ""}
               onChange={handleBookChange}
-              className={`px-[18px] py-2 rounded-lg bg-neutral-70 border text-neutral-65 focus:outline-none focus:border-primary-10 transition duration-300`}
+              className="px-[18px] py-2 rounded-lg bg-neutral-70 border text-neutral-65 focus:outline-none focus:border-primary-10 transition duration-300"
             >
               <option value="" disabled>
                 Select Book
@@ -79,6 +89,7 @@ const Translations = () => {
             </select>
           </div>
 
+          {/* Dynamic location fields */}
           {selectedBook && (
             <div className="flex flex-col gap-2 font-Inter w-full">
               <label className="text-neutral-65">
@@ -86,18 +97,15 @@ const Translations = () => {
                 <span className="text-red-600"> *</span>
               </label>
               <div className="flex items-center gap-2">
-                <input
-                  placeholder="Chapter"
-                  value={chapter}
-                  onChange={(e) => setChapter(e.target.value)}
-                  className="px-[18px] py-2 rounded-lg border focus:outline-none focus:border-primary-500 transition duration-300 bg-neutral-50 w-[200px]"
-                />
-                <input
-                  placeholder="Verse"
-                  value={verse}
-                  onChange={(e) => setVerse(e.target.value)}
-                  className="px-[18px] py-2 rounded-lg border focus:outline-none focus:border-primary-500 transition duration-300 bg-neutral-50 w-[200px]"
-                />
+                {selectedBook.levels.map((lvl) => (
+                  <input
+                    key={lvl._id}
+                    placeholder={lvl.name}
+                    value={locationValues[lvl.name] || ""}
+                    onChange={(e) => handleLocationChange(lvl.name, e.target.value)}
+                    className="px-[18px] py-2 rounded-lg border focus:outline-none focus:border-primary-500 transition duration-300 bg-neutral-50 w-[200px]"
+                  />
+                ))}
               </div>
             </div>
           )}
@@ -105,9 +113,7 @@ const Translations = () => {
 
         <button
           onClick={() => setIsTranslateModalOpen(true)}
-          disabled={
-            !chapter || (!verse && !singleText?.data) || isSingleTextFetching
-          }
+          disabled={!shouldFetch || isSingleTextFetching}
           className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed mt-8"
         >
           {isSingleTextFetching || isSingleTextLoading ? (
@@ -128,9 +134,9 @@ const Translations = () => {
         />
       )}
 
-      {verse && !singleText?.data && (
+      {Object.values(locationValues).some((v) => v) && !singleText?.data && (
         <p className="mt-3 text-red-500">
-          No text found. Try to search bg another location
+          No text found. Try to search by another location
         </p>
       )}
     </div>

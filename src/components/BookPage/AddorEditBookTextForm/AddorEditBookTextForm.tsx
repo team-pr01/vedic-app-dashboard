@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import toast from "react-hot-toast";
 import TextInput from "../../Reusable/TextInput/TextInput";
 import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
@@ -21,18 +21,18 @@ export type TAddorEditBookTextFormProps = {
   bookNames: TBooks[];
 };
 
+type TLocation = {
+  levelName: string;
+  value: string;
+};
+
 type TFormValues = {
-  bookId: any;
-  location: {
-    chapter: string;
-    verse: string;
-  };
-  chapter: string;
-  verse: string;
+  bookId: string;
+  location: TLocation[];
   originalText: string;
   primaryTranslation: string;
   tags: string[];
-  idVerified: boolean;
+  isVerified: boolean;
 };
 
 const AddorEditBookTextForm: React.FC<TAddorEditBookTextFormProps> = ({
@@ -46,91 +46,99 @@ const AddorEditBookTextForm: React.FC<TAddorEditBookTextFormProps> = ({
   const [isVerified, setIsVerified] = useState<boolean>(false);
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
+  const [selectedBook, setSelectedBook] = useState<any>(null);
+
   const [addText, { isLoading }] = useAddTextMutation();
   const [updateText, { isLoading: isUpdating }] = useUpdateTextMutation();
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<TFormValues>({
-    defaultValues: defaultValues || {
-      type: "veda",
-      structure: "Chapter-Verse",
+  const { register, handleSubmit, control, reset, formState: { errors } } = useForm<TFormValues>({
+    defaultValues: {
+      bookId: "",
+      location: [],
+      originalText: "",
+      primaryTranslation: "",
+      tags: [],
+      isVerified: false,
     },
   });
 
-  //   To enter tags
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const trimmed = tagInput.trim();
-      if (trimmed && !tags.includes(trimmed)) {
-        const newTags = [...tags, trimmed];
-        setTags(newTags);
-      }
-      setTagInput("");
+  const { fields, replace } = useFieldArray({
+    control,
+    name: "location",
+  });
+
+  const allBookNames = bookNames?.map((b) => ({
+    _id: b._id,
+    name: b.name,
+    structure: b.structure,
+    levels: b.levels,
+  }));
+
+  // 🟢 Handle selecting a book to auto-load structure levels
+  const handleBookChange = (bookId: string) => {
+    const book = allBookNames.find((b) => b._id === bookId);
+    setSelectedBook(book);
+
+    if (book?.levels?.length) {
+      replace(book.levels.map((level: any) => ({ levelName: level.name, value: "" })));
+    } else {
+      replace([]); // Empty if custom
     }
   };
 
-  const removeTag = (tagToRemove: string) => {
-    const filtered = tags.filter((tag) => tag !== tagToRemove);
-    setTags(filtered);
-  };
-
-  const allBookNames = bookNames?.map((item) => {
-    return {
-      _id: item._id,
-      name: item.name,
-    };
-  });
-
-  // Set default values on edit or add
+  // 🟢 Setup defaults on edit or add
   useEffect(() => {
     if (mode === "edit" && defaultValues) {
       reset({
-        bookId: defaultValues?.bookId?._id ?? "",
-        chapter: defaultValues.location?.chapter ?? "",
-        verse: defaultValues.location?.verse ?? "",
+        bookId: defaultValues.bookId?._id ?? "",
+        location: defaultValues.location ?? [],
         originalText: defaultValues.originalText ?? "",
         primaryTranslation: defaultValues.primaryTranslation ?? "",
         tags: defaultValues.tags ?? [],
-        idVerified: defaultValues.idVerified ?? false,
+        isVerified: defaultValues.isVerified ?? false,
       });
-      setIsVerified(defaultValues.idVerified);
+      setIsVerified(defaultValues.isVerified);
       setTags(defaultValues.tags || []);
     } else if (mode === "add") {
       reset({
         bookId: "",
-        location: { chapter: "", verse: "" },
+        location: [],
         originalText: "",
         primaryTranslation: "",
-        idVerified: false,
+        tags: [],
+        isVerified: false,
       });
       setTags([]);
     }
   }, [defaultValues, mode, reset]);
 
+  // 🟢 Tag input handlers
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const trimmed = tagInput.trim();
+      if (trimmed && !tags.includes(trimmed)) setTags((prev) => [...prev, trimmed]);
+      setTagInput("");
+    }
+  };
+
+  const removeTag = (tag: string) => setTags((prev) => prev.filter((t) => t !== tag));
+
+  // 🟢 Submit handler
   const onSubmit = async (data: TFormValues) => {
     const payload = {
       bookId: data.bookId,
+      location: data.location,
       originalText: data.originalText,
       primaryTranslation: data.primaryTranslation,
-      tags: tags,
-      idVerified: isVerified,
-      location: {
-        chapter: data.chapter,
-        verse: data.verse,
-      },
+      tags,
+      isVerified,
     };
+
     try {
       let response;
       if (mode === "edit" && defaultValues?._id) {
-        response = await updateText({
-          id: defaultValues._id,
-          data: payload,
-        }).unwrap();
+        response = await updateText({ id: defaultValues._id, data: payload }).unwrap();
         toast.success(response?.message || "Book text updated successfully");
       } else {
         response = await addText(payload).unwrap();
@@ -139,9 +147,9 @@ const AddorEditBookTextForm: React.FC<TAddorEditBookTextFormProps> = ({
 
       reset();
       setShowForm(false);
+      setMode("add");
     } catch (error: any) {
-      const err = error?.data?.message || "Something went wrong";
-      toast.error(err);
+      toast.error(error?.data?.message || "Something went wrong");
     }
   };
 
@@ -158,8 +166,8 @@ const AddorEditBookTextForm: React.FC<TAddorEditBookTextFormProps> = ({
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-200">
-              {mode === "edit" ? "Edit" : "Add"} Book
+            <h3 className="text-xl font-semibold">
+              {mode === "edit" ? "Edit" : "Add"} Book Text
             </h3>
             <button
               type="button"
@@ -168,137 +176,100 @@ const AddorEditBookTextForm: React.FC<TAddorEditBookTextFormProps> = ({
                 setShowForm(false);
                 setMode("add");
               }}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             >
-              <X className="h-6 w-6" />
+              <X className="h-6 w-6 text-gray-500 hover:text-gray-700" />
             </button>
           </div>
 
-          <div className="flex flex-col gap-6">
-            {/* Books dropdown */}
-            <div className="flex flex-col gap-2 font-Inter">
-              <label className="text-neutral-65">
-                Book
-                <span className="text-red-600"> *</span>
-              </label>
-              <select
-                className={`px-[18px] py-[14px] rounded-lg bg-neutral-70 border text-neutral-65 focus:outline-none focus:border-primary-10 transition duration-300 ${
-                  errors.bookId ? "border-red-500" : "border-neutral-75"
-                }`}
-                {...register("bookId", { required: "Please select book" })}
-              >
-                <option value="" disabled className="capitalize">
-                  Select Book
-                </option>
-                {allBookNames.map((option, index) => (
-                  <option
-                    key={index}
-                    value={option?._id}
-                    className="capitalize"
-                  >
-                    {option?.name}
-                  </option>
-                ))}
-              </select>
-              {errors.bookId && typeof errors.bookId.message === "string" && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.bookId.message}
-                </p>
-              )}
-            </div>
+          {/* Book Dropdown */}
+          <div className="flex flex-col gap-2">
+            <label>Book<span className="text-red-600">*</span></label>
+            <select
+              {...register("bookId", { required: "Please select book" })}
+              onChange={(e) => handleBookChange(e.target.value)}
+              className="border rounded-lg p-3"
+            >
+              <option value="">Select Book</option>
+              {allBookNames.map((book) => (
+                <option key={book._id} value={book._id}>{book.name}</option>
+              ))}
+            </select>
+            {errors.bookId && <p className="text-red-500 text-sm">{errors.bookId.message}</p>}
+          </div>
 
-            {/* Locations */}
-            <div className="bg-gray-100 rounded-2xl p-3 flex items-center gap-3">
-              <TextInput
-                label="Chapter"
-                placeholder="Enter Chapter"
-                {...register("chapter", { required: "Chapter is required" })}
-                error={errors.chapter}
-              />
-              <TextInput
-                label="Verse"
-                placeholder="Enter Verse"
-                {...register("verse", { required: "Verse is required" })}
-                error={errors.verse}
-              />
-            </div>
-
-            <Textarea
-              label="Text (Original)"
-              placeholder="Enter original text"
-              {...register("originalText", {
-                required: "Original text is required",
-              })}
-              error={errors.originalText}
-            />
-
-            <Textarea
-              label="Primary Translation (English)"
-              placeholder="Enter primary English translation"
-              {...register("primaryTranslation", {
-                required: "Primary English translation is required",
-              })}
-              error={errors.primaryTranslation}
-            />
-
-            {/* Tags */}
-            <div>
-              <TextInput
-                label="Tags"
-                name="tags"
-                placeholder="Enter tag. Press enter to add another tag"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                error={
-                  Array.isArray(errors.tags) ? errors.tags[0] : errors.tags
-                }
-                isRequired={false}
-              />
-              {/* Display tags below the input */}
-              <div className="flex flex-wrap gap-2 mt-2">
-                {tags.map((tag, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm"
-                  >
-                    <span>{tag}</span>
-                    <button
-                      type="button"
-                      onClick={() => removeTag(tag)}
-                      className="ml-1 text-blue-500 hover:text-red-500"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
+          {/* Dynamic Location Fields */}
+          {fields.length > 0 && (
+            <div className="bg-gray-100 rounded-xl p-4">
+              <h4 className="font-semibold mb-2">Location</h4>
+              <div className="grid grid-cols-2 gap-3">
+                {fields.map((field, index) => (
+                  <TextInput
+                    key={field.id}
+                    label={field.levelName}
+                    placeholder={`Enter ${field.levelName}`}
+                    {...register(`location.${index}.value`, { required: `${field.levelName} is required` })}
+                    error={errors.location?.[index]?.value}
+                  />
                 ))}
               </div>
             </div>
+          )}
 
-            <div className="flex items-center gap-3">
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isVerified}
-                  onChange={(e) => setIsVerified(e.target.checked)}
-                  className="w-5 h-5 rounded border-gray-300 focus:ring-2 focus:ring-primary-10"
-                />
-                <span
-                  className={`ml-2 font-medium ${
-                    isVerified ? "text-green-600" : "text-gray-700"
-                  }`}
-                >
-                  Human Verified
-                </span>
-              </label>
+          <Textarea
+            label="Original Text"
+            placeholder="Enter original text"
+            {...register("originalText", { required: "Original text is required" })}
+            error={errors.originalText}
+          />
+
+          <Textarea
+            label="Primary Translation (English)"
+            placeholder="Enter primary English translation"
+            {...register("primaryTranslation", { required: "Translation is required" })}
+            error={errors.primaryTranslation}
+          />
+
+          {/* Tags Section */}
+          <div>
+            <TextInput
+              label="Tags"
+              name="tags"
+              placeholder="Press enter to add tag"
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              isRequired={false}
+            />
+            <div className="flex flex-wrap gap-2 mt-2">
+              {tags.map((tag, i) => (
+                <div key={i} className="bg-blue-100 px-3 py-1 rounded-full flex items-center gap-2">
+                  <span>{tag}</span>
+                  <button type="button" onClick={() => removeTag(tag)}>
+                    <X className="w-4 h-4 text-blue-500 hover:text-red-500" />
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3">
+          {/* Verified Checkbox */}
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={isVerified}
+              onChange={(e) => setIsVerified(e.target.checked)}
+              className="w-5 h-5"
+            />
+            <span className={isVerified ? "text-green-600" : "text-gray-700"}>
+              Human Verified
+            </span>
+          </div>
+
+          <div className="flex justify-end gap-3">
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="px-4 py-2 border rounded-md"
             >
               Cancel
             </button>

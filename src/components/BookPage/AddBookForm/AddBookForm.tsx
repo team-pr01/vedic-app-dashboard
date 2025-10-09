@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useRef } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
 import toast from "react-hot-toast";
 import TextInput from "../../Reusable/TextInput/TextInput";
 import SubmitButton from "../../Reusable/SubmitButton/SubmitButton";
@@ -27,9 +27,7 @@ type TFormValues = {
     | "Mandala-Sukta-Rik"
     | "Kanda-Sarga-Shloka"
     | "Custom";
-  level1Name?: string;
-  level2Name?: string;
-  level3Name?: string;
+  levels: { name: string }[];
   image?: FileList;
 };
 
@@ -47,57 +45,110 @@ const AddBookForm: React.FC<TAddBookFormProps> = ({
     register,
     handleSubmit,
     watch,
-    setValue,
     reset,
+    control,
+    resetField,
+    getValues,
     formState: { errors },
+    setValue,
   } = useForm<TFormValues>({
     defaultValues: defaultValues || {
       type: "veda",
       structure: "Chapter-Verse",
+      levels: [],
     },
+  });
+
+  const { fields, replace } = useFieldArray({
+    control,
+    name: "levels",
   });
 
   const watchStructure = watch("structure");
 
-  // Set default values on edit
+  // Set default values on edit or add
   useEffect(() => {
     if (mode === "edit" && defaultValues) {
-      const fields: (keyof TFormValues)[] = [
-        "name",
-        "type",
-        "structure",
-        "level1Name",
-        "level2Name",
-        "level3Name",
-      ];
-      const newValues: Partial<TFormValues> = {};
-      fields.forEach((field) => {
-        newValues[field] = defaultValues[field] ?? "";
+      reset({
+        name: defaultValues.name || "",
+        type: defaultValues.type || "veda",
+        structure: defaultValues.structure || "Chapter-Verse",
+        levels: defaultValues.levels || [],
+        image: undefined,
       });
-      reset(newValues);
     } else if (mode === "add") {
       reset({
         name: "",
         type: "veda",
         structure: "Chapter-Verse",
-        level1Name: "",
-        level2Name: "",
-        level3Name: "",
+        levels: [],
         image: undefined,
       });
     }
   }, [defaultValues, mode, reset]);
 
+  // 🧠 Store previously used levels for each structure
+  const previousLevelsRef = useRef<Record<string, { name: string }[]>>({});
+
+useEffect(() => {
+  const structure = watchStructure;
+  const currentLevels = getValues("levels");
+
+  // Save current levels for the previous structure
+  const previousStructure = previousLevelsRef.current.lastSelected;
+  if (previousStructure) {
+    previousLevelsRef.current[previousStructure] = currentLevels;
+  }
+
+  // Remember current structure
+  previousLevelsRef.current.lastSelected = structure;
+
+  const defaultStructures: Record<string, string[]> = {
+    "Chapter-Verse": ["Chapter", "Verse"],
+    "Mandala-Sukta-Rik": ["Mandala", "Sukta", "Rik"],
+    "Kanda-Sarga-Shloka": ["Kanda", "Sarga", "Shloka"],
+  };
+
+  // ✅ Clear existing levels before replacing
+  replace([]);
+
+  // ✅ Use setTimeout to ensure rerender (React Hook Form quirk)
+  setTimeout(() => {
+    if (structure === "Custom") {
+      const savedCustomLevels = previousLevelsRef.current["Custom"];
+      if (savedCustomLevels && savedCustomLevels.length > 0) {
+        replace(savedCustomLevels);
+      } else {
+        // Always show 3 empty fields
+        replace([{ name: "" }, { name: "" }, { name: "" }]);
+      }
+    } else {
+      const savedLevels = previousLevelsRef.current[structure];
+      if (savedLevels && savedLevels.length > 0) {
+        replace(savedLevels);
+      } else if (defaultStructures[structure]) {
+        replace(defaultStructures[structure].map((name) => ({ name })));
+      }
+    }
+  }, 0);
+}, [watchStructure, replace, getValues]);
+
+
+
   const onSubmit = async (data: TFormValues) => {
     try {
       const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (key === "image" && value instanceof FileList && value.length > 0) {
-          formData.append("file", value[0]);
-        } else if (value !== undefined) {
-          formData.append(key, value as string);
-        }
-      });
+      formData.append("name", data.name);
+      formData.append("type", data.type);
+      formData.append("structure", data.structure);
+      data.levels.forEach((level, index) => {
+  formData.append(`levels[${index}][name]`, level.name);
+});
+
+
+      if (data.image && data.image.length > 0) {
+        formData.append("file", data.image[0]);
+      }
 
       let response;
       if (mode === "edit" && defaultValues?._id) {
@@ -175,32 +226,21 @@ const AddBookForm: React.FC<TAddBookFormProps> = ({
               error={errors.structure}
             />
 
-            {watchStructure === "Custom" && (
-              <div className="flex flex-col gap-4">
-                <TextInput
-                  label="Level 1 Name (e.g., Adhyaya)"
-                  placeholder="Enter level 1 name"
-                  {...register("level1Name", {
-                    required: "Level 1 Name is required",
-                  })}
-                  error={errors.level1Name}
-                />
-                <TextInput
-                  label="Level 2 Name (e.g., Brahmana)"
-                  placeholder="Enter level 2 name"
-                  {...register("level2Name", {
-                    required: "Level 2 Name is required",
-                  })}
-                  error={errors.level2Name}
-                />
-                <TextInput
-                  label="Level 3 Name"
-                  placeholder="Enter level 3 name"
-                  {...register("level3Name", {
-                    required: "Level 3 Name is required",
-                  })}
-                  error={errors.level3Name}
-                />
+            {/* Only show inputs if Custom */}
+             {/* Only show inputs if Custom */}
+              {watchStructure === "Custom" && (
+              <div className="flex flex-col gap-4 bg-gray-100 p-3 rounded-xl">
+                {fields.map((field, index) => (
+                  <TextInput
+                    key={index}
+                    label={`Level ${index + 1} Name`}
+                    placeholder={`Enter level ${index + 1} name`}
+                    {...register(`levels.${index}.name` as const, {
+                      required: "Level name is required",
+                    })}
+                    error={errors.levels?.[index]?.name}
+                  />
+                ))}
               </div>
             )}
 

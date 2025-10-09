@@ -5,17 +5,21 @@ import DeleteConfirmationModal from "../../DeleteConfirmationModal/DeleteConfirm
 import toast from "react-hot-toast";
 import { useDeleteTextMutation } from "../../../redux/Features/Book/textsApi";
 
+export type TLocation = {
+  levelName: string;
+  value: string;
+};
+
 export type TBookText = {
   _id: string;
-  bookId: any;
-  location: {
-    chapter: string;
-    verse: string;
+  bookId: {
+    name : string
   };
+  location: TLocation[];
   originalText: string;
   primaryTranslation: string;
   tags: string[];
-  idVerified: boolean;
+  isVerified?: boolean;
 };
 
 type AllTextsTableProps = {
@@ -85,7 +89,9 @@ const AllTextsTable: React.FC<AllTextsTableProps> = ({
                 <td className="py-2 align-middle text-gray-700 dark:text-gray-200">
                   <div className="font-medium">{text.bookId?.name}</div>
                   <div className="text-sm text-gray-500 dark:text-gray-400">
-                    Chapter {text.location?.chapter},  Verse {text.location?.verse}
+                   {
+                    text?.location?.map((location) => `${location.levelName}-${location?.value}`).join(", ")
+                   }
                   </div>
                 </td>
                 <td className="py-2 align-middle text-gray-700 dark:text-gray-200">
@@ -95,7 +101,7 @@ const AllTextsTable: React.FC<AllTextsTableProps> = ({
                   {text.tags.join(", ")}
                 </td>
                 <td className="py-2 align-middle">
-                  {text.idVerified && <Check className="w-5 h-5 text-green-500" />}
+                  {text.isVerified && <Check className="w-5 h-5 text-green-500" />}
                 </td>
                 <td className="py-2 align-middle flex gap-3 items-center">
                   <button onClick={() => onEdit(text._id)}>
