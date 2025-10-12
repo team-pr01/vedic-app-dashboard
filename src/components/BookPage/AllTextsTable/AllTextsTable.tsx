@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Pen, Trash2, Check } from "lucide-react";
+import { Pen, Trash2 } from "lucide-react";
 import Loader from "../../Shared/Loader/Loader";
 import DeleteConfirmationModal from "../../DeleteConfirmationModal/DeleteConfirmationModal";
 import toast from "react-hot-toast";
@@ -71,7 +71,6 @@ const AllTextsTable: React.FC<AllTextsTableProps> = ({
             <th className="pb-2">Book & Location</th>
             <th className="pb-2">Text</th>
             <th className="pb-2">Tags</th>
-            <th className="pb-2">Verified</th>
             <th className="pb-2">Action</th>
           </tr>
         </thead>
@@ -99,9 +98,6 @@ const AllTextsTable: React.FC<AllTextsTableProps> = ({
                 </td>
                 <td className="py-2 align-middle text-gray-700 dark:text-gray-200 capitalize">
                   {text.tags.join(", ")}
-                </td>
-                <td className="py-2 align-middle">
-                  {text.isVerified && <Check className="w-5 h-5 text-green-500" />}
                 </td>
                 <td className="py-2 align-middle flex gap-3 items-center">
                   <button onClick={() => onEdit(text._id)}>

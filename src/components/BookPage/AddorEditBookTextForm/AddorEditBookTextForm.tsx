@@ -43,7 +43,6 @@ const AddorEditBookTextForm: React.FC<TAddorEditBookTextFormProps> = ({
   isSingleDataLoading,
   bookNames,
 }) => {
-  const [isVerified, setIsVerified] = useState<boolean>(false);
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [selectedBook, setSelectedBook] = useState<any>(null);
@@ -51,14 +50,19 @@ const AddorEditBookTextForm: React.FC<TAddorEditBookTextFormProps> = ({
   const [addText, { isLoading }] = useAddTextMutation();
   const [updateText, { isLoading: isUpdating }] = useUpdateTextMutation();
 
-  const { register, handleSubmit, control, reset, formState: { errors } } = useForm<TFormValues>({
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm<TFormValues>({
     defaultValues: {
       bookId: "",
       location: [],
       originalText: "",
       primaryTranslation: "",
       tags: [],
-      isVerified: false,
     },
   });
 
@@ -80,7 +84,9 @@ const AddorEditBookTextForm: React.FC<TAddorEditBookTextFormProps> = ({
     setSelectedBook(book);
 
     if (book?.levels?.length) {
-      replace(book.levels.map((level: any) => ({ levelName: level.name, value: "" })));
+      replace(
+        book.levels.map((level: any) => ({ levelName: level.name, value: "" }))
+      );
     } else {
       replace([]); // Empty if custom
     }
@@ -95,9 +101,7 @@ const AddorEditBookTextForm: React.FC<TAddorEditBookTextFormProps> = ({
         originalText: defaultValues.originalText ?? "",
         primaryTranslation: defaultValues.primaryTranslation ?? "",
         tags: defaultValues.tags ?? [],
-        isVerified: defaultValues.isVerified ?? false,
       });
-      setIsVerified(defaultValues.isVerified);
       setTags(defaultValues.tags || []);
     } else if (mode === "add") {
       reset({
@@ -106,7 +110,6 @@ const AddorEditBookTextForm: React.FC<TAddorEditBookTextFormProps> = ({
         originalText: "",
         primaryTranslation: "",
         tags: [],
-        isVerified: false,
       });
       setTags([]);
     }
@@ -117,12 +120,14 @@ const AddorEditBookTextForm: React.FC<TAddorEditBookTextFormProps> = ({
     if (e.key === "Enter") {
       e.preventDefault();
       const trimmed = tagInput.trim();
-      if (trimmed && !tags.includes(trimmed)) setTags((prev) => [...prev, trimmed]);
+      if (trimmed && !tags.includes(trimmed))
+        setTags((prev) => [...prev, trimmed]);
       setTagInput("");
     }
   };
 
-  const removeTag = (tag: string) => setTags((prev) => prev.filter((t) => t !== tag));
+  const removeTag = (tag: string) =>
+    setTags((prev) => prev.filter((t) => t !== tag));
 
   // 🟢 Submit handler
   const onSubmit = async (data: TFormValues) => {
@@ -132,13 +137,15 @@ const AddorEditBookTextForm: React.FC<TAddorEditBookTextFormProps> = ({
       originalText: data.originalText,
       primaryTranslation: data.primaryTranslation,
       tags,
-      isVerified,
     };
 
     try {
       let response;
       if (mode === "edit" && defaultValues?._id) {
-        response = await updateText({ id: defaultValues._id, data: payload }).unwrap();
+        response = await updateText({
+          id: defaultValues._id,
+          data: payload,
+        }).unwrap();
         toast.success(response?.message || "Book text updated successfully");
       } else {
         response = await addText(payload).unwrap();
@@ -183,7 +190,9 @@ const AddorEditBookTextForm: React.FC<TAddorEditBookTextFormProps> = ({
 
           {/* Book Dropdown */}
           <div className="flex flex-col gap-2">
-            <label>Book<span className="text-red-600">*</span></label>
+            <label>
+              Book<span className="text-red-600">*</span>
+            </label>
             <select
               {...register("bookId", { required: "Please select book" })}
               onChange={(e) => handleBookChange(e.target.value)}
@@ -191,10 +200,14 @@ const AddorEditBookTextForm: React.FC<TAddorEditBookTextFormProps> = ({
             >
               <option value="">Select Book</option>
               {allBookNames.map((book) => (
-                <option key={book._id} value={book._id}>{book.name}</option>
+                <option key={book._id} value={book._id}>
+                  {book.name}
+                </option>
               ))}
             </select>
-            {errors.bookId && <p className="text-red-500 text-sm">{errors.bookId.message}</p>}
+            {errors.bookId && (
+              <p className="text-red-500 text-sm">{errors.bookId.message}</p>
+            )}
           </div>
 
           {/* Dynamic Location Fields */}
@@ -207,7 +220,9 @@ const AddorEditBookTextForm: React.FC<TAddorEditBookTextFormProps> = ({
                     key={field.id}
                     label={field.levelName}
                     placeholder={`Enter ${field.levelName}`}
-                    {...register(`location.${index}.value`, { required: `${field.levelName} is required` })}
+                    {...register(`location.${index}.value`, {
+                      required: `${field.levelName} is required`,
+                    })}
                     error={errors.location?.[index]?.value}
                   />
                 ))}
@@ -218,14 +233,18 @@ const AddorEditBookTextForm: React.FC<TAddorEditBookTextFormProps> = ({
           <Textarea
             label="Original Text"
             placeholder="Enter original text"
-            {...register("originalText", { required: "Original text is required" })}
+            {...register("originalText", {
+              required: "Original text is required",
+            })}
             error={errors.originalText}
           />
 
           <Textarea
             label="Primary Translation (English)"
             placeholder="Enter primary English translation"
-            {...register("primaryTranslation", { required: "Translation is required" })}
+            {...register("primaryTranslation", {
+              required: "Translation is required",
+            })}
             error={errors.primaryTranslation}
           />
 
@@ -242,7 +261,10 @@ const AddorEditBookTextForm: React.FC<TAddorEditBookTextFormProps> = ({
             />
             <div className="flex flex-wrap gap-2 mt-2">
               {tags.map((tag, i) => (
-                <div key={i} className="bg-blue-100 px-3 py-1 rounded-full flex items-center gap-2">
+                <div
+                  key={i}
+                  className="bg-blue-100 px-3 py-1 rounded-full flex items-center gap-2"
+                >
                   <span>{tag}</span>
                   <button type="button" onClick={() => removeTag(tag)}>
                     <X className="w-4 h-4 text-blue-500 hover:text-red-500" />
@@ -250,19 +272,6 @@ const AddorEditBookTextForm: React.FC<TAddorEditBookTextFormProps> = ({
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Verified Checkbox */}
-          <div className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              checked={isVerified}
-              onChange={(e) => setIsVerified(e.target.checked)}
-              className="w-5 h-5"
-            />
-            <span className={isVerified ? "text-green-600" : "text-gray-700"}>
-              Human Verified
-            </span>
           </div>
 
           <div className="flex justify-end gap-3">

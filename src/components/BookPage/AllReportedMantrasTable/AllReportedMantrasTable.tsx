@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Trash2 } from "lucide-react";
+import { Check, Trash2 } from "lucide-react";
 import Loader from "../../Shared/Loader/Loader";
 import DeleteConfirmationModal from "../../DeleteConfirmationModal/DeleteConfirmationModal";
 import toast from "react-hot-toast";
@@ -109,9 +109,9 @@ const AllReportedMantrasTable: React.FC<AllReportedMantrasTableProps> = ({
                 </td>
                 <td className="py-2">
                   {mantra.isHumanVerified ? (
-                    <span className="text-green-500 font-medium">Yes</span>
+                    <span className="text-green-500 font-medium inline">Verified <Check className="w-5 h-5 inline" /></span>
                   ) : (
-                    <span className="text-gray-400">No</span>
+                    <span className="text-red-500">Not Verified</span>
                   )}
                 </td>
                 <td className="py-2 flex gap-3 items-center">
