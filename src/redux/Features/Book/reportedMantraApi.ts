@@ -22,6 +22,32 @@ const reportedMantraApi = baseApi.injectEndpoints({
       providesTags: ["reportMantra"],
     }),
 
+     getMantraToResolve: builder.query({
+      query: ({
+        bookId,
+        levels,
+      }: {
+        bookId: string;
+        levels?: Record<string, string>;
+      }) => {
+        if (!bookId) return { url: "", method: "GET" };
+
+        const safeLevels = levels || {};
+        const params = new URLSearchParams({ bookId });
+
+        Object.entries(safeLevels).forEach(([key, value]) => {
+          if (value) params.append(key, value);
+        });
+
+        return {
+          url: `/book-text/find-by-details?${params.toString()}`,
+          method: "GET",
+          credentials: "include",
+        };
+      },
+      providesTags: ["reportMantra"],
+    }),
+
     reportMantra: builder.mutation<any, any>({
       query: (data) => ({
         url: `/reportMantra/report`,
@@ -50,13 +76,25 @@ const reportedMantraApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["reportMantra"],
     }),
+
+    resolveIssue: builder.mutation<any, any>({
+      query: ({ id, data }) => ({
+        url: `/reportMantra/resolve/${id}`,
+        method: "PUT",
+        body: data,
+        credentials: "include",
+      }),
+      invalidatesTags: ["reportMantra"],
+    }),
   }),
 });
 
 export const {
   useGetAllReportedMantrasQuery,
   useGetSingleReportedMantraQuery,
+  useGetMantraToResolveQuery,
   useReportMantraMutation,
   useDeleteReportedMantraMutation,
   useUpdateStatusMutation,
+  useResolveIssueMutation,
 } = reportedMantraApi;

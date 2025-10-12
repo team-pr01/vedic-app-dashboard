@@ -13,25 +13,30 @@ type TSelectedBook = {
 
 const Translations = () => {
   const { data: books } = useGetAllBooksQuery({});
-  const [isTranslateModalOpen, setIsTranslateModalOpen] = useState<boolean>(false);
+  const [isTranslateModalOpen, setIsTranslateModalOpen] =
+    useState<boolean>(false);
   const [selectedBook, setSelectedBook] = useState<TSelectedBook>(null);
-  const [locationValues, setLocationValues] = useState<Record<string, string>>({});
+  const [locationValues, setLocationValues] = useState<Record<string, string>>(
+    {}
+  );
 
   const shouldFetch =
     !!selectedBook?._id &&
     Object.values(locationValues).every((v) => v.trim() !== "");
 
-  const { data: singleText, isLoading: isSingleTextLoading, isFetching: isSingleTextFetching } =
-  useGetTextByDetailsQuery(
+  const {
+    data: singleText,
+    isLoading: isSingleTextLoading,
+    isFetching: isSingleTextFetching,
+  } = useGetTextByDetailsQuery(
     {
       bookId: selectedBook?._id!,
-      levels: locationValues, // <-- pass it here
+      levels: locationValues,
     },
     {
       skip: !shouldFetch,
     }
   );
-
 
   const allBookNames = books?.data?.map((item: any) => ({
     _id: item?._id,
@@ -102,7 +107,9 @@ const Translations = () => {
                     key={lvl._id}
                     placeholder={lvl.name}
                     value={locationValues[lvl.name] || ""}
-                    onChange={(e) => handleLocationChange(lvl.name, e.target.value)}
+                    onChange={(e) =>
+                      handleLocationChange(lvl.name, e.target.value)
+                    }
                     className="px-[18px] py-2 rounded-lg border focus:outline-none focus:border-primary-500 transition duration-300 bg-neutral-50 w-[200px]"
                   />
                 ))}
