@@ -169,7 +169,7 @@ const Books = () => {
           onChange={(e) => setReportedMantraStatus(e.target.value)}
           className="px-[18px] py-2 rounded-lg bg-neutral-70 border text-neutral-65 focus:outline-none focus:border-primary-10 transition duration-300"
         >
-          <option value="" disabled>
+          <option value="">
             All Reports
           </option>
           {["pending", "resolved", "dismissed"].map(
