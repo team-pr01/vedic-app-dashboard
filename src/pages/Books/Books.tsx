@@ -13,6 +13,8 @@ import {
 } from "../../redux/Features/Book/textsApi";
 import AddorEditBookTextForm from "../../components/BookPage/AddorEditBookTextForm/AddorEditBookTextForm";
 import Translations from "../../components/BookPage/Translations/Translations";
+import { useGetAllReportedMantrasQuery } from "../../redux/Features/Book/reportedMantraApi";
+import AllReportedMantrasTable from "../../components/BookPage/AllReportedMantrasTable/AllReportedMantrasTable";
 
 export type TBook = {
   _id: string;
@@ -29,6 +31,8 @@ const Books = () => {
   const [mode, setMode] = useState<"add" | "edit">("add");
   const [showForm, setShowForm] = useState<boolean>(false);
   const [showBookTextForm, setShowBookTextForm] = useState<boolean>(false);
+  const [isReviewMantraModalOpen, setIsReviewMantraModalOpen] = useState<boolean>(false);
+  const [reportedMantraStatus, setReportedMantraStatus] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBookId, setSelectedBookId] = useState<null | string>("");
   const [selectedBookTextId, setSelectedBookTextId] = useState<null | string>(
@@ -51,6 +55,12 @@ const Books = () => {
 
   const { data: singleBookText, isLoading: isSingleBookTextLoading } =
     useGetSingleTextQuery(selectedBookTextId);
+
+  const {
+    data: reportedMantras,
+    isLoading: isReportedMantrasLoading,
+    isFetching: isReportedMantrasFetching,
+  } = useGetAllReportedMantrasQuery({ status: reportedMantraStatus });
 
   const [activeTab, setActiveTab] = useState("Manage Books");
 
@@ -148,6 +158,37 @@ const Books = () => {
       )}
 
       {activeTab === "Translations" && <Translations />}
+
+      {activeTab === "Mantra Reports" && (
+
+      <div className="flex flex-col gap-4 mt-8">
+        {/* Status */}
+      <div className="flex justify-end">
+        <select
+          value={reportedMantraStatus}
+          onChange={(e) => setReportedMantraStatus(e.target.value)}
+          className="px-[18px] py-2 rounded-lg bg-neutral-70 border text-neutral-65 focus:outline-none focus:border-primary-10 transition duration-300"
+        >
+          <option value="" disabled>
+            All Reports
+          </option>
+          {["pending", "resolved", "dismissed"].map(
+            (option: any, index: number) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            )
+          )}
+        </select>
+      </div>
+        <AllReportedMantrasTable
+          reportedMantras={reportedMantras?.data}
+          isLoading={isReportedMantrasLoading || isReportedMantrasFetching}
+          isReviewMantraModalOpen={isReviewMantraModalOpen}
+          setIsReviewMantraModalOpen={setIsReviewMantraModalOpen}
+        />
+      </div>
+      )}
 
       {/* Add Form Modal */}
       {showForm && (
