@@ -6,11 +6,13 @@ import { useSendNotificationMutation } from "../../../redux/Features/Notificatio
 import toast from "react-hot-toast";
 import Loader from "../../Shared/Loader/Loader";
 import { useState } from "react";
+import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
+import { useGetAllUsersQuery } from "../../../redux/Features/Auth/authApi";
 
 type TFormValues = {
   notificationId: string;
   title: string;
-  adminMessage: string;
+  message: string;
 };
 
 type TSendNotificationFormProps = {
@@ -29,10 +31,121 @@ const SendNotificationForm: React.FC<TSendNotificationFormProps> = ({
   } = useForm<TFormValues>();
 
   const [sendNotification, { isLoading }] = useSendNotificationMutation();
-  const [targetedAudience, setTargetedAudience] = useState<string[]>([]);
+
+  const {
+    data: allUsers,
+    isLoading: isUserLoading,
+    isFetching,
+  } = useGetAllUsersQuery({});
+
+  const [selectedCountry, setSelectedCountry] = useState<string>("");
+  const [selectedDistrict, setSelectedDistrict] = useState<string>("");
+
+  const filteredUsers = allUsers?.data?.filter(
+    (user: any) =>
+      user?.country === selectedCountry && user?.city === selectedDistrict
+  );
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+
+  const isAllSelected = selectedUserIds?.length === filteredUsers?.length;
+
+  const bangladeshDistricts = [
+    "Bagerhat",
+    "Bandarban",
+    "Barguna",
+    "Barishal",
+    "Bhola",
+    "Bogra",
+    "Brahmanbaria",
+    "Chandpur",
+    "Chapai Nawabganj",
+    "Chattogram",
+    "Chuadanga",
+    "Cox's Bazar",
+    "Cumilla",
+    "Dhaka",
+    "Dinajpur",
+    "Faridpur",
+    "Feni",
+    "Gaibandha",
+    "Gazipur",
+    "Gopalganj",
+    "Habiganj",
+    "Jamalpur",
+    "Jashore",
+    "Jhalokati",
+    "Jhenaidah",
+    "Joypurhat",
+    "Khagrachari",
+    "Khulna",
+    "Kishoreganj",
+    "Kurigram",
+    "Kushtia",
+    "Lakshmipur",
+    "Lalmonirhat",
+    "Madaripur",
+    "Magura",
+    "Manikganj",
+    "Meherpur",
+    "Moulvibazar",
+    "Munshiganj",
+    "Mymensingh",
+    "Naogaon",
+    "Narail",
+    "Narayanganj",
+    "Narsingdi",
+    "Natore",
+    "Netrokona",
+    "Nilphamari",
+    "Noakhali",
+    "Pabna",
+    "Panchagarh",
+    "Patuakhali",
+    "Pirojpur",
+    "Rajbari",
+    "Rajshahi",
+    "Rangamati",
+    "Rangpur",
+    "Satkhira",
+    "Shariatpur",
+    "Sherpur",
+    "Sirajganj",
+    "Sunamganj",
+    "Sylhet",
+    "Tangail",
+    "Thakurgaon",
+  ];
+
+  const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setSelectedCountry(value);
+    setSelectedDistrict("");
+  };
+
+  const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setSelectedDistrict(value);
+  };
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedUserIds([]);
+    } else {
+      const allIds = filteredUsers.map((user: any) => user._id);
+      setSelectedUserIds(allIds);
+    }
+  };
+
+  const toggleSelectUser = (id: string) => {
+    if (selectedUserIds.includes(id)) {
+      setSelectedUserIds((prev) => prev.filter((_id) => _id !== id));
+    } else {
+      setSelectedUserIds((prev) => [...prev, id]);
+    }
+  };
 
   const handleSendNotification = async (data: TFormValues) => {
-    if (targetedAudience.length === 0) {
+    if (selectedUserIds?.length === 0) {
       toast.error("Please select at least one targeted audience");
       return;
     }
@@ -40,7 +153,7 @@ const SendNotificationForm: React.FC<TSendNotificationFormProps> = ({
     try {
       const payload = {
         ...data,
-        targetedAudience,
+        userIds: selectedUserIds,
       };
       const response = await sendNotification(payload).unwrap();
       if (response?.success) {
@@ -59,20 +172,10 @@ const SendNotificationForm: React.FC<TSendNotificationFormProps> = ({
     }
   };
 
-  const audiences = ["All Users", "Moderator", "Admin"];
-
-  const toggleAudience = (audience: string) => {
-    setTargetedAudience((prev) =>
-      prev.includes(audience)
-        ? prev.filter((a) => a !== audience)
-        : [...prev, audience]
-    );
-  };
-
   return (
     showForm && (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
           <form
             onSubmit={handleSubmit(handleSendNotification)}
             className="p-6 space-y-6"
@@ -92,14 +195,6 @@ const SendNotificationForm: React.FC<TSendNotificationFormProps> = ({
 
             <div className="space-y-4">
               <TextInput
-                label="Notification Id"
-                placeholder="Enter Title"
-                {...register("title", {
-                  required: "Title is required",
-                })}
-                error={errors.title}
-              />
-              <TextInput
                 label="Title"
                 placeholder="Enter Title"
                 {...register("title", {
@@ -110,35 +205,112 @@ const SendNotificationForm: React.FC<TSendNotificationFormProps> = ({
               />
 
               <Textarea
-                label="Admin Message"
+                label="Message"
                 placeholder="Write Message here..."
                 rows={6}
-                error={errors.adminMessage}
-                {...register("adminMessage", {
-                  required: "Admin Message is required",
+                error={errors.message}
+                {...register("message", {
+                  required: "Message is required",
                 })}
                 isRequired={false}
               />
 
+              <SelectDropdown
+                label="Targeted Country"
+                value={selectedCountry}
+                onChange={handleCountryChange}
+                options={["Bangladesh"]}
+              />
+
+              <SelectDropdown
+                label="Targeted District"
+                value={selectedDistrict}
+                onChange={handleDistrictChange}
+                options={
+                  selectedCountry === "Bangladesh" ? bangladeshDistricts : []
+                }
+                placeholder={
+                  selectedCountry ? "Select district" : "Select country first"
+                }
+                disabled={!selectedCountry}
+              />
+
               <div>
                 <p className="font-medium text-gray-700 dark:text-white mb-2">
-                  Targeted Audience
+                  Targeted Audience <span className="text-red-600"> *</span>
                 </p>
-                <div className="flex gap-4 flex-wrap">
-                  {audiences.map((audience) => (
-                    <button
-                      key={audience}
-                      type="button"
-                      onClick={() => toggleAudience(audience)}
-                      className={`px-4 py-2 rounded-lg border text-sm font-medium shadow-sm transition-all ${
-                        targetedAudience.includes(audience)
-                          ? "bg-blue-600 text-white border-blue-600"
-                          : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600"
-                      }`}
-                    >
-                      {audience}
-                    </button>
-                  ))}
+
+                <div className="mt-4 overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200 border">
+                    <thead className="bg-gray-100 dark:bg-gray-800">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-white">
+                          <input
+                            type="checkbox"
+                            checked={isAllSelected}
+                            onChange={toggleSelectAll}
+                          />
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-white">
+                          User ID
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-white">
+                          Name
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-white">
+                          Location
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-700 dark:text-white">
+                          Phone Number
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white dark:bg-gray-900">
+                      {isUserLoading || isFetching ? (
+                        <tr>
+                          <td colSpan={5} className="py-6 text-center">
+                            <Loader size="size-10" />
+                          </td>
+                        </tr>
+                      ) : filteredUsers?.length === 0 ? (
+                        <tr>
+                          <td
+                            colSpan={5}
+                            className="py-6 text-center text-gray-500 dark:text-gray-300"
+                          >
+                            No user found
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredUsers?.map((user: any) => (
+                          <tr
+                            key={user._id}
+                            className="border-b border-gray-300 dark:border-gray-700"
+                          >
+                            <td className="px-4 py-2">
+                              <input
+                                type="checkbox"
+                                checked={selectedUserIds.includes(user._id)}
+                                onChange={() => toggleSelectUser(user._id)}
+                              />
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-800 dark:text-gray-100">
+                              {user._id}
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-800 dark:text-gray-100">
+                              {user.name}
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-800 dark:text-gray-100">
+                              {user.district || "N/A"}, {user.country || "N/A"}
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-800 dark:text-gray-100">
+                              {user.phone || "N/A"}
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>

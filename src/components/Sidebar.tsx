@@ -31,6 +31,7 @@ import {
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { useCurrentUser } from "../redux/Features/Auth/authSlice";
+import logo from "../assets/logo.png"
 
 interface SidebarProps {
   isDarkMode: boolean;
@@ -131,7 +132,8 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
 
   return (
     <div className="h-screen w-[270px] sticky top-0 left-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
-      <div className="px-4 py-[23px] border-b border-gray-200 dark:border-gray-700">
+      <div className="px-4 py-[23px] border-b border-gray-200 dark:border-gray-700 flex flex-col items-center gap-2">
+        <img src={logo} alt="" className="w-20" />
         <h1 className="text-xl font-bold text-gray-800 dark:text-white capitalize">
           {user?.role} Dashboard
         </h1>

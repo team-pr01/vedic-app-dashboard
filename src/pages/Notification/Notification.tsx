@@ -6,52 +6,6 @@ import SendNotificationForm from "./../../components/NotificationPage/SendNotifi
 import { useGetAllNotificationsQuery } from "../../redux/Features/Notification/notificationApi";
 import Loader from "../../components/Shared/Loader/Loader";
 
-export const dummyNotifications = [
-  {
-    id: "1",
-    title: "Weekly Update",
-    message: "Here's your weekly update on project progress.",
-    status: "sent",
-    type: "Team",
-    scheduled_for: "2025-06-05T10:00:00Z",
-    sent_at: "2025-06-05T10:05:00Z",
-  },
-  {
-    id: "2",
-    title: "Server Maintenance",
-    message: "We will perform maintenance on Sunday at 2 AM.",
-    status: "scheduled",
-    type: "System",
-    scheduled_for: "2025-06-09T02:00:00Z",
-  },
-  {
-    id: "3",
-    title: "Policy Update",
-    message:
-      "Our terms of service have been updated. Please review the changes.",
-    status: "failed",
-    type: "User",
-    scheduled_for: "2025-06-01T09:30:00Z",
-  },
-  {
-    id: "4",
-    title: "Event Reminder",
-    message: "Don’t forget the company-wide Q&A session on Friday!",
-    status: "sent",
-    type: "Announcement",
-    scheduled_for: "2025-06-03T15:00:00Z",
-    sent_at: "2025-06-03T15:02:00Z",
-  },
-  {
-    id: "5",
-    title: "System Alert",
-    message: "High memory usage detected on Server #12.",
-    status: "scheduled",
-    type: "Admin",
-    scheduled_for: "2025-06-10T06:45:00Z",
-  },
-];
-
 const Notification = () => {
   const [showForm, setShowForm] = useState<boolean>(false);
   const { data, isLoading } = useGetAllNotificationsQuery({});
