@@ -5,7 +5,7 @@ import { SparklesIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import {
   useTranslateTextMutation,
-  useUpdateTextMutation,
+  useUpdateTranslationMutation,
 } from "../../../redux/Features/Book/textsApi";
 import toast from "react-hot-toast";
 
@@ -57,7 +57,7 @@ const TranslateBookModal = ({
   data: BookTextData;
   setIsTranslateModalOpen: (isOpen: boolean) => void;
 }) => {
-  const [updateText, { isLoading: isUpdating }] = useUpdateTextMutation();
+  const [updateTranslation, { isLoading: isUpdating }] = useUpdateTranslationMutation();
   const [translateText, { isLoading: isTranslating }] =
     useTranslateTextMutation();
   const [selectedLanguages, setSelectedLanguages] = useState<any[]>([]);
@@ -199,7 +199,7 @@ const TranslateBookModal = ({
       });
 
       // Call API
-      const response = await updateText({
+      const response = await updateTranslation({
         id: data._id,
         data: {
           translations: translationsArray,

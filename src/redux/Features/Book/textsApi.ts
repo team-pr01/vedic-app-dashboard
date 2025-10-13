@@ -69,6 +69,16 @@ const bookTextApi = baseApi.injectEndpoints({
 
     updateText: builder.mutation<any, any>({
       query: ({ id, data }) => ({
+        url: `/book-text/update/text/${id}`,
+        method: "PUT",
+        body: data,
+        credentials: "include",
+      }),
+      invalidatesTags: ["texts"],
+    }),
+
+    updateTranslation: builder.mutation<any, any>({
+      query: ({ id, data }) => ({
         url: `/book-text/update/${id}`,
         method: "PUT",
         body: data,
@@ -96,5 +106,6 @@ export const {
   useAddTextMutation,
   useDeleteTextMutation,
   useUpdateTextMutation,
+  useUpdateTranslationMutation,
   useTranslateTextMutation,
 } = bookTextApi;
