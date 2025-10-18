@@ -139,10 +139,17 @@ const EmergencyPostForm: React.FC<TSendNotificationFormProps> = ({
     isFetching,
   } = useGetAllUsersQuery({});
 
-  const filteredUsers = allUsers?.data?.filter(
-    (user: any) =>
-      user?.country === selectedCountry && user?.city === selectedDistrict
-  );
+const filteredUsers = selectedCountry
+  ? allUsers?.data?.filter((user: any) => {
+      // Filter by country first
+      if (user?.country !== selectedCountry) return false;
+
+      // Filter by district only if selected
+      if (selectedDistrict && user?.city !== selectedDistrict) return false;
+
+      return true;
+    })
+  : [];
 
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 
@@ -152,7 +159,7 @@ const EmergencyPostForm: React.FC<TSendNotificationFormProps> = ({
     if (isAllSelected) {
       setSelectedUserIds([]);
     } else {
-      const allIds = filteredUsers.map((user: any) => user._id);
+      const allIds = filteredUsers?.map((user: any) => user._id) || [];
       setSelectedUserIds(allIds);
     }
   };
