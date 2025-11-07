@@ -27,11 +27,12 @@ import {
   Leaf,
   ShoppingBag,
   UserCheck,
+  Gift,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { useCurrentUser } from "../redux/Features/Auth/authSlice";
-import logo from "../assets/logo.png"
+import logo from "../assets/logo.png";
 
 interface SidebarProps {
   isDarkMode: boolean;
@@ -49,18 +50,18 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
       label: "Books",
       path: "/dashboard/religious-texts",
     },
-   
+
     // {
     //   icon: BookOpen,
     //   label: "Religious Texts",
     //   path: "/dashboard/religious-texts",
     // },
-     {
+    {
       icon: GraduationCap,
       label: "Course",
       path: "/dashboard/course",
     },
-     {
+    {
       icon: FileText,
       label: "Quiz",
       path: "/dashboard/quiz",
@@ -82,7 +83,11 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
     },
     { icon: MessageSquarePlus, label: "Popups", path: "/dashboard/popups" },
     { icon: FileText, label: "Content Management", path: "/dashboard/content" },
-    { icon: CreditCard, label: "Donation Programs", path: "/dashboard/donation-programs" },
+    {
+      icon: CreditCard,
+      label: "Donation Programs",
+      path: "/dashboard/donation-programs",
+    },
     { icon: CreditCard, label: "Total Donations", path: "/dashboard/donation" },
     {
       icon: Headphones,
@@ -90,15 +95,21 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
       path: "/dashboard/consultancy-service",
     },
     {
-      icon: Sun,
-      label: "Daily Horoscope",
-      path: "/dashboard/daily-horoscope",
-    },
-    {
       icon: UserCheck,
       label: "Consultations",
       path: "/dashboard/consultation",
     },
+    {
+      icon: Gift,
+      label: "Subscriptions",
+      path: "/dashboard/subscriptions",
+    },
+    {
+      icon: Sun,
+      label: "Daily Horoscope",
+      path: "/dashboard/daily-horoscope",
+    },
+
     {
       icon: FolderDot,
       label: "Recipe",
@@ -109,7 +120,7 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
       label: "Ayurveda",
       path: "/dashboard/ayurveda",
     },
-    
+
     {
       icon: ShoppingBag,
       label: "Shop",
@@ -120,7 +131,7 @@ export function Sidebar({ isDarkMode, toggleDarkMode }: SidebarProps) {
       label: "Bulk SMS",
       path: "/dashboard/bulk-sms",
     },
-    
+
     { icon: Key, label: "API Keys", path: "/dashboard/api-keys" },
     { icon: BarChart2, label: "Analytics", path: "/dashboard/analytics" },
     { icon: Activity, label: "Activity", path: "/dashboard/activity" },
