@@ -1,7 +1,8 @@
 import { useState } from "react";
 import {
   useGetAllSubscriptionsQuery,
-  useMarkUserAsPaidMutation,
+  useMarkUserAsSubscribedMutation,
+  useMarkUserAsUnSubscribedMutation,
 } from "../../redux/Features/Subscription/subscriptionApi";
 import { Loader, Search, UserCheck } from "lucide-react";
 import toast from "react-hot-toast";
@@ -11,18 +12,37 @@ const Subscriptions = () => {
   const { data, isLoading, isFetching } = useGetAllSubscriptionsQuery({
     keyword,
   });
-  const [markUserAsPaid, { isLoading: isMarkingUserPaid }] =
-    useMarkUserAsPaidMutation();
+  const [markUserAsSubscribed, { isLoading: isMarkingUserPaid }] =
+    useMarkUserAsSubscribedMutation();
+  const [markUserAsUnSubscribed, { isLoading: isMarkingUserUnPaid }] =
+    useMarkUserAsUnSubscribedMutation();
 
-  const handleMarkUserAsPaid = async (data:any) => {
+  const handleMarkUserAsSubscribed = async (data: any) => {
     try {
       const payload = {
         userId: data?.userId?._id,
-        subscriptionPlanName : data?.subscriptionPlanName
+        subscriptionId: data?._id,
+        subscriptionPlanName: data?.subscriptionPlanName,
       };
-      const response = await markUserAsPaid(payload).unwrap();
+      const response = await markUserAsSubscribed(payload).unwrap();
       if (response?.success) {
-        toast.success("User marked as paid.");
+        toast.success("User marked as subscribed.");
+      }
+    } catch (error: any) {
+      const err = error?.data?.message || "Something went wrong";
+      toast.error(err);
+    }
+  };
+
+  const handleMarkUserAsUnSubscribed = async (data: any) => {
+    try {
+      const payload = {
+        userId: data?.userId?._id,
+        subscriptionId: data?._id,
+      };
+      const response = await markUserAsUnSubscribed(payload).unwrap();
+      if (response?.success) {
+        toast.success("User marked as un-subscribed.");
       }
     } catch (error: any) {
       const err = error?.data?.message || "Something went wrong";
@@ -51,20 +71,19 @@ const Subscriptions = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto mt-5">
+      <div className="overflow-x-auto max-w-[1800px] mt-5">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-200 dark:bg-gray-900">
             <tr>
               {[
-                "User Name",
-                "User Phone",
-                "User Email",
+                "User",
                 "Subscription Plan",
                 "Amount",
                 "Payment Method",
                 "Sender Account Number",
                 "Start Date",
                 "End Date",
+                "Status",
                 "Action",
               ].map((header) => (
                 <th
@@ -93,13 +112,8 @@ const Subscriptions = () => {
                 data.data.map((subscription: any) => (
                   <tr key={subscription._id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {subscription.userId?.name || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      <p>{subscription.userId?.name || "N/A"}</p>
                       {subscription.userId?.phoneNumber || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                      {subscription.userId?.email || "N/A"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       {subscription.subscriptionPlanName || "N/A"}
@@ -123,15 +137,29 @@ const Subscriptions = () => {
                         ? new Date(subscription.endDate).toLocaleString()
                         : "N/A"}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 capitalize">
+                      {subscription?.status}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       <button
                         className={`px-3 py-1 text-sm font-medium rounded-md bg-green-50 text-green-500 disabled:cursor-not-allowed`}
-                        onClick={() => handleMarkUserAsPaid(subscription)}
+                        onClick={() => handleMarkUserAsSubscribed(subscription)}
                         disabled={isMarkingUserPaid}
                       >
-                        {
-                            isMarkingUserPaid ? "Loading..." : "Mark as paid"
+                        {isMarkingUserPaid
+                          ? "Loading..."
+                          : "Mark as Subscribed"}
+                      </button>
+                      <button
+                        className={`px-3 py-1 text-sm font-medium rounded-md bg-red-50 text-red-500 disabled:cursor-not-allowed`}
+                        onClick={() =>
+                          handleMarkUserAsUnSubscribed(subscription)
                         }
+                        disabled={isMarkingUserUnPaid}
+                      >
+                        {isMarkingUserUnPaid
+                          ? "Loading..."
+                          : "Mark as Un-Subscribed"}
                       </button>
                     </td>
                   </tr>

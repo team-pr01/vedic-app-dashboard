@@ -40,9 +40,19 @@ const subscriptionApi = baseApi.injectEndpoints({
       invalidatesTags: ["subscription"],
     }),
 
-    markUserAsPaid: builder.mutation({
+    markUserAsSubscribed: builder.mutation({
       query: (data) => ({
         url: `/subscription/mark-user-as-subscribed`,
+        method: "PUT",
+        body: data,
+        credentials: "include",
+      }),
+      invalidatesTags: ["subscription"],
+    }),
+
+    markUserAsUnSubscribed: builder.mutation({
+      query: (data) => ({
+        url: `/subscription/mark-user-as-unsubscribed`,
         method: "PUT",
         body: data,
         credentials: "include",
@@ -56,5 +66,6 @@ export const {
   useGetAllSubscriptionsQuery,
   useGetSingleSubscriptionQuery,
   useDeleteSubscriptionMutation,
-  useMarkUserAsPaidMutation,
+  useMarkUserAsSubscribedMutation,
+  useMarkUserAsUnSubscribedMutation,
 } = subscriptionApi;
