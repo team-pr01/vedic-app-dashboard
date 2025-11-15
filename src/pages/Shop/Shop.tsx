@@ -57,7 +57,6 @@ const Shop = () => {
   );
 
   const allProducts = data?.data?.products || [];
-  const pagination = data?.data?.pagination || {};
 
   const {
     data: singleProductData,

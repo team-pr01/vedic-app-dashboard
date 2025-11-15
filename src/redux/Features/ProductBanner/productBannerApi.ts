@@ -3,7 +3,7 @@ import { baseApi } from "../../API/baseApi";
 const productBannerApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllProductBanners: builder.query({
-      query: (id) => ({
+      query: () => ({
         url: `/product-banner`,
         method: "GET",
         credentials: "include",
