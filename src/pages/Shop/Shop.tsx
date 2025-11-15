@@ -11,6 +11,7 @@ import {
 } from "../../redux/Features/Product/productApi";
 import Loader from "../../components/Shared/Loader/Loader";
 import { useGetAllCategoriesQuery } from "../../redux/Features/Categories/ReelCategory/categoriesApi";
+import ProductBanner from "../../components/ShopPage/ProductBanner/ProductBanner";
 
 export type TProduct = {
   _id: string;
@@ -107,6 +108,7 @@ const Shop = () => {
         Shop Management
       </h2>
 
+      {/* Stats card */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center gap-4">
           <div className="p-3 rounded-full bg-blue-100 dark:bg-blue-500/20">
@@ -132,7 +134,9 @@ const Shop = () => {
         </div>
       </div>
 
+      {/* Table & Header */}
       <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700">
+        {/* Table header */}
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-bold">All Products</h3>
           <div className="flex items-center gap-3">
@@ -180,6 +184,7 @@ const Shop = () => {
           </div>
         </div>
 
+          {/* Product table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
             <thead className="border-b border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400">
@@ -297,6 +302,8 @@ const Shop = () => {
           onConfirm={handleConfirmDelete}
         />
       )}
+
+      <ProductBanner/>
     </div>
   );
 };
