@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { useSendEmergencyPushNotificationToUsersMutation } from "../../../redux/Features/Emergencies/emergencyApi";
 import SelectDropdown from "../../Reusable/SelectDropdown/SelectDropdown";
 import { useGetAllUsersQuery } from "../../../redux/Features/Auth/authApi";
+import { useSendNotificationMutation } from "../../../redux/Features/Notification/notificationApi";
 
 type TFormValues = {
   emergencyMessageId: string;
@@ -37,7 +38,7 @@ const EmergencyPostForm: React.FC<TSendNotificationFormProps> = ({
     reset,
   } = useForm<TFormValues>();
 
-  const [sendEmergencyPushNotificationToUsers, { isLoading }] =   useSendEmergencyPushNotificationToUsersMutation();
+  const [sendNotification, { isLoading }] = useSendNotificationMutation();
 
   useEffect(() => {
     if (postData) {
@@ -186,7 +187,7 @@ const filteredUsers = selectedCountry
           adminMessage : data.adminMessage
         }
       };
-      const response = await sendEmergencyPushNotificationToUsers(payload).unwrap();
+      const response = await sendNotification(payload).unwrap();
       if (response?.success) {
         toast.success(response?.message || "Message forwarded successfully");
         setShowForm(false);
